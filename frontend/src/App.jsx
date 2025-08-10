@@ -8,7 +8,8 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const url = "http://localhost:4000";
+  // const url = "http://localhost:4000";
+  const url = "https://mandal-software.onrender.com";
 
   const location = useLocation();
   const hideLayout = location.pathname === "/login";
