@@ -1,0 +1,11 @@
+import sangam_logo from './sangam_logo.png'
+import sarojini_logo from './sarojini_logo.png'
+import login_logo from './login_logo.png'
+import login_bg from './bg.jpg'
+
+export const assets = {
+    sangam_logo,
+    sarojini_logo,
+    login_logo,
+    login_bg,
+}
