@@ -31,7 +31,7 @@ const Navbar = ({ toggleSidebar }) => {
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary py-1 px-4">
-      <div className="container-fluid" style={{ height: "70px" }}>
+      <div className="container-fluid" style={{ height: "60px" }}>
         <div className="ham" onClick={toggleSidebar}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@ const Navbar = ({ toggleSidebar }) => {
           <img
             className="rounded-circle"
             src={assets.sangam_logo}
-            height={70}
+            height={60}
             alt=""
           />
         </div>

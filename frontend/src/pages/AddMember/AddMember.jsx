@@ -13,6 +13,7 @@ const AddMember = () => {
             type="text"
             className="form-control"
             placeholder="Enter Username"
+            required
           />
         </div>
         <div className="col-md-6">
@@ -21,6 +22,7 @@ const AddMember = () => {
             type="password"
             className="form-control"
             placeholder="Enter Password"
+            required
           />
         </div>
         <div className="col-md-6">
@@ -29,6 +31,7 @@ const AddMember = () => {
             type="text"
             className="form-control"
             placeholder="Enter Member Name"
+            required
           />
         </div>
         <div className="col-md-6">
@@ -37,32 +40,21 @@ const AddMember = () => {
             type="text"
             className="form-control"
             placeholder="Enter Mobile Number"
+            required
           />
         </div>
-        {/* <div className="col-12">
-          <label className="form-label">
-            Address
-          </label>
-          <input
-          type="text"
-          className="form-control"
-          placeholder="Enter Address"
-          />
-          </div> */}
-        <div class="form-floating">
-          <label className="form-label">
-            Address
-          </label>
+        <div className="col-12">
+          <label className="form-label">Address</label>
           <textarea
             className="form-control"
-            placeholder="Leave a comment here"
-            id="floatingTextarea"
+            placeholder="Enter Address"
+            rows="3"
+            required
           ></textarea>
-          <label htmlFor="floatingTextarea">Address</label>
         </div>
         <div className="col-md-4">
           <label className="form-label">Role</label>
-          <select className="form-select">
+          <select className="form-select" required>
             <option value="member" selected>
               Member
             </option>
