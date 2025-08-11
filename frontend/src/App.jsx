@@ -5,11 +5,13 @@ import Login from "./pages/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Navbar from "./components/Navbar/Navbar";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import AddMember from "./pages/AddMember/AddMember";
+import Members from "./pages/Members/Members";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  // const url = "http://localhost:4000";
-  const url = "https://mandal-software.onrender.com";
+  const url = "http://localhost:4000";
+  // const url = "https://mandal-software.onrender.com";
 
   const location = useLocation();
   const hideLayout = location.pathname === "/login";
@@ -36,6 +38,8 @@ function App() {
               <Route path="/login" element={<Login url={url} />} />
               {/*<Route path="/dashboard" element={<PrivateRoute roles={["admin"]}> <Dashboard url={url} /> </PrivateRoute>} /> */}
               <Route path="/dashboard" element={<Dashboard url={url} />} />
+              <Route path="/add-member" element={<AddMember url={url} />} />
+              <Route path="/member-list" element={<Members url={url} />} />
             </Routes>
           </main>
         </div>
