@@ -6,7 +6,7 @@ const AddMember = () => {
     <>
       <div className="bread">Add Member</div>
 
-      <form className="addmember row g-3 mt-3 mb-3 mx-1 rounded">
+      <form className="addmember row g-3 my-4 mx-1 rounded">
         <div className="col-md-6">
           <label className="form-label">Username</label>
           <input

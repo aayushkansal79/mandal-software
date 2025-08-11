@@ -7,7 +7,7 @@ const Footer = () => {
 
   return (
     <nav className="footer navbar navbar-expand-lg bg-body-tertiary py-1">
-      <div className="container-fluid" style={{ height: "60px" }}>
+      <div className="container-fluid" style={{ height: "70px" }}>
         
         <NavLink to="/add-receipt" className="icons text-center rounded">
           <div className="icon">

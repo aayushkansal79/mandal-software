@@ -31,6 +31,7 @@ function App() {
             flex: 1,
             overflowY: "auto",
             scrollbarWidth: "none",
+            paddingBottom: "80px"
           }}
         >
           <Toaster

@@ -6,7 +6,7 @@ const Dashboard = () => {
     <>
       <div className="bread">Dashboard</div>
 
-      <div className="my-4">
+      <div className="my-3">
         <div className="dashboard row g-4">
           <div className="col-12 col-sm-6 col-md-3">
             <div className="card text-bg-light mb-3">
