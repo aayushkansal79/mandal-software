@@ -14,19 +14,18 @@ const MemberReceipt = () => {
         <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>
           ← Back
         </button>
-        <h3>
-          Receipts for{" "}
-          <b className="text-primary">Aayush Kansal</b>
-        </h3>
         <p>
-          <b>Mobile:</b> 95821448468 | <b>Coins:</b> 20 |{" "}
-            <b className="text-danger">
-              Wallet: ₹ 0.00
-            </b>
-            <b className="text-success">
-              Wallet: ₹ 0.00
-            </b>
+          <b className="text-danger">Personal Information : </b> {" "}
+          <b>Member ID :</b> 1234567890 | {" "}
+          <b>Email :</b> example123@gmail.com | {" "}  
+          <b>Mobile :</b> 95821448468 | {" "}
+          <b>Address :</b> 234 , Street Name, City | {" "}
+          <b>Role :</b> <b className="text-primary">Karyakarta</b>
         </p>
+        <h3>
+          <b className="text-primary">Aayush Kansal 's</b> Reciepts
+        </h3>
+        
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-info">
             <tr>
