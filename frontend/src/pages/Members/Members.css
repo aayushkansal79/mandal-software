@@ -1,0 +1,12 @@
+.members p{
+  margin: 0;
+  padding: 0;
+}
+
+.members .card{
+    cursor: pointer;
+}
+
+.members .card:hover {
+  transform: scale(1.04);
+}

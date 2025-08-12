@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import AddMember from "./pages/AddMember/AddMember";
 import Members from "./pages/Members/Members";
 import Footer from "./components/Footer/Footer";
+import MemberReceipt from "./pages/MemberReceipt/MemberReceipt";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -47,6 +48,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard url={url} />} />
             <Route path="/add-member" element={<AddMember url={url} />} />
             <Route path="/member-list" element={<Members url={url} />} />
+            <Route path="/member-list/:id/member-receipts" element={<MemberReceipt url={url} />} />
           </Routes>
         </main>
         {!hideLayout && (

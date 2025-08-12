@@ -4,7 +4,12 @@
   color: #6d0616;
 }
 
-label{
+.op-btn {
+  border: none;
+  background-color: transparent;
+}
+
+label {
   font-weight: 600;
 }
 
@@ -21,11 +26,11 @@ label{
   cursor: pointer;
 }
 
-
 .dashboard .card-header {
   font-size: 1.2rem !important;
   font-weight: 600;
   background-color: #ffb82e;
+  border-radius: 10px 10px 0 0;
 }
 
 .dashboard .card-body {

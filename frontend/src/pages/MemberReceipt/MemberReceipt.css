@@ -1,0 +1,28 @@
+.MemberReceipt {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.MemberReceipt th {
+  text-align: center;
+}
+
+.MemberReceipt td {
+  text-align: center;
+}
+
+@media (max-width: 680px) {
+  .MemberReceipt {
+    width: calc(100vw - 2rem);
+    overflow-x: auto;
+  }
+
+  .MemberReceipt td {
+    white-space: nowrap;
+  }
+
+  .MemberReceipt th {
+    white-space: nowrap;
+  }
+}

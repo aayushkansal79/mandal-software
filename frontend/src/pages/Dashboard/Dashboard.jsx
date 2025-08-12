@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./Dashboard.css";
 
 const Dashboard = () => {
+  const user = "sangam";
+
+  useEffect(() => {
+    if (user === "sangam") {
+      document.title = "Shri Shyam Sewak Yuva Mandal";
+    } else if (user === "sarojini") {
+      document.title = "Shri Shyam Sewa Sangh";
+    }
+  }, []);
+  
   return (
     <>
       <div className="bread">Dashboard</div>
