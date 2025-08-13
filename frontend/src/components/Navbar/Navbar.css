@@ -34,6 +34,10 @@
   font-weight: 600;
 }
 
+.navbar .no-caret::after {
+  display: none !important;
+}
+
 @media (max-width: 1000px) {
   .navbar .img {
     display: block;

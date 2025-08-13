@@ -36,7 +36,7 @@
   }
   > .img2 {
     height: 120px;
-    /* width: 150px; */
+    /* width: 120px; */
     /* display: none; */
   }
   > p {
@@ -169,6 +169,10 @@
 
   .img2 {
     display: none;
+  }
+  
+  .img2-active {
+    height: 50px;
   }
 
   .sidebar-active {

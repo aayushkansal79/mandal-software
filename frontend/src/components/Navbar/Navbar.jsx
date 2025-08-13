@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
+import React, { use, useContext } from "react";
 import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toast } from "react-hot-toast";
-// import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { assets } from "../../assets/assets";
 
-const Navbar = ({ toggleSidebar }) => {
-  // const { logout, user } = useContext(AuthContext);
+const Navbar = ({ toggleSidebar, url }) => {
+  const { logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,7 +22,7 @@ const Navbar = ({ toggleSidebar }) => {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        // logout();
+        logout();
         toast.success("Logged Out Successfully");
         navigate("/login");
       }
@@ -30,7 +30,7 @@ const Navbar = ({ toggleSidebar }) => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary py-1 px-4">
+    <nav className="navbar navbar-expand-lg bg-body-tertiary py-1 px-md-4 px-2">
       <div className="container-fluid" style={{ height: "60px" }}>
         <div className="ham" onClick={toggleSidebar}>
           <svg
@@ -43,37 +43,44 @@ const Navbar = ({ toggleSidebar }) => {
             <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z" />
           </svg>
         </div>
-        <div className="name">SHRI SHYAM SEWAK YUVA MANDAL</div>
-        <div className="img">
-          <img
-            className="rounded-circle"
-            src={assets.sangam_logo}
-            height={60}
-            alt=""
-          />
-        </div>
+        <div className="name">{user?.mandalName.toUpperCase()}</div>
+        <Link to="/dashboard" className="img">
+          {user?.mandalName === "Shri Shyam Sewak Yuva Mandal Sangam Vihar" ? (
+            <img
+              className="rounded-circle"
+              src={assets.sangam_logo}
+              height={60}
+              alt=""
+            />
+          ) : (
+            <img
+              className="rounded-circle"
+              src={assets.sarojini_logo}
+              height={60}
+              alt=""
+            />
+          )}
+        </Link>
         <div className="nav-item dropdown">
           <a
-            className="nav-link dropdown-toggle"
+            className="nav-link dropdown-toggle no-caret"
             href="#"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#1f1f1f"
-            >
-              <path d="M185-80q-17 0-29.5-12.5T143-122v-105q0-90 56-159t144-88q-40 28-62 70.5T259-312v190q0 11 3 22t10 20h-87Zm147 0q-17 0-29.5-12.5T290-122v-190q0-70 49.5-119T459-480h189q70 0 119 49t49 119v64q0 70-49 119T648-80H332Zm148-484q-66 0-112-46t-46-112q0-66 46-112t112-46q66 0 112 46t46 112q0 66-46 112t-112 46Z" />
-            </svg>
-            {/* &nbsp; {user ? user.username : "User"} */}
+            <img
+              src={`${url}${user?.profilePic}`}
+              width={40}
+              height={40}
+              alt=""
+              className="rounded-circle border"
+            />
           </a>
           <ul className="dropdown-menu dropdown-menu-end">
-            {/* {user?.type === "admin" && ( */}
-            <li className="dropdown-item"><b>Hello, Aayush</b></li>
+            <li className="dropdown-item">
+              <b>Hello, {user?.memberName}</b>
+            </li>
             <li>
               <hr className="dropdown-divider" />
             </li>
@@ -91,7 +98,6 @@ const Navbar = ({ toggleSidebar }) => {
                 &nbsp; Profile
               </Link>
             </li>
-            {/* )} */}
             <li>
               <Link to="/change-password" className="dropdown-item" href="#">
                 <svg

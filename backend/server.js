@@ -1,7 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import path from "path";
 import 'dotenv/config';
+import mandalRoutes from './routes/mandalRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import receiptBookRoutes from './routes/receiptBookRoutes.js'
+import receiptRoutes from './routes/receiptRoutes.js';
 
 
 // app config
@@ -17,8 +22,13 @@ app.get("/", (req, res) => {
     res.send("Shyam Parivar - API Working");
 });
 
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 // routes
-// app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/mandal", mandalRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/receiptbook", receiptBookRoutes);
+app.use("/api/receipt", receiptRoutes);
 
 // database connection
 mongoose.connect(process.env.MONGO_URI)

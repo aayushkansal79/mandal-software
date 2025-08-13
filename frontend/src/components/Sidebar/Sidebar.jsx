@@ -2,36 +2,39 @@ import React, { useContext, useState } from "react";
 import "./Sidebar.css";
 import { assets } from "../../assets/assets";
 import { Link, NavLink, useLocation } from "react-router-dom";
-// import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const Sidebar = ({ sidebarOpen }) => {
   const location = useLocation();
 
   const [openMenu, setOpenMenu] = useState(null);
-  // const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
-  // if (!user) {
-  //   return;
-  // }
+  if (!user) {
+    return;
+  }
 
   return (
     <aside className={sidebarOpen ? "sidebar" : "sidebar sidebar-active"}>
-      <Link
-        // to={user?.type === "admin" ? "/dashboard" : "/store-products"}
-        className="top"
-      >
-        <img
-          className={
-            sidebarOpen ? "img2" : "img2-active"
-          }
-          src={assets.sangam_logo}
-          alt=""
-        />
-        {/* <p>ajjawam</p> */}
+      <Link to="/dashboard" className="top">
+        {user?.mandalName === "Shri Shyam Sewak Yuva Mandal Sangam Vihar" && (
+          <img
+            className={sidebarOpen ? "img2" : "img2-active"}
+            src={assets.sangam_logo}
+            alt=""
+          />
+        )}
+        {user?.mandalName === "Shri Shyam Sewa Sangh Sarojini Nagar" && (
+          <img
+            className={sidebarOpen ? "img2" : "img2-active"}
+            src={assets.sarojini_logo}
+            alt=""
+          />
+        )}
       </Link>
 
       <nav>
@@ -54,7 +57,7 @@ const Sidebar = ({ sidebarOpen }) => {
             <p>Dashboard</p>
           </NavLink>
 
-          <div
+          {/* <div
             onClick={() => toggleMenu("member")}
             className={sidebarOpen ? "side-item" : "side-item side-item-active"}
             title="Members"
@@ -75,48 +78,42 @@ const Sidebar = ({ sidebarOpen }) => {
           </div>
 
           {openMenu === "member" && (
-            <>
-              <NavLink
-                to="/add-member"
-                className={`side-item menu-item ${
-                  sidebarOpen ? "" : "side-item-active menu-item-active"
-                }`}
-                style={{ paddingLeft: "30px" }}
-                title="Add Member"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="20px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#1f1f1f"
-                >
-                  <path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm80-80h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0-80Zm0 400Z" />
-                </svg>
-                <p>Add Member</p>
-              </NavLink>
+            <> */}
+          <NavLink
+            to="/add-member"
+            className={sidebarOpen ? "side-item" : "side-item side-item-active"}
+            title="Add Member"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="20px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#1f1f1f"
+            >
+              <path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm80-80h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0-80Zm0 400Z" />
+            </svg>
+            <p>Add Member</p>
+          </NavLink>
 
-              <NavLink
-                to="/member-list"
-                className={`side-item menu-item ${
-                  sidebarOpen ? "" : "side-item-active menu-item-active"
-                }`}
-                style={{ paddingLeft: "30px" }}
-                title="Members List"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="20px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#1f1f1f"
-                >
-                  <path d="M200-200v-560 179-19 400Zm80-240h221q2-22 10-42t20-38H280v80Zm0 160h157q17-20 39-32.5t46-20.5q-4-6-7-13t-5-14H280v80Zm0-320h400v-80H280v80Zm-80 480q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v258q-14-26-34-46t-46-33v-179H200v560h202q-1 6-1.5 12t-.5 12v56H200Zm480-200q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM480-120v-56q0-24 12.5-44.5T528-250q36-15 74.5-22.5T680-280q39 0 77.5 7.5T832-250q23 9 35.5 29.5T880-176v56H480Z" />
-                </svg>
-                <p>Members List</p>
-              </NavLink>
-            </>
-          )}
+          <NavLink
+            to="/member-list"
+            className={sidebarOpen ? "side-item" : "side-item side-item-active"}
+            title="Members"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="20px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#000000"
+            >
+              <path d="M0-240v-63q0-43 44-70t116-27q13 0 25 .5t23 2.5q-14 21-21 44t-7 48v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5q72 0 116 26.5t44 70.5v63H780Zm-455-80h311q-10-20-55.5-35T480-370q-55 0-100.5 15T325-320ZM160-440q-33 0-56.5-23.5T80-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T160-440Zm640 0q-33 0-56.5-23.5T720-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T800-440Zm-320-40q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm0-80q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm1 240Zm-1-280Z" />
+            </svg>
+            <p>Members</p>
+          </NavLink>
+          {/* </>
+          )} */}
 
           <NavLink
             to="/assign-pad"
@@ -155,7 +152,7 @@ const Sidebar = ({ sidebarOpen }) => {
           <NavLink
             to="/receipt-list"
             className={sidebarOpen ? "side-item" : "side-item side-item-active"}
-            title="Receipt List"
+            title="All Receipt"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -166,7 +163,24 @@ const Sidebar = ({ sidebarOpen }) => {
             >
               <path d="M240-80q-50 0-85-35t-35-85v-120h120v-560l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v680q0 50-35 85t-85 35H240Zm480-80q17 0 28.5-11.5T760-200v-560H320v440h360v120q0 17 11.5 28.5T720-160ZM360-600v-80h240v80H360Zm0 120v-80h240v80H360Zm320-120q-17 0-28.5-11.5T640-640q0-17 11.5-28.5T680-680q17 0 28.5 11.5T720-640q0 17-11.5 28.5T680-600Zm0 120q-17 0-28.5-11.5T640-520q0-17 11.5-28.5T680-560q17 0 28.5 11.5T720-520q0 17-11.5 28.5T680-480ZM240-160h360v-80H200v40q0 17 11.5 28.5T240-160Zm-40 0v-80 80Z" />
             </svg>
-            <p>Receipt List</p>
+            <p>All Receipt</p>
+          </NavLink>
+
+          <NavLink
+            to="/my-receipts"
+            className={sidebarOpen ? "side-item" : "side-item side-item-active"}
+            title="My Receipt"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="20px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#1f1f1f"
+            >
+              <path d="M240-80q-50 0-85-35t-35-85v-120h120v-560l60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60 60 60 60-60v680q0 50-35 85t-85 35H240Zm480-80q17 0 28.5-11.5T760-200v-560H320v440h360v120q0 17 11.5 28.5T720-160ZM360-600v-80h240v80H360Zm0 120v-80h240v80H360Zm320-120q-17 0-28.5-11.5T640-640q0-17 11.5-28.5T680-680q17 0 28.5 11.5T720-640q0 17-11.5 28.5T680-600Zm0 120q-17 0-28.5-11.5T640-520q0-17 11.5-28.5T680-560q17 0 28.5 11.5T720-520q0 17-11.5 28.5T680-480ZM240-160h360v-80H200v40q0 17 11.5 28.5T240-160Zm-40 0v-80 80Z" />
+            </svg>
+            <p>My Receipt</p>
           </NavLink>
 
           <NavLink
