@@ -3,7 +3,6 @@ import axios from "axios";
 import "./AddMember.css";
 import { toast } from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext";
-import { set } from "mongoose";
 import Loader from "../../components/Loader/Loader";
 
 const AddMember = ({ url }) => {
