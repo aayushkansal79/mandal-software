@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import "./AddReceipt.css";
 import toast from "react-hot-toast";
+import Loader from "../../components/Loader/Loader";
 
 const AddReceipt = ({ url }) => {
   const token = localStorage.getItem("token");
@@ -13,6 +14,7 @@ const AddReceipt = ({ url }) => {
     mobile: "",
     address: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,14 +22,17 @@ const AddReceipt = ({ url }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       if (!formData.receiptNumber || !formData.name || !formData.amount) {
         toast.error("Please fill in all required fields");
+        setLoading(false);
         return;
       }
 
       if (formData.mobile && formData.mobile.length !== 10) {
         toast.error("Mobile number must be 10 digits");
+        setLoading(false);
         return;
       }
 
@@ -45,6 +50,8 @@ const AddReceipt = ({ url }) => {
     } catch (err) {
       console.error("Error adding receipt:", err);
       toast.error(err.response?.data?.message || "Error adding receipt");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,6 +127,7 @@ const AddReceipt = ({ url }) => {
           </button>
         </div>
       </form>
+      {loading && <Loader />}
     </>
   );
 };

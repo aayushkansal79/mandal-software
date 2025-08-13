@@ -3,6 +3,8 @@ import axios from "axios";
 import "./AddMember.css";
 import { toast } from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext";
+import { set } from "mongoose";
+import Loader from "../../components/Loader/Loader";
 
 const AddMember = ({ url }) => {
   const [formData, setFormData] = useState({
@@ -13,6 +15,7 @@ const AddMember = ({ url }) => {
     address: "",
     type: "member",
   });
+  const [loading, setLoading] = useState(false);
 
   const [profilePic, setProfilePic] = useState(null); // NEW state for profile pic
 
@@ -29,7 +32,7 @@ const AddMember = ({ url }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       if (
         !formData.username ||
@@ -39,16 +42,19 @@ const AddMember = ({ url }) => {
         !formData.address
       ) {
         toast.error("Please fill in all fields");
+        setLoading(false);
         return;
       }
 
       if (formData.password.length < 6) {
         toast.error("Password must be at least 6 characters");
+        setLoading(false);
         return;
       }
 
       if (formData.mobile.length !== 10) {
         toast.error("Mobile number must be 10 digits");
+        setLoading(false);
         return;
       }
 
@@ -88,6 +94,8 @@ const AddMember = ({ url }) => {
       setProfilePic(null);
     } catch (err) {
       toast.error(err.response?.data?.message || "Error creating member");
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -197,6 +205,8 @@ const AddMember = ({ url }) => {
           </button>
         </div>
       </form>
+
+      {loading && <Loader />}
     </>
   );
 };

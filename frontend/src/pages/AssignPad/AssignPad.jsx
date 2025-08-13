@@ -3,11 +3,13 @@ import "./AssignPad.css";
 import Select from "react-select";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Loader from "../../components/Loader/Loader";
 
 const AssignPad = ({ url }) => {
   const [members, setMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
   const [padNumbers, setPadNumbers] = useState([""]);
+  const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -44,6 +46,7 @@ const AssignPad = ({ url }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const filteredPads = padNumbers.filter((pad) => pad.trim() !== "");
       await axios.post(
@@ -59,6 +62,8 @@ const AssignPad = ({ url }) => {
     } catch (err) {
       toast.error(err.response?.data?.message || "Error assigning pads");
       console.error("Error assigning pads:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,6 +147,8 @@ const AssignPad = ({ url }) => {
           </tbody>
         </table>
       </div>
+
+      {loading && <Loader />}
     </>
   );
 };
