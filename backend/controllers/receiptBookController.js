@@ -25,12 +25,15 @@ export const assignPads = async (req, res) => {
       return res.status(400).json({ message: `Pad numbers already assigned: ${takenPads.join(", ")}` });
     }
 
+    const year = new Date().getFullYear();
+
     const padDocs = padNumbers.map(num => ({
       mandal: loggedInUser.mandal,
       mandalName: loggedInUser.mandalName,
       member: member._id,
       memberName: member.memberName,
-      padNumber: num
+      padNumber: num,
+      year,
     }));
 
     await ReceiptBook.insertMany(padDocs);

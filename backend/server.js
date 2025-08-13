@@ -3,6 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import path from "path";
 import 'dotenv/config';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 import mandalRoutes from './routes/mandalRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import receiptBookRoutes from './routes/receiptBookRoutes.js'
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // routes
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/mandal", mandalRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/receiptbook", receiptBookRoutes);

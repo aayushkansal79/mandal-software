@@ -80,14 +80,14 @@ const Members = ({ url }) => {
                 <div className="card-body align-items-center">
                   <p className="card-text red">
                     Assigned Pad No. : <br />{" "}
-                    <b className="text-black">1, 2, 3, 4, 5, 6</b>
+                    <b className="text-black">{member.padsAssigned.join(", ")}</b>
                   </p>
                   <p className="card-text red">
-                    Receipt Count : <br /> <b className="text-black">150</b>
+                    Receipt Count : <br /> <b className="text-black">{member.receiptCount}</b>
                   </p>
                   <p className="card-text red">
                     Total Collection : <br />{" "}
-                    <b className="text-black">₹ 10,00,000</b>
+                    <b className="text-black">₹ {member.totalAmount}</b>
                   </p>
                 </div>
                 <div

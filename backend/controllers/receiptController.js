@@ -36,6 +36,8 @@ export const addReceipt = async (req, res) => {
       return res.status(400).json({ message: "Receipt number already exists" });
     }
 
+    const year = new Date().getFullYear();
+
     const newReceipt = new Receipt({
       receiptNumber,
       name,
@@ -46,6 +48,7 @@ export const addReceipt = async (req, res) => {
       mandalName: user.mandal.name,
       member: user._id,
       memberName: user.memberName,
+      year,
     });
 
     const saved = await newReceipt.save();
@@ -57,8 +60,13 @@ export const addReceipt = async (req, res) => {
 
 export const getReceiptsByMandal = async (req, res) => {
   try {
+    const { year } = req.query;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
-    const receipts = await Receipt.find({ mandal: req.user.mandal })
+    const query = { mandal: req.user.mandal };
+    if (selectedYear) query.year = selectedYear;
+
+    const receipts = await Receipt.find(query)
       .sort({ receiptNumber: 1 });
 
     res.status(200).json(receipts);
@@ -70,13 +78,18 @@ export const getReceiptsByMandal = async (req, res) => {
 
 export const getReceiptsByMember = async (req, res) => {
   try {
+    const { year } = req.query;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
-    const receipts = await Receipt.find({ mandal: req.user.mandal, member: req.user.id })
+    const query = { mandal: req.user.mandal, member: req.user.id };
+    if (selectedYear) query.year = selectedYear;
+
+    const receipts = await Receipt.find(query)
       .sort({ receiptNumber: 1 });
 
     res.status(200).json(receipts);
   } catch (err) {
-    console.error("Error fetching receipts by mandal:", err);
+    console.error("Error fetching receipts by member:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

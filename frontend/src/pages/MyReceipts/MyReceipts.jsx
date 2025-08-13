@@ -74,7 +74,7 @@ const MyReceipts = ({url}) => {
 
       <div className="AllReceipts rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">
-          <thead className="table-primary">
+          <thead className="table-danger">
             <tr>
               <th scope="col">#</th>
               <th scope="col">Member Name</th>
@@ -91,8 +91,8 @@ const MyReceipts = ({url}) => {
                 <td>{receipt.memberName}</td>
                 <td>{receipt.name}</td>
                 <th className="text-success">₹ {receipt.amount}</th>
-                <td>{receipt.mobile}</td>
-                <td>{receipt.address}</td>
+                <td>{receipt.mobile || "-"}</td>
+                <td>{receipt.address || "-"}</td>
               </tr>
             ))}
           </tbody>

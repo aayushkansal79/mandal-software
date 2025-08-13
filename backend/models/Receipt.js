@@ -10,6 +10,7 @@ const ReceiptSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
     mobile: { type: String},
     address: { type: String},
+    year: { type: Number, required: true },
     status: { type: Boolean, default: true },
 }, { timestamps: true });
 

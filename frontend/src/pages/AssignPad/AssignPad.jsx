@@ -124,7 +124,7 @@ const AssignPad = ({ url }) => {
 
       <div className="AssignPad rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">
-          <thead className="table-info">
+          <thead className="table-success">
             <tr>
               <th scope="col">#</th>
               <th scope="col">Name</th>

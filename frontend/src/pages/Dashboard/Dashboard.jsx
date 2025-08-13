@@ -1,28 +1,42 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
-const Dashboard = () => {
-  const user = "sangam";
+const Dashboard = ({url}) => {
+  const [stats, setStats] = useState({});
+  const [year, setYear] = useState(new Date().getFullYear());
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (user === "sangam") {
-      document.title = "Shri Shyam Sewak Yuva Mandal";
-    } else if (user === "sarojini") {
-      document.title = "Shri Shyam Sewa Sangh";
-    }
-  }, []);
-  
+    axios
+      .get(`${url}/api/dashboard?year=${year}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setStats(res.data))
+      .catch((err) => console.error(err));
+  }, [year]);
+
   return (
     <>
       <div className="bread">Dashboard</div>
 
       <div className="my-3">
-        <div className="dashboard row g-4">
-          <div className="col-12 col-sm-6 col-md-3">
+        <div className="col-12 col-sm-6 col-md-2">
+          <div class="form-floating">
+            <select class="form-select" value={year} onChange={(e) => setYear(e.target.value)}>
+              <option value="2025">2025</option>
+            </select>
+            <label htmlFor="floatingSelectGrid">Year:</label>
+          </div>
+        </div>
+
+        <div className="dashboard row gy-2 gx-4">
+          <Link to="/member-list" className="col-12 col-sm-6 col-md-3">
             <div className="card text-bg-light mb-3">
               <div className="card-header text-dark">Members</div>
               <div className="card-body align-items-center">
-                <p className="card-text blue">42</p>
+                <p className="card-text blue">{stats.memberCount}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="70px"
@@ -35,12 +49,12 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-          </div>
-          <div className="col-12 col-sm-6 col-md-3">
+          </Link>
+          <Link to="/receipt-list" className="col-12 col-sm-6 col-md-3">
             <div className="card text-bg-light mb-3">
               <div className="card-header">Receipts</div>
               <div className="card-body align-items-center">
-                <p className="card-text blue">518</p>
+                <p className="card-text blue">{stats.receiptCount}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="70px"
@@ -53,8 +67,8 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-          </div>
-          <div className="col-12 col-sm-6 col-md-3">
+          </Link>
+          <Link to="/expenditure" className="col-12 col-sm-6 col-md-3">
             <div className="card text-bg-light mb-3">
               <div className="card-header">Expenditure</div>
               <div className="card-body align-items-center">
@@ -71,7 +85,7 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-          </div>
+          </Link>
           <div className="col-12 col-sm-6 col-md-3">
             <div className="card text-bg-light mb-3">
               <div className="card-header">Documents</div>
@@ -90,21 +104,8 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="dashboard flex-column row">
-          <div className="col-12 col-sm-6 col-md-2">
-            <div class="form-floating">
-              <select class="form-select" id="floatingSelectGrid">
-                <option value="2023">2025</option>
-                <option value="2022">2024</option>
-                <option value="2021">2023</option>
-              </select>
-              <label htmlFor="floatingSelectGrid">Year:</label>
-            </div>
-          </div>
-
-          <div className="row gy-2">
+          <div className="row">
             <div className="col-12 col-sm-6 col-md-3">
               <div className="amt-card card text-bg-light mb-3">
                 <div className="card-header bg-secondary text-light">

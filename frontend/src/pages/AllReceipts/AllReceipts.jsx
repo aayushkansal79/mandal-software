@@ -91,8 +91,8 @@ const AllReceipts = ({url}) => {
                 <td>{receipt.memberName}</td>
                 <td>{receipt.name}</td>
                 <th className="text-success">₹ {receipt.amount}</th>
-                <td>{receipt.mobile}</td>
-                <td>{receipt.address}</td>
+                <td>{receipt.mobile || "-"}</td>
+                <td>{receipt.address || "-"}</td>
               </tr>
             ))}
           </tbody>

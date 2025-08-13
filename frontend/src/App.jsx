@@ -16,6 +16,7 @@ import AssignPad from "./pages/AssignPad/AssignPad";
 import MandalForm from "./pages/Mandal/Mandal";
 import PrivateRoute from "./context/PrivateRoute";
 import MyReceipts from "./pages/MyReceipts/MyReceipts";
+import Expenditure from "./pages/Expenditure/Expenditure";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -46,7 +47,7 @@ function App() {
             toastOptions={{
               className: "bg-dark text-light border shadow-sm rounded",
               duration: 2000,
-              style: { padding: "10px 15px", fontSize: "0.9rem" },
+              style: { padding: "10px 15px", fontSize: "1rem" },
             }}
           />
           <Routes>
@@ -61,6 +62,7 @@ function App() {
             <Route path="/add-receipt" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AddReceipt url={url} /> </PrivateRoute>} />
             <Route path="/receipt-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
             <Route path="/my-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
+            <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Expenditure url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
         {!hideLayout && (

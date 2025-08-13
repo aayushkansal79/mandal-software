@@ -106,6 +106,85 @@ export const getLoggedInUser = async (req, res) => {
   }
 };
 
+//member details with total count and pad
+export const getMemberStats = async (req, res) => {
+  try {
+    const { year } = req.query;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
+    const members = await User.aggregate([
+      {
+        $match: {
+          mandal: req.user.mandal,
+          type: "member"
+        }
+      },
+      // Lookup pads assigned to member (filter by year)
+      {
+        $lookup: {
+          from: "receiptbooks",
+          let: { memberId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$member", "$$memberId"] },
+                    { $eq: ["$year", selectedYear] }
+                  ]
+                }
+              }
+            },
+            { $project: { padNumber: 1, _id: 0 } }
+          ],
+          as: "pads"
+        }
+      },
+      // Lookup receipts added by member (filter by year)
+      {
+        $lookup: {
+          from: "receipts",
+          let: { memberId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$member", "$$memberId"] },
+                    { $eq: ["$year", selectedYear] }
+                  ]
+                }
+              }
+            },
+            { $project: { amount: 1, _id: 0 } }
+          ],
+          as: "receipts"
+        }
+      },
+      // Add receipt count & total amount
+      {
+        $addFields: {
+          receiptCount: { $size: "$receipts" },
+          totalAmount: { $sum: "$receipts.amount" },
+          padsAssigned: "$pads.padNumber"
+        }
+      },
+      // Hide receipts array from final response
+      {
+        $project: {
+          receipts: 0,
+          pads: 0
+        }
+      }
+    ]);
+
+    res.status(200).json(members);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 // Get all users with type 'member'
 export const getAllMembers = async (req, res) => {
   try {
@@ -120,16 +199,20 @@ export const getAllMembers = async (req, res) => {
 
 export const getMemberWithReceipts = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, year } = req.params;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
-    const member = await User.findById(id)
+    const member = await User.findById(id);
 
     if (!member) {
       return res.status(404).json({ message: "Member not found" });
     }
 
-    const receipts = await Receipt.find({ member: id })
-      .sort({ receiptNumber: 1 })
+    const receipts = await Receipt.find({
+      member: id,
+      year: selectedYear
+    })
+      .sort({ receiptNumber: 1 });
 
     res.json({
       member,
