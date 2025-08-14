@@ -116,7 +116,7 @@ export const getMemberStats = async (req, res) => {
       {
         $match: {
           mandal: req.user.mandal,
-          type: "member"
+          type: { $ne: "superadmin" }
         }
       },
       // Lookup pads assigned to member (filter by year)
@@ -185,10 +185,10 @@ export const getMemberStats = async (req, res) => {
 };
 
 
-// Get all users with type 'member'
+// Get all users with type not 'superadmin'
 export const getAllMembers = async (req, res) => {
   try {
-    const members = await User.find({ mandal: req.user.mandal, type: "member" })
+    const members = await User.find({ mandal: req.user.mandal, type: { $ne: "superadmin" } })
       .select("-password");
 
     res.status(200).json(members);

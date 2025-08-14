@@ -13,7 +13,9 @@ export const addReceipt = async (req, res) => {
 
     const { receiptNumber, name, amount, mobile, address } = req.body;
 
-    const assignedPads = await ReceiptBook.find({ member: user._id }).select("padNumber");
+    const selectedYear = new Date().getFullYear();
+
+    const assignedPads = await ReceiptBook.find({ member: user._id, year: selectedYear }).select("padNumber");
 
     if (!assignedPads.length) {
       return res.status(400).json({ message: "No pads assigned to you" });

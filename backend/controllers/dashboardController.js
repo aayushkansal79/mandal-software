@@ -6,7 +6,7 @@ export const getDashboardStats = async (req, res) => {
   try {
     const { year } = req.query; // ?year=2025
 
-    const memberCount = await User.countDocuments({ mandal: req.user.mandal, type: "member" });
+    const memberCount = await User.countDocuments({ mandal: req.user.mandal, type: { $ne: "superadmin" } });
 
     const receiptFilter = { mandal: req.user.mandal };
     if (year) {

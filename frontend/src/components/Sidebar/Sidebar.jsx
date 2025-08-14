@@ -57,7 +57,7 @@ const Sidebar = ({ sidebarOpen }) => {
             <p>Dashboard</p>
           </NavLink>
 
-          {user?.type === "admin" && (
+          {user?.type !== "member" && (
             <NavLink
               to="/add-member"
               className={
@@ -95,7 +95,7 @@ const Sidebar = ({ sidebarOpen }) => {
             <p>Members</p>
           </NavLink>
 
-          {user?.type === "admin" && (
+          {user?.type !== "member" && (
             <NavLink
               to="/assign-pad"
               className={
@@ -150,7 +150,6 @@ const Sidebar = ({ sidebarOpen }) => {
             <p>All Receipt</p>
           </NavLink>
 
-          {user?.type === "member" && (
             <NavLink
               to="/my-receipts"
               className={
@@ -169,9 +168,8 @@ const Sidebar = ({ sidebarOpen }) => {
               </svg>
               <p>My Receipt</p>
             </NavLink>
-          )}
 
-          {user?.type === "admin" && (
+          {user?.type !== "member" && (
             <>
               <NavLink
                 to="/expenditure"

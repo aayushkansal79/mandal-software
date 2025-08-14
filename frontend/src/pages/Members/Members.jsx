@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Members.css";
 import axios from "axios";
-import { assets } from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const Members = ({ url }) => {
   const [members, setMembers] = useState([]);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -62,7 +63,7 @@ const Members = ({ url }) => {
         <div className="members row">
           {members.map((member, index) => (
             <div
-            key={member._id}
+              key={member._id}
               className="col-6 col-sm-6 col-md-2"
               onClick={() => handleMemberClick(member._id)}
             >
@@ -71,6 +72,7 @@ const Members = ({ url }) => {
                   <img
                     src={`${url}${member.profilePic}`}
                     width={70}
+                    height={70}
                     alt=""
                     className="rounded-circle"
                   />
@@ -80,58 +82,63 @@ const Members = ({ url }) => {
                 <div className="card-body align-items-center">
                   <p className="card-text red">
                     Assigned Pad No. : <br />{" "}
-                    <b className="text-black">{member.padsAssigned.join(", ")}</b>
+                    <b className="text-black">
+                      {member.padsAssigned.join(", ") || "-"}
+                    </b>
                   </p>
                   <p className="card-text red">
-                    Receipt Count : <br /> <b className="text-black">{member.receiptCount}</b>
+                    Receipt Count : <br />{" "}
+                    <b className="text-black">{member.receiptCount}</b>
                   </p>
                   <p className="card-text red">
                     Total Collection : <br />{" "}
                     <b className="text-black">₹ {member.totalAmount}</b>
                   </p>
                 </div>
-                <div
-                  className="card-header d-flex justify-content-between align-items-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <div className="form-check form-switch">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      title="Change Status"
-                      checked={member.status}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      style={{ cursor: "pointer" }}
-                    />
+                {user?.type === "admin" && (
+                  <div
+                    className="card-header d-flex justify-content-between align-items-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="form-check form-switch">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        title="Change Status"
+                        checked={member.status}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        style={{ cursor: "pointer" }}
+                      />
+                    </div>
+                    <button className="op-btn" title="Edit">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="green"
+                      >
+                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+                      </svg>
+                    </button>
+                    <button className="op-btn" title="Change Password">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="green"
+                      >
+                        <path d="M80-200v-80h800v80H80Zm46-242-52-30 34-60H40v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Zm320 0-52-30 34-60h-68v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Zm320 0-52-30 34-60h-68v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Z" />
+                      </svg>
+                    </button>
                   </div>
-                  <button className="op-btn" title="Edit">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="24px"
-                      viewBox="0 -960 960 960"
-                      width="24px"
-                      fill="green"
-                    >
-                      <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
-                    </svg>
-                  </button>
-                  <button className="op-btn" title="Change Password">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="24px"
-                      viewBox="0 -960 960 960"
-                      width="24px"
-                      fill="green"
-                    >
-                      <path d="M80-200v-80h800v80H80Zm46-242-52-30 34-60H40v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Zm320 0-52-30 34-60h-68v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Zm320 0-52-30 34-60h-68v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Z" />
-                    </svg>
-                  </button>
-                </div>
+                )}
               </div>
             </div>
           ))}

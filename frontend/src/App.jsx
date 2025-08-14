@@ -53,16 +53,16 @@ function App() {
           <Routes>
             <Route path="*" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login url={url} />} />
-            <Route path="/dashboard" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Dashboard url={url} /> </PrivateRoute>} />
-            <Route path="/mandal" element={<PrivateRoute roles={["admin"]}> <MandalForm url={url} /> </PrivateRoute>} />
-            <Route path="/add-member" element={<PrivateRoute roles={["admin"]}> <AddMember url={url} /> </PrivateRoute>} />
-            <Route path="/member-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Members url={url} /> </PrivateRoute>} />
-            <Route path="/member-list/:id/member-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MemberReceipt url={url} /> </PrivateRoute>} />
-            <Route path="/assign-pad" element={<PrivateRoute roles={["admin"]}> <AssignPad url={url} /> </PrivateRoute>} />
-            <Route path="/add-receipt" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AddReceipt url={url} /> </PrivateRoute>} />
-            <Route path="/receipt-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
-            <Route path="/my-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
-            <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Expenditure url={url} /> </PrivateRoute>} />
+            <Route path="/dashboard" element={<PrivateRoute roles={["superadmin", "admin", "subadmin", "member"]}> <Dashboard url={url} /> </PrivateRoute>} />
+            <Route path="/mandal" element={<PrivateRoute roles={["superadmin", "admin"]}> <MandalForm url={url} /> </PrivateRoute>} />
+            <Route path="/add-member" element={<PrivateRoute roles={["superadmin", "admin"]}> <AddMember url={url} /> </PrivateRoute>} />
+            <Route path="/member-list" element={<PrivateRoute roles={["superadmin", "admin", "subadmin", "member"]}> <Members url={url} /> </PrivateRoute>} />
+            <Route path="/member-list/:id/member-receipts" element={<PrivateRoute roles={["superadmin", "admin", "subadmin", "member"]}> <MemberReceipt url={url} /> </PrivateRoute>} />
+            <Route path="/assign-pad" element={<PrivateRoute roles={["superadmin", "admin"]}> <AssignPad url={url} /> </PrivateRoute>} />
+            <Route path="/add-receipt" element={<PrivateRoute roles={["superadmin", "admin", "subadmin", "member"]}> <AddReceipt url={url} /> </PrivateRoute>} />
+            <Route path="/receipt-list" element={<PrivateRoute roles={["superadmin", "admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
+            <Route path="/my-receipts" element={<PrivateRoute roles={["superadmin", "admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
+            <Route path="/expenditure" element={<PrivateRoute roles={["superadmin", "admin", "subadmin", "member"]}> <Expenditure url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
         {!hideLayout && (

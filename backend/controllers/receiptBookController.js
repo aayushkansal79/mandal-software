@@ -49,16 +49,19 @@ export const getMembersWithPads = async (req, res) => {
   try {
     const loggedInMandal = req.user.mandal;
 
+    const { year } = req.query;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
     if (!loggedInMandal) {
       return res.status(400).json({ message: "User has no mandal assigned" });
     }
 
     const result = await ReceiptBook.aggregate([
-      { $match: { mandal: loggedInMandal } }, // Only logged-in user's mandal
+      { $match: { mandal: loggedInMandal, year: selectedYear } },
 
       {
         $group: {
-          _id: "$member",             // group by member id
+          _id: "$member",
           memberName: { $first: "$memberName" },
           pads: { $push: "$padNumber" }
         }
