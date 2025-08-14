@@ -43,7 +43,7 @@ export const getAllExpenses = async (req, res) => {
         const expenses = await Expenditure.find({
             mandal: mandalId,
             year: selectedYear
-        }).sort({ createdAt: -1 });
+        }).sort({ createdAt: 1 });
 
         res.status(200).json(expenses);
     } catch (error) {
