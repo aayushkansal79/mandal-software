@@ -92,7 +92,7 @@ const Members = ({ url }) => {
                   </p>
                   <p className="card-text red">
                     Total Collection : <br />{" "}
-                    <b className="text-black">₹ {member.totalAmount}</b>
+                    <b className="text-black">₹ {member.totalAmount?.toLocaleString("en-IN")}</b>
                   </p>
                 </div>
                 {user?.type === "admin" && (

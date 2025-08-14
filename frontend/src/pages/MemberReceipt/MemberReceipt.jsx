@@ -125,6 +125,7 @@ const MemberReceipt = ({ url }) => {
             </tr>
           </thead>
           <tbody className="table-group-divider">
+            {memberData?.receipts.length === 0 && (<tr><td colSpan={user?.type !== "member" ? 6 : 4} className="text-center">No Receipts Found</td></tr>)}
             {memberData?.receipts.map((receipt, index) => (
               <tr key={index}>
                 <th>{receipt.receiptNumber}</th>

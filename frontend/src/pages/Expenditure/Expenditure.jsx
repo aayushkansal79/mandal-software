@@ -65,11 +65,11 @@ const ExpenseManager = ({ url }) => {
   return (
     <div>
       <form
-        className="addreceipt g-3 my-3 mx-1 rounded"
+        className="addreceipt g-3 my-3 rounded"
         onSubmit={handleSubmit}
       >
         {expenses.map((exp, index) => (
-          <div key={index} className="row mb-2 align-items-center gy-0 gx-2">
+          <div key={index} className="row mb-2 align-items-center gy-0 gx-1">
             <div className="col-md-3 col-6">
               <label className="form-label">Expense Detail</label>
               <input
@@ -113,17 +113,17 @@ const ExpenseManager = ({ url }) => {
           <tbody className="table-group-divider">
             {allExpenses.map((exp, index) => (
               <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{exp.field}</td>
-                <td className="text-danger text-end">
+                <th>{index + 1}</th>
+                <th className="text-primary">{exp.field}</th>
+                <th className="text-danger text-end">
                   ₹ {exp.amount.toLocaleString()}
-                </td>
+                </th>
               </tr>
             ))}
             <tr>
-              <th>Total</th>
+              <th className="text-success">Total</th>
               <th></th>
-              <th className="text-danger text-end">
+              <th className="text-success text-end">
                 ₹ {totalAmount.toLocaleString()}
               </th>
             </tr>
