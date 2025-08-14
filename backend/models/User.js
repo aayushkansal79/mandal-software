@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
     address: { type: String, required: true },
     mandal: { type: mongoose.Schema.Types.ObjectId, ref: "Mandal" },
     mandalName: { type: String },
-    type: { type: String, enum: ["superadmin", "admin", "subadmin", "member"], default: "member" },
+    type: { type: String, enum: ["admin", "subadmin", "member"], default: "member" },
     status: { type: Boolean, default: true },
 }, { timestamps: true });
 

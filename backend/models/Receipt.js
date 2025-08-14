@@ -5,7 +5,7 @@ const ReceiptSchema = new mongoose.Schema({
     mandalName: { type: String, required: true },
     member: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     memberName: { type: String, required: true },
-    receiptNumber: { type: String, required: true, unique: true },
+    receiptNumber: { type: Number, required: true, unique: true },
     name: { type: String, required: true },
     amount: { type: Number, required: true },
     mobile: { type: String},

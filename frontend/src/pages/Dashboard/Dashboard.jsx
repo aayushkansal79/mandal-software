@@ -72,7 +72,7 @@ const Dashboard = ({url}) => {
             <div className="card text-bg-light mb-3">
               <div className="card-header">Expenditure</div>
               <div className="card-body align-items-center">
-                <p className="card-text blue">25</p>
+                <p className="card-text blue">{stats.expenseCount}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="70px"
@@ -86,7 +86,7 @@ const Dashboard = ({url}) => {
               </div>
             </div>
           </Link>
-          <div className="col-12 col-sm-6 col-md-3">
+          {/* <div className="col-12 col-sm-6 col-md-3">
             <div className="card text-bg-light mb-3">
               <div className="card-header">Documents</div>
               <div className="card-body align-items-center">
@@ -103,16 +103,20 @@ const Dashboard = ({url}) => {
                 </svg>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="row">
+          <div className="row mt-3">
             <div className="col-12 col-sm-6 col-md-3">
               <div className="amt-card card text-bg-light mb-3">
                 <div className="card-header bg-secondary text-light">
                   Account
                 </div>
                 <div className="card-body align-items-center">
-                  <p className="card-text green amt">+ ₹ 9,46,000</p>
+                  {(stats.totalReceiptAmount - stats.totalExpenseAmount) < 0 ? (
+                    <p className="card-text red amt">- ₹ {(-(stats.totalReceiptAmount - stats.totalExpenseAmount))?.toLocaleString("en-IN")}</p>
+                  ) : (
+                    <p className="card-text green amt">+ ₹{(stats.totalReceiptAmount - stats.totalExpenseAmount)?.toLocaleString("en-IN")}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -123,7 +127,7 @@ const Dashboard = ({url}) => {
                   Total Receipt Amount
                 </div>
                 <div className="card-body align-items-center">
-                  <p className="card-text amt">₹ 10,00,000</p>
+                  <p className="card-text amt">₹ {stats.totalReceiptAmount?.toLocaleString("en-IN")}</p>
                 </div>
               </div>
             </div>
@@ -134,7 +138,7 @@ const Dashboard = ({url}) => {
                   Total Expense Amount
                 </div>
                 <div className="card-body align-items-center">
-                  <p className="card-text amt">₹ 54,000</p>
+                  <p className="card-text amt">₹ {stats.totalExpenseAmount?.toLocaleString("en-IN")}</p>
                 </div>
               </div>
             </div>

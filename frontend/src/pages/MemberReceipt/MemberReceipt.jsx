@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./MemberReceipt.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const MemberReceipt = ({ url }) => {
 
@@ -9,6 +10,7 @@ const MemberReceipt = ({ url }) => {
   const token = localStorage.getItem("token");
   const { id } = useParams();
   const [memberData, setMemberData] = useState(null);
+  const {user} = useContext(AuthContext);
 
   useEffect(() => {
     axios
@@ -79,6 +81,7 @@ const MemberReceipt = ({ url }) => {
             <option value="11000">&gt;= ₹ 11000</option>
             <option value="21000">&gt;= ₹ 21000</option>
             <option value="51000">&gt;= ₹ 51000</option>
+            <option value="100000">&gt;= ₹ 100000</option>
           </select>
         </div>
         <div className="col-md-2 col-6">
@@ -113,8 +116,12 @@ const MemberReceipt = ({ url }) => {
               <th scope="col">#</th>
               <th scope="col">Name</th>
               <th scope="col">Amount</th>
-              <th scope="col">Mobile No.</th>
-              <th scope="col">Address</th>
+              {user?.type !== "member" && (
+                <>
+                  <th scope="col">Mobile No.</th>
+                  <th scope="col">Address</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody className="table-group-divider">
@@ -123,8 +130,12 @@ const MemberReceipt = ({ url }) => {
                 <th>{receipt.receiptNumber}</th>
                 <td>{receipt.name}</td>
                 <th className="text-success">₹ {receipt.amount}</th>
-                <td>{receipt.mobile || "-"}</td>
-                <td>{receipt.address || "-"}</td>
+                {user?.type !== "member" && (
+                  <>
+                    <td>{receipt.mobile || "-"}</td>
+                    <td>{receipt.address || "-"}</td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>

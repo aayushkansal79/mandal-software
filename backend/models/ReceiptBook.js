@@ -6,6 +6,7 @@ const ReceiptBookSchema = new mongoose.Schema({
     member: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     memberName: { type: String, required: true },
     padNumber: { type: Number, required: true, unique: true },
+    totalAmount: { type: Number, default: 0 },
     year: { type: Number, required: true },
     status: { type: Boolean, default: true },
 }, { timestamps: true });

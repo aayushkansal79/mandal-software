@@ -1,3 +1,4 @@
+import Receipt from "../models/Receipt.js";
 import ReceiptBook from "../models/ReceiptBook.js";
 import User from "../models/User.js";
 
@@ -71,6 +72,48 @@ export const getMembersWithPads = async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error("Error fetching members with pads:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+export const getPadsWithTotalAmount = async (req, res) => {
+  try {
+    const { year } = req.query;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+    const mandalId = req.user.mandal;
+
+    const pads = await ReceiptBook.find({ mandal: mandalId, year: selectedYear })
+      .populate("member", "name")
+      .sort({ padNumber: 1 });
+
+    const result = [];
+
+    for (const pad of pads) {
+      const startReceiptNum = (pad.padNumber - 1) * 25 + 1;
+      const endReceiptNum = pad.padNumber * 25;
+
+      const receipts = await Receipt.find({
+        mandal: mandalId,
+        year: selectedYear,
+        receiptNumber: {
+          $gte: startReceiptNum,
+          $lte: endReceiptNum
+        }
+      });
+
+      const totalAmount = receipts.reduce((sum, r) => sum + r.amount, 0);
+
+      result.push({
+        padNumber: pad.padNumber,
+        memberName: pad.member?.name || pad.memberName,
+        totalAmount,
+      });
+    }
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("Error fetching pads with total amount:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

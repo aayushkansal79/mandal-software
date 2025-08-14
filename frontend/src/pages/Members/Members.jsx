@@ -76,7 +76,7 @@ const Members = ({ url }) => {
                     alt=""
                     className="rounded-circle"
                   />
-                  <b>{member.memberName}</b>
+                  <b>{member.memberName.split(' ').slice(0, 2).join(' ')}</b>
                   <div className="text-primary">{member.mobile}</div>
                 </div>
                 <div className="card-body align-items-center">

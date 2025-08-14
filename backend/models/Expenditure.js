@@ -5,6 +5,7 @@ const ExpenditureSchema = new mongoose.Schema({
     mandalName: { type: String, required: true },
     field: { type: String, required: true },
     amount: { type: Number, required: true },
+    year: { type: Number, required: true },
     status: { type: Boolean, default: true },
 }, { timestamps: true });
 

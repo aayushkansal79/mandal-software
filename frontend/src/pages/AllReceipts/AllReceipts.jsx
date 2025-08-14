@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./AllReceipts.css";
 import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
 
 const AllReceipts = ({url}) => {
 
     const [receipts, setReceipts] = useState([]);
     const token = localStorage.getItem("token");
+    const {user} = useContext(AuthContext);
 
     useEffect(() => {
         const fetchReceipts = async () => {
@@ -80,8 +82,12 @@ const AllReceipts = ({url}) => {
               <th scope="col">Member Name</th>
               <th scope="col">Name</th>
               <th scope="col">Amount</th>
-              <th scope="col">Mobile No.</th>
-              <th scope="col">Address</th>
+              {user?.type !== "member" && (
+                <>
+                  <th scope="col">Mobile No.</th>
+                  <th scope="col">Address</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody className="table-group-divider">
@@ -91,8 +97,12 @@ const AllReceipts = ({url}) => {
                 <td>{receipt.memberName}</td>
                 <td>{receipt.name}</td>
                 <th className="text-success">₹ {receipt.amount}</th>
-                <td>{receipt.mobile || "-"}</td>
-                <td>{receipt.address || "-"}</td>
+                {user?.type !== "member" && (
+                  <>
+                    <td>{receipt.mobile || "-"}</td>
+                    <td>{receipt.address || "-"}</td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>

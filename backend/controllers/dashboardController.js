@@ -1,3 +1,4 @@
+import Expenditure from "../models/Expenditure.js";
 import Receipt from "../models/Receipt.js";
 import User from "../models/User.js";
 
@@ -5,21 +6,42 @@ import User from "../models/User.js";
 export const getDashboardStats = async (req, res) => {
   try {
     const { year } = req.query; // ?year=2025
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
-    const memberCount = await User.countDocuments({ mandal: req.user.mandal, type: { $ne: "superadmin" } });
+    const mandalId = req.user.mandal;
 
-    const receiptFilter = { mandal: req.user.mandal };
-    if (year) {
-      receiptFilter.year = parseInt(year);
-    }
-    const receiptCount = await Receipt.countDocuments(receiptFilter);
+    const memberCount = await User.countDocuments({
+      mandal: mandalId,
+      type: { $ne: "superadmin" }
+    });
+
+    const filter = { mandal: mandalId, year: selectedYear };
+
+    const receiptCount = await Receipt.countDocuments(filter);
+    const expenseCount = await Expenditure.countDocuments(filter);
+
+    const receiptTotal = await Receipt.aggregate([
+      { $match: filter },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    const totalReceiptAmount = receiptTotal.length > 0 ? receiptTotal[0].total : 0;
+
+    const expenseTotal = await Expenditure.aggregate([
+      { $match: filter },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    const totalExpenseAmount = expenseTotal.length > 0 ? expenseTotal[0].total : 0;
 
     res.status(200).json({
       memberCount,
       receiptCount,
-      year: year ? parseInt(year) : new Date().getFullYear(),
+      expenseCount,
+      totalReceiptAmount,
+      totalExpenseAmount,
+      year: selectedYear
     });
   } catch (err) {
+    console.error("Error in getDashboardStats:", err);
     res.status(500).json({ message: err.message });
   }
 };

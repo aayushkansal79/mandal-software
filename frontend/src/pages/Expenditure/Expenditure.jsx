@@ -1,170 +1,137 @@
-import React, { useEffect, useState } from "react";
-import "./Expenditure.css";
-import Select from "react-select";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
-import Loader from "../../components/Loader/Loader";
+import "./Expenditure.css";
 
-const Expenditure = ({ url }) => {
-  const [members, setMembers] = useState([]);
-  const [selectedMember, setSelectedMember] = useState(null);
-  const [padNumbers, setPadNumbers] = useState([""]);
-  const [loading, setLoading] = useState(false);
+const ExpenseManager = ({ url }) => {
+  const [expenses, setExpenses] = useState([{ field: "", amount: "" }]);
+  const [allExpenses, setAllExpenses] = useState([]);
 
   const token = localStorage.getItem("token");
 
+  // Fetch all expenses
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await axios.get(`${url}/api/user/members`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setMembers(
-          res.data.map((member) => ({
-            label: member.memberName,
-            value: member._id,
-          }))
-        );
-      } catch (err) {
-        console.error("Error fetching members:", err);
-      }
-    };
-    fetchMembers();
-  }, [url]);
+    fetchExpenses();
+  }, []);
 
-  // Handle pad number change
-  const handlePadChange = (index, value) => {
-    const updatedPads = [...padNumbers];
-    updatedPads[index] = value;
-
-    if (index === padNumbers.length - 1 && value.trim() !== "") {
-      updatedPads.push("");
+  const fetchExpenses = async () => {
+    try {
+      const res = await axios.get(`${url}/api/expenditure`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAllExpenses(res.data);
+    } catch (err) {
+      console.error(err);
     }
+  };
 
-    setPadNumbers(updatedPads);
+  const handleChange = (index, field, value) => {
+    const newExpenses = [...expenses];
+    newExpenses[index][field] = value;
+    setExpenses(newExpenses);
+
+    // If editing the last row and it has data → add a new empty row
+    if (
+      index === expenses.length - 1 &&
+      newExpenses[index].field &&
+      newExpenses[index].amount
+    ) {
+      setExpenses([...newExpenses, { field: "", amount: "" }]);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      const filteredPads = padNumbers.filter((pad) => pad.trim() !== "");
+      // Remove empty rows before sending
+      const filteredExpenses = expenses.filter(
+        (exp) => exp.field && exp.amount
+      );
+
       await axios.post(
-        `${url}/api/receiptbook/assign`,
-        {
-          memberId: selectedMember?.value,
-          padNumbers: filteredPads,
-        },
+        `${url}/api/expenditure`,
+        { expenses: filteredExpenses },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("Pads assigned successfully!");
-      setPadNumbers([""]);
+
+      fetchExpenses();
+      setExpenses([{ field: "", amount: "" }]);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Error assigning pads");
-      console.error("Error assigning pads:", err);
-    } finally {
-      setLoading(false);
+      console.error(err);
     }
   };
 
-  const [pads, setPads] = useState([]);
-
-  useEffect(() => {
-    const fetchPads = async () => {
-      try {
-        const res = await axios.get(`${url}/api/receiptbook/members`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setPads(res.data);
-      } catch (err) {
-        console.error("Error fetching pads:", err);
-      }
-    };
-    fetchPads();
-  }, [url]);
+  const totalAmount = allExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   return (
-    <>
-      <div className="bread">Expenditure</div>
-
+    <div>
       <form
         className="addreceipt g-3 my-3 mx-1 rounded"
         onSubmit={handleSubmit}
       >
-        <div className="row">
-          <div className="col-md-3">
-            <label className="form-label">Member Name</label>
-            <Select
-              options={members}
-              value={selectedMember}
-              onChange={setSelectedMember}
-              placeholder="Select Member"
-              className="basic-single-select"
-              classNamePrefix="select"
-            />
-          </div>
-        </div>
-
-        <label className="form-label mt-3">Pad Number</label>
-        {padNumbers.map((pad, index) => (
-          <div className="row mb-2 align-items-center g-2 pb-2">
-            <div key={index} className="col-md-3 col-6">
+        {expenses.map((exp, index) => (
+          <div key={index} className="row mb-2 align-items-center gy-0 gx-2">
+            <div className="col-md-3 col-6">
+              <label className="form-label">Expense Detail</label>
               <input
                 type="text"
                 className="form-control"
                 placeholder="Enter Detail"
-                value={pad}
-                onChange={(e) => handlePadChange(index, e.target.value)}
+                value={exp.field}
+                onChange={(e) => handleChange(index, "field", e.target.value)}
               />
             </div>
-            <div key={index} className="col-md-3 col-6">
+            <div className="col-md-3 col-6">
+              <label className="form-label">Expense Amount</label>
               <input
                 type="number"
                 className="form-control"
                 placeholder="Enter Amount"
-                value={pad}
-                onChange={(e) => handlePadChange(index, e.target.value)}
+                value={exp.amount}
+                onChange={(e) => handleChange(index, "amount", e.target.value)}
               />
             </div>
           </div>
         ))}
 
-        <div className="col-12">
+        <div className="col-12 mt-3">
           <button type="submit" className="btn btn-primary">
             Add Expense
           </button>
         </div>
       </form>
 
+      {/* Expense Table */}
       <div className="Expenditure rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-success">
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name</th>
-              <th scope="col" className="text-end">Pad Number</th>
+              <th>#</th>
+              <th>Expense Detail</th>
+              <th className="text-end">Amount</th>
             </tr>
           </thead>
           <tbody className="table-group-divider">
-            {pads.map((pad, index) => (
+            {allExpenses.map((exp, index) => (
               <tr key={index}>
-                <th>{index + 1}</th>
-                <td>{pad.memberName}</td>
-                <th className="text-danger text-end">{pad.pads.join(", ")}</th>
+                <td>{index + 1}</td>
+                <td>{exp.field}</td>
+                <td className="text-danger text-end">
+                  ₹ {exp.amount.toLocaleString()}
+                </td>
               </tr>
             ))}
-              <tr>
-                <th>Total</th>
-                <th></th>
-                <th className="text-danger text-end">₹ 10,35,000</th>
-              </tr>
+            <tr>
+              <th>Total</th>
+              <th></th>
+              <th className="text-danger text-end">
+                ₹ {totalAmount.toLocaleString()}
+              </th>
+            </tr>
           </tbody>
         </table>
       </div>
-
-      {loading && <Loader />}
-    </>
+    </div>
   );
 };
 
-export default Expenditure;
+export default ExpenseManager;

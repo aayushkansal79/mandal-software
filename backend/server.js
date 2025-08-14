@@ -8,6 +8,7 @@ import mandalRoutes from './routes/mandalRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import receiptBookRoutes from './routes/receiptBookRoutes.js'
 import receiptRoutes from './routes/receiptRoutes.js';
+import expenditureRoutes from './routes/expenditureRoutes.js';
 
 
 // app config
@@ -31,6 +32,7 @@ app.use("/api/mandal", mandalRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/receiptbook", receiptBookRoutes);
 app.use("/api/receipt", receiptRoutes);
+app.use("/api/expenditure", expenditureRoutes);
 
 // database connection
 mongoose.connect(process.env.MONGO_URI)
