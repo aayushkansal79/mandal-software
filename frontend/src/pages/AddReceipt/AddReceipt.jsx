@@ -91,6 +91,7 @@ const AddReceipt = ({ url }) => {
           <input
             type="number"
             name="amount"
+            min={0}
             value={formData.amount}
             onChange={handleChange}
             className="form-control"

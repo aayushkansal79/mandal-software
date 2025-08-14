@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import "./Expenditure.css";
+import { AuthContext } from "../../context/AuthContext";
 
 const ExpenseManager = ({ url }) => {
   const [expenses, setExpenses] = useState([{ field: "", amount: "" }]);
   const [allExpenses, setAllExpenses] = useState([]);
 
   const token = localStorage.getItem("token");
+  const { user } = useContext(AuthContext);
 
   // Fetch all expenses
   useEffect(() => {
@@ -64,41 +66,43 @@ const ExpenseManager = ({ url }) => {
 
   return (
     <div>
-      <form
-        className="addreceipt g-3 my-3 rounded"
-        onSubmit={handleSubmit}
-      >
-        {expenses.map((exp, index) => (
-          <div key={index} className="row mb-2 align-items-center gy-0 gx-1">
-            <div className="col-md-3 col-6">
-              <label className="form-label">Expense Detail</label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter Detail"
-                value={exp.field}
-                onChange={(e) => handleChange(index, "field", e.target.value)}
-              />
+      {user?.type === "admin" && (
+        <form className="addreceipt g-3 my-3 rounded" onSubmit={handleSubmit}>
+          {expenses.map((exp, index) => (
+            <div key={index} className="row mb-2 align-items-center gy-0 gx-1">
+              <div className="col-md-3 col-6">
+                <label className="form-label">Expense Detail</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Detail"
+                  value={exp.field}
+                  onChange={(e) => handleChange(index, "field", e.target.value)}
+                />
+              </div>
+              <div className="col-md-3 col-6">
+                <label className="form-label">Expense Amount</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Enter Amount"
+                  min={0}
+                  value={exp.amount}
+                  onChange={(e) =>
+                    handleChange(index, "amount", e.target.value)
+                  }
+                />
+              </div>
             </div>
-            <div className="col-md-3 col-6">
-              <label className="form-label">Expense Amount</label>
-              <input
-                type="number"
-                className="form-control"
-                placeholder="Enter Amount"
-                value={exp.amount}
-                onChange={(e) => handleChange(index, "amount", e.target.value)}
-              />
-            </div>
-          </div>
-        ))}
+          ))}
 
-        <div className="col-12 mt-3">
-          <button type="submit" className="btn btn-primary">
-            Add Expense
-          </button>
-        </div>
-      </form>
+          <div className="col-12 mt-3">
+            <button type="submit" className="btn btn-primary">
+              Add Expense
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Expense Table */}
       <div className="Expenditure rounded my-3">
@@ -111,12 +115,19 @@ const ExpenseManager = ({ url }) => {
             </tr>
           </thead>
           <tbody className="table-group-divider">
+            {allExpenses.length === 0 && (
+              <tr>
+                <td colSpan="3" className="text-center">
+                  No Expenses Found
+                </td>
+              </tr>
+            )}
             {allExpenses.map((exp, index) => (
               <tr key={index}>
                 <th>{index + 1}</th>
                 <th className="text-primary">{exp.field}</th>
                 <th className="text-danger text-end">
-                  ₹ {exp.amount.toLocaleString()}
+                  ₹ {exp.amount.toLocaleString("en-IN")}
                 </th>
               </tr>
             ))}
@@ -124,7 +135,7 @@ const ExpenseManager = ({ url }) => {
               <th className="text-success">Total</th>
               <th></th>
               <th className="text-success text-end">
-                ₹ {totalAmount.toLocaleString()}
+                ₹ {totalAmount.toLocaleString("en-IN")}
               </th>
             </tr>
           </tbody>

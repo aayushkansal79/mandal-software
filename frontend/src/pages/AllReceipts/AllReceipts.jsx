@@ -3,25 +3,24 @@ import "./AllReceipts.css";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 
-const AllReceipts = ({url}) => {
+const AllReceipts = ({ url }) => {
+  const [receipts, setReceipts] = useState([]);
+  const token = localStorage.getItem("token");
+  const { user } = useContext(AuthContext);
 
-    const [receipts, setReceipts] = useState([]);
-    const token = localStorage.getItem("token");
-    const {user} = useContext(AuthContext);
-
-    useEffect(() => {
-        const fetchReceipts = async () => {
-          try {
-            const res = await axios.get(`${url}/api/receipt`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            setReceipts(res.data);
-          } catch (err) {
-            console.error("Error fetching receipts:", err);
-          }
-        };
-        fetchReceipts();
-      }, [url]);
+  useEffect(() => {
+    const fetchReceipts = async () => {
+      try {
+        const res = await axios.get(`${url}/api/receipt`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setReceipts(res.data);
+      } catch (err) {
+        console.error("Error fetching receipts:", err);
+      }
+    };
+    fetchReceipts();
+  }, [url]);
 
   return (
     <>
@@ -78,9 +77,9 @@ const AllReceipts = ({url}) => {
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-primary">
             <tr>
-              <th scope="col">#</th>
+              <th scope="col">Receipt No.</th>
               <th scope="col">Member Name</th>
-              <th scope="col">Name</th>
+              {user?.type !== "member" && <th scope="col">Name</th>}
               <th scope="col">Amount</th>
               {user?.type !== "member" && (
                 <>
@@ -91,11 +90,12 @@ const AllReceipts = ({url}) => {
             </tr>
           </thead>
           <tbody className="table-group-divider">
+            {receipts.length === 0 && (<tr><td colSpan="3" className="text-center">No Receipts Found</td></tr>)}
             {receipts.map((receipt, index) => (
               <tr key={receipt._id}>
                 <th>{receipt.receiptNumber}</th>
                 <td>{receipt.memberName}</td>
-                <td>{receipt.name}</td>
+                {user?.type !== "member" && <td>{receipt.name}</td>}
                 <th className="text-success">₹ {receipt.amount}</th>
                 {user?.type !== "member" && (
                   <>

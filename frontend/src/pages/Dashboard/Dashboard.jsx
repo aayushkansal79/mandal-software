@@ -36,7 +36,7 @@ const Dashboard = ({url}) => {
             <div className="card text-bg-light mb-3">
               <div className="card-header text-dark">Members</div>
               <div className="card-body align-items-center">
-                <p className="card-text blue">{stats.memberCount}</p>
+                <p className="card-text blue">{stats.memberCount || "0"}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="70px"
@@ -54,7 +54,7 @@ const Dashboard = ({url}) => {
             <div className="card text-bg-light mb-3">
               <div className="card-header">Receipts</div>
               <div className="card-body align-items-center">
-                <p className="card-text blue">{stats.receiptCount}</p>
+                <p className="card-text blue">{stats.receiptCount || "0"}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="70px"
@@ -72,7 +72,7 @@ const Dashboard = ({url}) => {
             <div className="card text-bg-light mb-3">
               <div className="card-header">Expenditure</div>
               <div className="card-body align-items-center">
-                <p className="card-text blue">{stats.expenseCount}</p>
+                <p className="card-text blue">{stats.expenseCount || "0"}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="70px"
@@ -127,7 +127,7 @@ const Dashboard = ({url}) => {
                   Total Receipt Amount
                 </div>
                 <div className="card-body align-items-center">
-                  <p className="card-text amt">₹ {stats.totalReceiptAmount?.toLocaleString("en-IN")}</p>
+                  <p className="card-text amt">₹ {stats.totalReceiptAmount?.toLocaleString("en-IN") || "0"}</p>
                 </div>
               </div>
             </div>
@@ -138,7 +138,7 @@ const Dashboard = ({url}) => {
                   Total Expense Amount
                 </div>
                 <div className="card-body align-items-center">
-                  <p className="card-text amt">₹ {stats.totalExpenseAmount?.toLocaleString("en-IN")}</p>
+                  <p className="card-text amt">₹ {stats.totalExpenseAmount?.toLocaleString("en-IN") || "0"}</p>
                 </div>
               </div>
             </div>

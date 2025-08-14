@@ -57,7 +57,7 @@ const Sidebar = ({ sidebarOpen }) => {
             <p>Dashboard</p>
           </NavLink>
 
-          {user?.type !== "member" && (
+          {user?.type === "admin" && (
             <NavLink
               to="/add-member"
               className={
@@ -95,7 +95,7 @@ const Sidebar = ({ sidebarOpen }) => {
             <p>Members</p>
           </NavLink>
 
-          {user?.type !== "member" && (
+          {user?.type === "admin" && (
             <NavLink
               to="/assign-pad"
               className={
@@ -149,7 +149,7 @@ const Sidebar = ({ sidebarOpen }) => {
             </svg>
             <p>Add Receipt</p>
           </NavLink>
-
+          
           <NavLink
             to="/receipt-list"
             className={sidebarOpen ? "side-item" : "side-item side-item-active"}

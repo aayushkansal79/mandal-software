@@ -5,12 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 const MemberReceipt = ({ url }) => {
-
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const { id } = useParams();
   const [memberData, setMemberData] = useState(null);
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     axios
@@ -43,10 +42,12 @@ const MemberReceipt = ({ url }) => {
             </svg>
           </button>
           <h3>
-            Receipts for <b className="text-primary">{memberData?.member?.memberName}</b>
+            Receipts for{" "}
+            <b className="text-primary">{memberData?.member?.memberName}</b>
           </h3>
           <p>
-            <b>Mobile :</b> {memberData?.member?.mobile} | <b>Address :</b> {memberData?.member?.address}
+            <b>Mobile :</b> {memberData?.member?.mobile} | <b>Address :</b>{" "}
+            {memberData?.member?.address}
           </p>
         </div>
         <div>
@@ -113,8 +114,8 @@ const MemberReceipt = ({ url }) => {
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-info">
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name</th>
+              <th scope="col">Receipt No.</th>
+              {user?.type !== "member" && <th scope="col">Name</th>}
               <th scope="col">Amount</th>
               {user?.type !== "member" && (
                 <>
@@ -125,11 +126,20 @@ const MemberReceipt = ({ url }) => {
             </tr>
           </thead>
           <tbody className="table-group-divider">
-            {memberData?.receipts.length === 0 && (<tr><td colSpan={user?.type !== "member" ? 6 : 4} className="text-center">No Receipts Found</td></tr>)}
+            {memberData?.receipts.length === 0 && (
+              <tr>
+                <td
+                  colSpan={user?.type !== "member" ? 6 : 4}
+                  className="text-center"
+                >
+                  No Receipts Found
+                </td>
+              </tr>
+            )}
             {memberData?.receipts.map((receipt, index) => (
               <tr key={index}>
                 <th>{receipt.receiptNumber}</th>
-                <td>{receipt.name}</td>
+                {user?.type !== "member" && <td>{receipt.name}</td>}
                 <th className="text-success">₹ {receipt.amount}</th>
                 {user?.type !== "member" && (
                   <>

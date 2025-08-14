@@ -76,7 +76,7 @@ const MyReceipts = ({url}) => {
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-danger">
             <tr>
-              <th scope="col">#</th>
+              <th scope="col">Receipt No.</th>
               <th scope="col">Name</th>
               <th scope="col">Amount</th>
               <th scope="col">Mobile No.</th>
@@ -84,6 +84,13 @@ const MyReceipts = ({url}) => {
             </tr>
           </thead>
           <tbody className="table-group-divider">
+            {receipts.length === 0 && (
+              <tr>
+                <td colSpan="5" className="text-center">
+                  No Receipts Found
+                </td>
+              </tr>
+            )}
             {receipts.map((receipt, index) => (
               <tr key={receipt._id}>
                 <th>{receipt.receiptNumber}</th>

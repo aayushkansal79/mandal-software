@@ -77,17 +77,18 @@ const AllPads = ({url}) => {
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-primary">
             <tr>
-              <th scope="col">#</th>
+              <th scope="col">Pad No.</th>
               <th scope="col">Member Name</th>
               <th scope="col">Amount</th>
             </tr>
           </thead>
           <tbody className="table-group-divider">
+            {pads.length === 0 && (<tr><td colSpan="3" className="text-center">No Pads Found</td></tr>)}
             {pads.map((pad, index) => (
               <tr key={pad._id}>
                 <th>{pad.padNumber}</th>
                 <td>{pad.memberName}</td>
-                <th className="text-success">₹ {pad.totalAmount}</th>
+                <th className="text-success">₹ {pad.totalAmount.toLocaleString("en-IN")}</th>
               </tr>
             ))}
           </tbody>

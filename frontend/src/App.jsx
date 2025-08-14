@@ -64,7 +64,7 @@ function App() {
             <Route path="/add-receipt" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AddReceipt url={url} /> </PrivateRoute>} />
             <Route path="/receipt-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
             <Route path="/my-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
-            <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Expenditure url={url} /> </PrivateRoute>} />
+            <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin"]}> <Expenditure url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
         {!hideLayout && (

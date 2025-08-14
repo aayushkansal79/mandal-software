@@ -4,6 +4,7 @@ import Select from "react-select";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader/Loader";
+import { use } from "react";
 
 const AssignPad = ({ url }) => {
   const [members, setMembers] = useState([]);
@@ -58,6 +59,7 @@ const AssignPad = ({ url }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Pads assigned successfully!");
+      fetchPads();
       setPadNumbers([""]);
     } catch (err) {
       toast.error(err.response?.data?.message || "Error assigning pads");
@@ -69,17 +71,18 @@ const AssignPad = ({ url }) => {
 
   const [pads, setPads] = useState([]);
 
+  const fetchPads = async () => {
+    try {
+      const res = await axios.get(`${url}/api/receiptbook/members`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPads(res.data);
+    } catch (err) {
+      console.error("Error fetching pads:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchPads = async () => {
-      try {
-        const res = await axios.get(`${url}/api/receiptbook/members`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setPads(res.data);
-      } catch (err) {
-        console.error("Error fetching pads:", err);
-      }
-    };
     fetchPads();
   }, [url]);
 
@@ -137,6 +140,7 @@ const AssignPad = ({ url }) => {
             </tr>
           </thead>
           <tbody className="table-group-divider">
+            {pads.length === 0 && (<tr><td colSpan="3" className="text-center">No Pads Found</td></tr>)}
             {pads.map((pad, index) => (
               <tr key={index}>
                 <th>{index + 1}</th>
