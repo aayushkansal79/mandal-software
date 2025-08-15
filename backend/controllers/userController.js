@@ -100,6 +100,31 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// Toggle user status
+export const toggleUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find user
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Toggle the status
+    user.status = !user.status;
+    await user.save();
+
+    res.json({
+      message: `${user.memberName || "User"} Status - ${user.status ? "Active" : "Inactive"}`,
+      status: user.status
+    });
+  } catch (error) {
+    console.error("Error toggling user status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const getLoggedInUser = async (req, res) => {
   try {
     res.json(req.user);
@@ -115,6 +140,10 @@ export const changePassword = async (req, res) => {
 
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ message: "Both fields are required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "New password must be at least 6 characters long" });
     }
 
     // Fetch the logged-in user
@@ -138,6 +167,31 @@ export const changePassword = async (req, res) => {
     res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
     console.error("Error changing password:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const adminChangePassword = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: "New password must be at least 6 characters long" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: `Password for ${user.name || "the user"} changed successfully` });
+  } catch (err) {
+    console.error("Error changing user password by admin:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

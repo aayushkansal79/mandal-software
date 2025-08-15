@@ -2,6 +2,7 @@ import axios from "axios";
 import "./ChangePassword.css";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 const ChangePassword = ({ url }) => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -14,6 +15,16 @@ const ChangePassword = ({ url }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!currentPassword || !newPassword) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    if (newPassword && newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long.");
+      return;
+    }
 
     const result = await Swal.fire({
       title: "Confirm Password Change",
