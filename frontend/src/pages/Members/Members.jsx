@@ -60,14 +60,14 @@ const Members = ({ url }) => {
       </div>
 
       <div className="my-3">
-        <div className="members row">
+        <div className="members row g-2 g-md-3">
           {members.map((member, index) => (
             <div
               key={member._id}
               className="col-6 col-sm-6 col-md-2"
               onClick={() => handleMemberClick(member._id)}
             >
-              <div className="card text-bg-light mb-3 text-center">
+              <div className="card text-bg-light text-center">
                 <div className="card-header d-flex flex-column align-items-center">
                   <img
                     src={`${url}${member.profilePic}`}

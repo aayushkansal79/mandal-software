@@ -60,56 +60,58 @@ const MemberReceipt = ({ url }) => {
         </div>
       </div>
 
-      <div className="row g-2 mb-4 px-2 mt-2">
-        <div className="col-md-2 col-6">
-          <label className="form-label">Receipt Number:</label>
-          <input
-            className="form-control"
-            placeholder="Enter Receipt Number"
-            type="number"
-            // value={filters.invoiceNumber}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, invoiceNumber: e.target.value })
-            // }
-          />
+      {user !== "member" && (
+        <div className="row g-2 mb-4 px-2 mt-2">
+          <div className="col-md-2 col-6">
+            <label className="form-label">Receipt Number:</label>
+            <input
+              className="form-control"
+              placeholder="Enter Receipt Number"
+              type="number"
+              // value={filters.invoiceNumber}
+              // onChange={(e) =>
+              //   setFilters({ ...filters, invoiceNumber: e.target.value })
+              // }
+            />
+          </div>
+          <div className="col-md-2 col-6">
+            <label className="form-label">Amount Category:</label>
+            <select className="form-select">
+              <option value="">Select Amount</option>
+              <option value="1100">&gt;= ₹ 1100</option>
+              <option value="5100">&gt;= ₹ 5100</option>
+              <option value="11000">&gt;= ₹ 11000</option>
+              <option value="21000">&gt;= ₹ 21000</option>
+              <option value="51000">&gt;= ₹ 51000</option>
+              <option value="100000">&gt;= ₹ 100000</option>
+            </select>
+          </div>
+          <div className="col-md-2 col-6">
+            <label className="form-label">Donor Name:</label>
+            <input
+              className="form-control"
+              placeholder="Enter Donor Name"
+              // value={filters.invoiceNumber}
+              // onChange={(e) =>
+              //   setFilters({ ...filters, invoiceNumber: e.target.value })
+              // }
+            />
+          </div>
+          <div className="col-md-2 col-6">
+            <label className="form-label">Mobile Number:</label>
+            <input
+              className="form-control"
+              placeholder="Enter Mobile Number"
+              type="number"
+              // value={filters.customerName}
+              // onChange={(e) =>
+              //   setFilters({ ...filters, customerName: e.target.value })
+              // }
+            />
+          </div>
         </div>
-        <div className="col-md-2 col-6">
-          <label className="form-label">Amount Category:</label>
-          <select className="form-select">
-            <option value="">Select Amount</option>
-            <option value="1100">&gt;= ₹ 1100</option>
-            <option value="5100">&gt;= ₹ 5100</option>
-            <option value="11000">&gt;= ₹ 11000</option>
-            <option value="21000">&gt;= ₹ 21000</option>
-            <option value="51000">&gt;= ₹ 51000</option>
-            <option value="100000">&gt;= ₹ 100000</option>
-          </select>
-        </div>
-        <div className="col-md-2 col-6">
-          <label className="form-label">Donor Name:</label>
-          <input
-            className="form-control"
-            placeholder="Enter Donor Name"
-            // value={filters.invoiceNumber}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, invoiceNumber: e.target.value })
-            // }
-          />
-        </div>
-        <div className="col-md-2 col-6">
-          <label className="form-label">Mobile Number:</label>
-          <input
-            className="form-control"
-            placeholder="Enter Mobile Number"
-            type="number"
-            // value={filters.customerName}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, customerName: e.target.value })
-            // }
-          />
-        </div>
-      </div>
-
+      )}
+      
       <div className="MemberReceipt rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-info">

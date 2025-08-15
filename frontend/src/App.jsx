@@ -5,6 +5,8 @@ import { AuthProvider } from "./context/AuthContext";
 import Login from "./pages/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Navbar from "./components/Navbar/Navbar";
+import Profile from "./pages/Profile/Profile";
+import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import AddMember from "./pages/AddMember/AddMember";
 import Members from "./pages/Members/Members";
@@ -54,6 +56,8 @@ function App() {
           <Routes>
             <Route path="*" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login url={url} />} />
+            <Route path="/profile" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Profile url={url} /> </PrivateRoute>} />
+            <Route path="/change-password" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <ChangePassword url={url} /> </PrivateRoute>} />
             <Route path="/dashboard" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Dashboard url={url} /> </PrivateRoute>} />
             <Route path="/mandal" element={<PrivateRoute roles={["admin"]}> <MandalForm url={url} /> </PrivateRoute>} />
             <Route path="/add-member" element={<PrivateRoute roles={["admin"]}> <AddMember url={url} /> </PrivateRoute>} />

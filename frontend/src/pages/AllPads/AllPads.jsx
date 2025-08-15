@@ -28,24 +28,14 @@ const AllPads = ({url}) => {
 
       <div className="row g-2 mb-4 px-2 mt-2">
         <div className="col-md-2 col-6">
-          <label className="form-label">Member Name:</label>
+          <label className="form-label">Pad Number:</label>
           <input
+          type="number"
             className="form-control"
-            placeholder="Enter Member Name"
+            placeholder="Enter Pad Number"
             // value={filters.invoiceNumber}
             // onChange={(e) =>
             //   setFilters({ ...filters, invoiceNumber: e.target.value })
-            // }
-          />
-        </div>
-        <div className="col-md-2 col-6">
-          <label className="form-label">Donor Name:</label>
-          <input
-            className="form-control"
-            placeholder="Enter Donor Name"
-            // value={filters.customerName}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, customerName: e.target.value })
             // }
           />
         </div>
@@ -57,17 +47,6 @@ const AllPads = ({url}) => {
             // value={filters.invoiceNumber}
             // onChange={(e) =>
             //   setFilters({ ...filters, invoiceNumber: e.target.value })
-            // }
-          />
-        </div>
-        <div className="col-md-2 col-6">
-          <label className="form-label">Donor Name:</label>
-          <input
-            className="form-control"
-            placeholder="Enter Donor Name"
-            // value={filters.customerName}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, customerName: e.target.value })
             // }
           />
         </div>

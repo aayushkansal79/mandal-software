@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // const url = "http://localhost:4000"; 
+  // const url = "http://localhost:4000";
   const url = "https://mandal-software.onrender.com";
 
   useEffect(() => {

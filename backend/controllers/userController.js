@@ -108,6 +108,40 @@ export const getLoggedInUser = async (req, res) => {
   }
 };
 
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user._id; // comes from auth middleware
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Both fields are required" });
+    }
+
+    // Fetch the logged-in user
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if current password matches
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 //member details with total count and pad
 export const getMemberStats = async (req, res) => {
   try {
@@ -185,6 +219,92 @@ export const getMemberStats = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+//same as above but for logges in user
+export const getMyMemberStats = async (req, res) => {
+  try {
+    const { year } = req.query;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
+    const userId = req.user._id; // Logged in user ID
+
+    const memberStats = await User.aggregate([
+      {
+        $match: {
+          _id: userId, // Only the logged in user
+          mandal: req.user.mandal,
+          type: { $ne: "superadmin" }
+        }
+      },
+      // Lookup pads assigned to the user (filter by year)
+      {
+        $lookup: {
+          from: "receiptbooks",
+          let: { memberId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$member", "$$memberId"] },
+                    { $eq: ["$year", selectedYear] }
+                  ]
+                }
+              }
+            },
+            { $project: { padNumber: 1, _id: 0 } }
+          ],
+          as: "pads"
+        }
+      },
+      // Lookup receipts added by the user (filter by year)
+      {
+        $lookup: {
+          from: "receipts",
+          let: { memberId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$member", "$$memberId"] },
+                    { $eq: ["$year", selectedYear] }
+                  ]
+                }
+              }
+            },
+            { $project: { amount: 1, _id: 0 } }
+          ],
+          as: "receipts"
+        }
+      },
+      // Add receipt count & total amount
+      {
+        $addFields: {
+          receiptCount: { $size: "$receipts" },
+          totalAmount: { $sum: "$receipts.amount" },
+          padsAssigned: "$pads.padNumber"
+        }
+      },
+      // Hide receipts array from final response
+      {
+        $project: {
+          receipts: 0,
+          pads: 0
+        }
+      }
+    ]);
+
+    if (!memberStats.length) {
+      return res.status(404).json({ message: "No data found for this user" });
+    }
+
+    res.status(200).json(memberStats[0]); // Return single object instead of array
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 
 // Get all users with type not 'superadmin'

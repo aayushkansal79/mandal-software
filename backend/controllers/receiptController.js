@@ -15,7 +15,7 @@ export const addReceipt = async (req, res) => {
     const selectedYear = new Date().getFullYear();
 
     // Get all assigned pads for this member for the current year
-    const assignedPads = await ReceiptBook.find({ member: user._id, year: selectedYear }).select("padNumber");
+    const assignedPads = await ReceiptBook.find({ mandal: user.mandal._id, member: user._id, year: selectedYear }).select("padNumber");
 
     if (!assignedPads.length) {
       return res.status(400).json({ message: "No pads assigned to you" });
@@ -40,7 +40,7 @@ export const addReceipt = async (req, res) => {
     }
 
     // Check for duplicate receipt number (within year)
-    const existingReceipt = await Receipt.findOne({ receiptNumber, year: selectedYear });
+    const existingReceipt = await Receipt.findOne({ mandal: user.mandal._id, receiptNumber, year: selectedYear });
     if (existingReceipt) {
       return res.status(400).json({ message: "Receipt number already exists" });
     }
@@ -65,7 +65,7 @@ export const addReceipt = async (req, res) => {
 
     // Update totalAmount in the matched ReceiptBook
     await ReceiptBook.findOneAndUpdate(
-      { padNumber: matchedPad, member: user._id, year },
+      { padNumber: matchedPad, mandal: user.mandal._id, member: user._id, year },
       { $inc: { totalAmount: amount } },
       { new: true }
     );
