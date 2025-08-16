@@ -165,12 +165,12 @@ export const memberUpdateReceipt = async (req, res) => {
         year: receipt.year,
       });
       if (newPadDoc) {
-        newPadDoc.totalAmount += amount ?? receipt.amount;
+        newPadDoc.totalAmount += parseInt(amount) ?? receipt.amount;
         await newPadDoc.save();
       }
     }
     // Case 2: Amount changed but receiptNumber same → update same pad total
-    else if (amount !== undefined && amount !== receipt.amount) {
+    else if (parseInt(amount) !== undefined && parseInt(amount) !== receipt.amount) {
       const padDoc = await ReceiptBook.findOne({
         padNumber: oldPad,
         mandal: receipt.mandal,
@@ -178,7 +178,7 @@ export const memberUpdateReceipt = async (req, res) => {
         year: receipt.year,
       });
       if (padDoc) {
-        padDoc.totalAmount = padDoc.totalAmount - receipt.amount + amount;
+        padDoc.totalAmount = padDoc.totalAmount - receipt.amount + parseInt(amount);
         await padDoc.save();
       }
     }
@@ -186,7 +186,7 @@ export const memberUpdateReceipt = async (req, res) => {
     // Update Receipt fields
     receipt.receiptNumber = receiptNumber ?? receipt.receiptNumber;
     receipt.name = name ?? receipt.name;
-    receipt.amount = amount ?? receipt.amount;
+    receipt.amount = parseInt(amount) ?? receipt.amount;
     receipt.mobile = mobile ?? receipt.mobile;
     receipt.address = address ?? receipt.address;
 
@@ -236,7 +236,7 @@ export const adminUpdateReceipt = async (req, res) => {
       ? Math.ceil(receiptNumber / 25)
       : oldPad;
 
-    if (amount !== undefined && amount !== receipt.amount) {
+    if (parseInt(amount) !== undefined && parseInt(amount) !== receipt.amount) {
       const oldPadDoc = await ReceiptBook.findOne({
         padNumber: oldPad,
         mandal: receipt.mandal,
@@ -256,7 +256,7 @@ export const adminUpdateReceipt = async (req, res) => {
         year: receipt.year,
       });
       if (newPadDoc) {
-        newPadDoc.totalAmount += amount;
+        newPadDoc.totalAmount += parseInt(amount);
         await newPadDoc.save();
       }
     } 
@@ -289,7 +289,7 @@ export const adminUpdateReceipt = async (req, res) => {
     // === Update receipt fields inplace ===
     receipt.receiptNumber = receiptNumber ?? receipt.receiptNumber;
     receipt.name = name ?? receipt.name;
-    receipt.amount = amount ?? receipt.amount;
+    receipt.amount = parseInt(amount) ?? receipt.amount;
     receipt.mobile = mobile ?? receipt.mobile;
     receipt.address = address ?? receipt.address;
 
@@ -341,42 +341,42 @@ export const getReceiptsByMember = async (req, res) => {
   }
 };
 
-// export const backfillReceiptBookTotals = async (req, res) => {
-//   try {
-//     const receiptBooks = await ReceiptBook.find();
+export const backfillReceiptBookTotals = async (req, res) => {
+  try {
+    const receiptBooks = await ReceiptBook.find();
 
-//     for (const book of receiptBooks) {
-//       const minReceiptNumber = (book.padNumber - 1) * 25 + 1;
-//       const maxReceiptNumber = book.padNumber * 25;
+    for (const book of receiptBooks) {
+      const minReceiptNumber = (book.padNumber - 1) * 25 + 1;
+      const maxReceiptNumber = book.padNumber * 25;
 
-//       const totalAmount = await Receipt.aggregate([
-//         {
-//           $match: {
-//             mandal: book.mandal,
-//             member: book.member,
-//             year: book.year,
-//             receiptNumber: { $gte: minReceiptNumber, $lte: maxReceiptNumber }
-//           }
-//         },
-//         {
-//           $group: {
-//             _id: null,
-//             total: { $sum: "$amount" }
-//           }
-//         }
-//       ]);
+      const totalAmount = await Receipt.aggregate([
+        {
+          $match: {
+            mandal: book.mandal,
+            member: book.member,
+            year: book.year,
+            receiptNumber: { $gte: minReceiptNumber, $lte: maxReceiptNumber }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$amount" }
+          }
+        }
+      ]);
 
-//       const amountSum = totalAmount.length > 0 ? totalAmount[0].total : 0;
+      const amountSum = totalAmount.length > 0 ? totalAmount[0].total : 0;
 
-//       await ReceiptBook.updateOne(
-//         { _id: book._id },
-//         { $set: { totalAmount: amountSum } }
-//       );
-//     }
+      await ReceiptBook.updateOne(
+        { _id: book._id },
+        { $set: { totalAmount: amountSum } }
+      );
+    }
 
-//     res.status(200).json({ message: "Backfill completed successfully" });
-//   } catch (err) {
-//     console.error("Backfill error:", err);
-//     res.status(500).json({ message: "Error during backfill", error: err.message });
-//   }
-// };
+    res.status(200).json({ message: "Backfill completed successfully" });
+  } catch (err) {
+    console.error("Backfill error:", err);
+    res.status(500).json({ message: "Error during backfill", error: err.message });
+  }
+};
