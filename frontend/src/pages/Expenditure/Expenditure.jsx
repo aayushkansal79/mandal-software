@@ -2,13 +2,18 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import "./Expenditure.css";
 import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
+import Loader from "../../components/Loader/Loader";
 
 const ExpenseManager = ({ url }) => {
   const [expenses, setExpenses] = useState([{ field: "", amount: "" }]);
   const [allExpenses, setAllExpenses] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editData, setEditData] = useState({ field: "", amount: "" });
 
   const token = localStorage.getItem("token");
   const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
   // Fetch all expenses
   useEffect(() => {
@@ -31,7 +36,6 @@ const ExpenseManager = ({ url }) => {
     newExpenses[index][field] = value;
     setExpenses(newExpenses);
 
-    // If editing the last row and it has data → add a new empty row
     if (
       index === expenses.length - 1 &&
       newExpenses[index].field &&
@@ -43,8 +47,8 @@ const ExpenseManager = ({ url }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      // Remove empty rows before sending
       const filteredExpenses = expenses.filter(
         (exp) => exp.field && exp.amount
       );
@@ -54,18 +58,59 @@ const ExpenseManager = ({ url }) => {
         { expenses: filteredExpenses },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+      toast.success("Expenses added successfully");
       fetchExpenses();
       setExpenses([{ field: "", amount: "" }]);
     } catch (err) {
       console.error(err);
+      toast.error(err.response?.data?.message || "Failed to add expenses");
+    } finally{
+      setLoading(false);
     }
+  };
+
+  const handleEdit = (index, exp) => {
+    setEditIndex(index);
+    setEditData({ field: exp.field, amount: exp.amount, _id: exp._id });
+  };
+
+  const handleEditChange = (field, value) => {
+    setEditData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async (id) => {
+    setLoading(true);
+    try {
+      const res = await axios.patch(
+        `${url}/api/expenditure/${id}`,
+        { field: editData.field, amount: editData.amount },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setAllExpenses((prev) =>
+        prev.map((exp) => (exp._id === id ? res.data.updated : exp))
+      );
+
+      toast.success("Expense updated successfully");
+      setEditIndex(null);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to update expense");
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditIndex(null);
+    setEditData({ field: "", amount: "" });
   };
 
   const totalAmount = allExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   return (
-    <div>
+    <>
+      <div className="bread">Expenditure</div>
       {user?.type === "admin" && (
         <form className="addreceipt g-3 my-3 rounded" onSubmit={handleSubmit}>
           {expenses.map((exp, index) => (
@@ -112,23 +157,87 @@ const ExpenseManager = ({ url }) => {
               <th>#</th>
               <th>Expense Detail</th>
               <th className="text-end">Amount</th>
+              <th>Date & Time</th>
+              {user?.type === "admin" && <th>Edit</th>}
             </tr>
           </thead>
           <tbody className="table-group-divider">
             {allExpenses.length === 0 && (
               <tr>
-                <td colSpan="3" className="text-center">
+                <td colSpan="5" className="text-center">
                   No Expenses Found
                 </td>
               </tr>
             )}
             {allExpenses.map((exp, index) => (
-              <tr key={index}>
+              <tr key={exp._id}>
                 <th>{index + 1}</th>
-                <th className="text-primary">{exp.field}</th>
-                <th className="text-danger text-end">
-                  ₹ {exp.amount.toLocaleString("en-IN")}
+                <th className="text-primary">
+                  {editIndex === index ? (
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editData.field}
+                      onChange={(e) =>
+                        handleEditChange("field", e.target.value)
+                      }
+                    />
+                  ) : (
+                    exp.field
+                  )}
                 </th>
+                <th className="text-danger text-end">
+                  {editIndex === index ? (
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={editData.amount}
+                      onChange={(e) =>
+                        handleEditChange("amount", e.target.value)
+                      }
+                    />
+                  ) : (
+                    `₹ ${exp.amount.toLocaleString("en-IN")}`
+                  )}
+                </th>
+                <td className="small">
+                  {new Date(exp.updatedAt).toLocaleString("en-IN")}
+                </td>
+                {user?.type === "admin" && (
+                  <td>
+                    {editIndex === index ? (
+                      <>
+                        <button
+                          className="btn btn-success btn-sm me-2 small"
+                          onClick={() => handleSave(exp._id)}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm small"
+                          onClick={handleCancel}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="op-btn"
+                        onClick={() => handleEdit(index, exp)}
+                      >
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="red"
+                      >
+                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+                      </svg>
+                      </button>
+                    )}
+                  </td>
+                )}
               </tr>
             ))}
             <tr>
@@ -137,11 +246,15 @@ const ExpenseManager = ({ url }) => {
               <th className="text-success text-end">
                 ₹ {totalAmount.toLocaleString("en-IN")}
               </th>
+              <th></th>
+              {user?.type === "admin" && <th></th>}
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
+
+      {loading && <Loader />}
+    </>
   );
 };
 

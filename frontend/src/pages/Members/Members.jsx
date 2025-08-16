@@ -189,17 +189,21 @@ const Members = ({ url }) => {
                       e.stopPropagation();
                     }}
                   >
-                    <div className="form-check form-switch">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        role="switch"
-                        title="Change Status"
-                        checked={member.status}
-                        onChange={() => handleToggleStatus(member)}
-                        style={{ cursor: "pointer" }}
-                      />
-                    </div>
+                    {member.type !== "admin" ? (
+                      <div className="form-check form-switch">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          title="Change Status"
+                          checked={member.status}
+                          onChange={() => handleToggleStatus(member)}
+                          style={{ cursor: "pointer" }}
+                        />
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
                     <button
                       className="op-btn"
                       title="Change Password"

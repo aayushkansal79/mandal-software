@@ -33,6 +33,26 @@ export const addExpenses = async (req, res) => {
     }
 };
 
+export const updateExpenditure = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { field, amount } = req.body;
+
+    const expense = await Expenditure.findById(id);
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    if (field) expense.field = field;
+    if (amount !== undefined) expense.amount = amount;
+
+    const updated = await expense.save();
+    res.json({ message: "Expense updated successfully", updated });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update expense" });
+  }
+};
+
 // FETCH all expenses for specific mandal & year
 export const getAllExpenses = async (req, res) => {
     try {

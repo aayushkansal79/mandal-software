@@ -2,11 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import "./AllReceipts.css";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
+import Loader from "../../components/Loader/Loader";
 
 const AllReceipts = ({ url }) => {
   const [receipts, setReceipts] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editData, setEditData] = useState({});
   const token = localStorage.getItem("token");
   const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -21,6 +26,38 @@ const AllReceipts = ({ url }) => {
     };
     fetchReceipts();
   }, [url]);
+
+  const handleSave = async (id) => {
+    setLoading(true);
+    try {
+      const res = await axios.patch(
+        `${url}/api/receipt/admin/${id}`,
+        editData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const updatedReceipt = res.data.updatedReceipt;
+
+      if (!updatedReceipt || !updatedReceipt._id) {
+        throw new Error("Invalid response from server");
+      }
+
+      setReceipts((prev) =>
+        prev.map((r) => (r._id === id ? { ...r, ...updatedReceipt } : r))
+      );
+
+      toast.success(`Receipt updated successfully`);
+      setEditIndex(null);
+      setEditData({}); // reset after save
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to update receipt");
+    } finally{
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -89,15 +126,17 @@ const AllReceipts = ({ url }) => {
                 <>
                   <th scope="col">Mobile No.</th>
                   <th scope="col">Address</th>
+                  <th scope="col">Date & Time</th>
                 </>
               )}
+              {user?.type === "admin" && <th>Actions</th>}
             </tr>
           </thead>
           <tbody className="table-group-divider">
             {receipts.length === 0 && (
               <tr>
                 <td
-                  colSpan={user?.type !== "member" ? 6 : 4}
+                  colSpan={user?.type !== "member" ? 8 : 3}
                   className="text-center"
                 >
                   No Receipts Found
@@ -106,21 +145,137 @@ const AllReceipts = ({ url }) => {
             )}
             {receipts.map((receipt, index) => (
               <tr key={receipt._id}>
-                <th>{receipt.receiptNumber}</th>
+                <th>
+                  {editIndex === index ? (
+                    <input
+                      type="number"
+                      className="form-control form-control-sm"
+                      value={editData.receiptNumber}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          receiptNumber: e.target.value,
+                        })
+                      }
+                    />
+                  ) : (
+                    receipt.receiptNumber
+                  )}
+                </th>
                 <td>{receipt.memberName}</td>
-                {user?.type !== "member" && <td>{receipt.name}</td>}
-                <th className="text-success">₹ {receipt.amount}</th>
+                {user?.type !== "member" && (
+                  <td>
+                    {editIndex === index ? (
+                      <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        value={editData.name}
+                        onChange={(e) =>
+                          setEditData({ ...editData, name: e.target.value })
+                        }
+                      />
+                    ) : (
+                      receipt.name
+                    )}
+                  </td>
+                )}
+                <th className="text-success">
+                  {editIndex === index ? (
+                    <input
+                      type="number"
+                      className="form-control form-control-sm"
+                      value={editData.amount}
+                      onChange={(e) =>
+                        setEditData({ ...editData, amount: e.target.value })
+                      }
+                    />
+                  ) : (
+                    `₹ ${receipt.amount}`
+                  )}
+                </th>
                 {user?.type !== "member" && (
                   <>
-                    <td>{receipt.mobile || "-"}</td>
-                    <td>{receipt.address || "-"}</td>
+                    <td>
+                      {editIndex === index ? (
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          value={editData.mobile ?? ""}
+                          onChange={(e) =>
+                            setEditData({ ...editData, mobile: e.target.value })
+                          }
+                        />
+                      ) : (
+                        receipt.mobile || "-"
+                      )}
+                    </td>
+                    <td>
+                      {editIndex === index ? (
+                        <input
+                          type="text"
+                          className="form-control form-control-sm"
+                          value={editData.address ?? ""}
+                          onChange={(e) =>
+                            setEditData({
+                              ...editData,
+                              address: e.target.value,
+                            })
+                          }
+                        />
+                      ) : (
+                        receipt.address || "-"
+                      )}
+                    </td>
+                    <td className="small">
+                      {new Date(receipt.updatedAt).toLocaleString("en-IN")}
+                    </td>
                   </>
+                )}
+                {user?.type === "admin" && (
+                  <td>
+                    {editIndex === index ? (
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn btn-success btn-sm small"
+                          onClick={() => handleSave(receipt._id)}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm small"
+                          onClick={() => setEditIndex(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="op-btn"
+                        onClick={() => {
+                          setEditIndex(index);
+                          setEditData(receipt);
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="red"
+                        >
+                          <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+                        </svg>
+                      </button>
+                    )}
+                  </td>
                 )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {loading && <Loader />}
     </>
   );
 };

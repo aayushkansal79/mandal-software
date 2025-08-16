@@ -12,6 +12,10 @@
   text-align: center;
 }
 
+.small{
+  font-size: 0.9rem !important;
+}
+
 @media (max-width: 680px) {
   .Expenditure {
     width: calc(100vw - 2rem);

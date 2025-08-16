@@ -21,10 +21,13 @@
 }
 
 .profile-container h2{
-  color: #1b1a55;
   font-size: 1.1rem !important;
   font-weight: 600;
   color: #6d0616;
+}
+
+.profile-container b{
+  color: #1b1a55;
 }
 
 .change-btn:disabled {

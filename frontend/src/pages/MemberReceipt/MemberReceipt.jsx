@@ -123,6 +123,7 @@ const MemberReceipt = ({ url }) => {
                 <>
                   <th scope="col">Mobile No.</th>
                   <th scope="col">Address</th>
+                  <th scope="col">Date & Time</th>
                 </>
               )}
             </tr>
@@ -131,7 +132,7 @@ const MemberReceipt = ({ url }) => {
             {memberData?.receipts.length === 0 && (
               <tr>
                 <td
-                  colSpan={user?.type !== "member" ? 6 : 4}
+                  colSpan={user?.type !== "member" ? 6 : 2}
                   className="text-center"
                 >
                   No Receipts Found
@@ -147,6 +148,7 @@ const MemberReceipt = ({ url }) => {
                   <>
                     <td>{receipt.mobile || "-"}</td>
                     <td>{receipt.address || "-"}</td>
+                    <td className="small">{new Date(receipt.updatedAt).toLocaleString("en-IN")}</td>
                   </>
                 )}
               </tr>

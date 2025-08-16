@@ -78,6 +78,232 @@ export const addReceipt = async (req, res) => {
   }
 };
 
+export const memberUpdateReceipt = async (req, res) => {
+  try {
+    const { id } = req.params; // receipt id
+    const { receiptNumber, name, amount, mobile, address } = req.body;
+
+    const receipt = await Receipt.findById(id);
+    if (!receipt) {
+      return res.status(404).json({ message: "Receipt not found" });
+    }
+
+    // Load user to check pad assignment
+    const user = await User.findById(receipt.member).populate("mandal", "name");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const selectedYear = receipt.year;
+
+    // Get all pads assigned to this member for this year
+    const assignedPads = await ReceiptBook.find({
+      mandal: user.mandal._id,
+      member: user._id,
+      year: selectedYear,
+    }).select("padNumber");
+
+    if (!assignedPads.length) {
+      return res.status(400).json({ message: "No pads assigned to you" });
+    }
+
+    let matchedPad = null;
+    if (receiptNumber !== undefined) {
+      // Check if the new receiptNumber belongs to assigned pads
+      const isValid = assignedPads.some((pad) => {
+        const min = (pad.padNumber - 1) * 25 + 1;
+        const max = pad.padNumber * 25;
+        if (receiptNumber >= min && receiptNumber <= max) {
+          matchedPad = pad.padNumber;
+          return true;
+        }
+        return false;
+      });
+
+      if (!isValid) {
+        return res.status(400).json({
+          message: `Receipt number ${receiptNumber} not assigned to you`,
+        });
+      }
+
+      // Check for duplicate receiptNumber in this year
+      const existingReceipt = await Receipt.findOne({
+        mandal: receipt.mandal,
+        receiptNumber,
+        year: selectedYear,
+        _id: { $ne: id }, // exclude current receipt
+      });
+
+      if (existingReceipt) {
+        return res
+          .status(400)
+          .json({ message: "Receipt number already exists" });
+      }
+    }
+
+    // === Update Pad Totals ===
+    let oldPad = Math.ceil(receipt.receiptNumber / 25);
+    let newPad = matchedPad || Math.ceil((receiptNumber ?? receipt.receiptNumber) / 25);
+
+    // Case 1: Receipt number changed → move full amount from oldPad to newPad
+    if (receiptNumber !== undefined && newPad !== oldPad) {
+      const oldPadDoc = await ReceiptBook.findOne({
+        padNumber: oldPad,
+        mandal: receipt.mandal,
+        member: receipt.member,
+        year: receipt.year,
+      });
+      if (oldPadDoc) {
+        oldPadDoc.totalAmount -= receipt.amount;
+        await oldPadDoc.save();
+      }
+
+      const newPadDoc = await ReceiptBook.findOne({
+        padNumber: newPad,
+        mandal: receipt.mandal,
+        member: receipt.member,
+        year: receipt.year,
+      });
+      if (newPadDoc) {
+        newPadDoc.totalAmount += amount ?? receipt.amount;
+        await newPadDoc.save();
+      }
+    }
+    // Case 2: Amount changed but receiptNumber same → update same pad total
+    else if (amount !== undefined && amount !== receipt.amount) {
+      const padDoc = await ReceiptBook.findOne({
+        padNumber: oldPad,
+        mandal: receipt.mandal,
+        member: receipt.member,
+        year: receipt.year,
+      });
+      if (padDoc) {
+        padDoc.totalAmount = padDoc.totalAmount - receipt.amount + amount;
+        await padDoc.save();
+      }
+    }
+
+    // Update Receipt fields
+    receipt.receiptNumber = receiptNumber ?? receipt.receiptNumber;
+    receipt.name = name ?? receipt.name;
+    receipt.amount = amount ?? receipt.amount;
+    receipt.mobile = mobile ?? receipt.mobile;
+    receipt.address = address ?? receipt.address;
+
+    const updated = await receipt.save();
+
+    res.status(200).json({
+      message: "Receipt updated successfully",
+      receipt: updated,
+    });
+  } catch (err) {
+    console.error("Error updating receipt:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+// Admin-only
+export const adminUpdateReceipt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { receiptNumber, name, amount, mobile, address } = req.body;
+
+    const receipt = await Receipt.findById(id);
+    if (!receipt) {
+      return res.status(404).json({ message: "Receipt not found" });
+    }
+
+    const selectedYear = receipt.year;
+
+    if (receiptNumber !== undefined) {
+      const existingReceipt = await Receipt.findOne({
+        mandal: receipt.mandal,
+        receiptNumber,
+        year: selectedYear,
+        _id: { $ne: id },
+      });
+
+      if (existingReceipt) {
+        return res
+          .status(400)
+          .json({ message: "Receipt number already exists" });
+      }
+    }
+
+    let oldPad = Math.ceil(receipt.receiptNumber / 25);
+    let newPad = receiptNumber
+      ? Math.ceil(receiptNumber / 25)
+      : oldPad;
+
+    if (amount !== undefined && amount !== receipt.amount) {
+      const oldPadDoc = await ReceiptBook.findOne({
+        padNumber: oldPad,
+        mandal: receipt.mandal,
+        member: receipt.member,
+        year: receipt.year,
+      });
+      if (oldPadDoc) {
+        oldPadDoc.totalAmount -= receipt.amount;
+        await oldPadDoc.save();
+      }
+
+      // Add to new pad
+      const newPadDoc = await ReceiptBook.findOne({
+        padNumber: newPad,
+        mandal: receipt.mandal,
+        member: receipt.member,
+        year: receipt.year,
+      });
+      if (newPadDoc) {
+        newPadDoc.totalAmount += amount;
+        await newPadDoc.save();
+      }
+    } 
+    // If only receiptNumber changed (amount same) -> shift totals
+    else if (receiptNumber && newPad !== oldPad) {
+      // Move the same amount to new pad
+      const oldPadDoc = await ReceiptBook.findOne({
+        padNumber: oldPad,
+        mandal: receipt.mandal,
+        member: receipt.member,
+        year: receipt.year,
+      });
+      if (oldPadDoc) {
+        oldPadDoc.totalAmount -= receipt.amount;
+        await oldPadDoc.save();
+      }
+
+      const newPadDoc = await ReceiptBook.findOne({
+        padNumber: newPad,
+        mandal: receipt.mandal,
+        member: receipt.member,
+        year: receipt.year,
+      });
+      if (newPadDoc) {
+        newPadDoc.totalAmount += receipt.amount;
+        await newPadDoc.save();
+      }
+    }
+
+    // === Update receipt fields inplace ===
+    receipt.receiptNumber = receiptNumber ?? receipt.receiptNumber;
+    receipt.name = name ?? receipt.name;
+    receipt.amount = amount ?? receipt.amount;
+    receipt.mobile = mobile ?? receipt.mobile;
+    receipt.address = address ?? receipt.address;
+
+    const updated = await receipt.save();
+
+    res.status(200).json({
+      message: "Receipt updated successfully (Admin)",
+      updatedReceipt: updated,
+    });
+  } catch (err) {
+    console.error("Error updating receipt (Admin):", err);
+    res.status(500).json({ message: err.message });
+  }
+};
 
 export const getReceiptsByMandal = async (req, res) => {
   try {

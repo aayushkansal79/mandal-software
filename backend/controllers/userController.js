@@ -133,6 +133,31 @@ export const getLoggedInUser = async (req, res) => {
   }
 };
 
+export const updateProfile = async (req, res) => {
+  try {
+    const { memberName, mobile, address } = req.body;
+
+    if (mobile && mobile.length < 10) {
+      return res.status(400).json({ message: "Mobile number must be at least 10 digits long" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { memberName, mobile, address },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Profile updated", user });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
 export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
