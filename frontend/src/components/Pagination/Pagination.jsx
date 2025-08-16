@@ -1,9 +1,9 @@
 import React from "react";
 import "./Pagination.css";
 
-const Pagination = ({ currentPage, totalPages, onPageChange, limit, hangeLimitChange }) => {
+const Pagination = ({ currentPage, totalPages, onPageChange, limit, handleLimitChange }) => {
   const getPageNumbers = () => {
-    const maxVisible = 5;
+    const maxVisible = 3;
     const half = Math.floor(maxVisible / 2);
 
     let start = Math.max(1, currentPage - half);
@@ -28,6 +28,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, hangeLimitCh
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1 || totalPages === 0}
+        className="p-0"
       >
         {/* First */}
         <svg
@@ -44,6 +45,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, hangeLimitCh
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || totalPages === 0}
+        className="p-0"
       >
         {/* Prev */}
         <svg
@@ -70,6 +72,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, hangeLimitCh
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || totalPages === 0}
+        className="p-0"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +89,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, hangeLimitCh
       <button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages || totalPages === 0}
+        className="p-0"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -101,14 +105,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, hangeLimitCh
 
       <select
         className="form-select"
-        style={{ width: "70px" }}
+        style={{ width: "75px" }}
         value={limit}
-        onChange={(e) => hangeLimitChange(parseInt(e.target.value))}
+        onChange={(e) => handleLimitChange(parseInt(e.target.value))}
       >
-        <option value="10">10</option>
-        <option value="20">20</option>
+        <option value="25">25</option>
         <option value="50">50</option>
         <option value="100">100</option>
+        <option value="500">500</option>
       </select>
     </div>
   );

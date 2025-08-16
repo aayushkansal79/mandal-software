@@ -307,16 +307,46 @@ export const adminUpdateReceipt = async (req, res) => {
 
 export const getReceiptsByMandal = async (req, res) => {
   try {
-    const { year } = req.query;
+    const { 
+      year, 
+      page = 1, 
+      limit = 100, 
+      receiptNumber, 
+      amount, 
+      memberName, 
+      name, 
+      mobile 
+    } = req.query;
+
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
+    // Base query
     const query = { mandal: req.user.mandal };
+
     if (selectedYear) query.year = selectedYear;
+    if (receiptNumber) query.receiptNumber = parseInt(receiptNumber);
+    if (amount) query.amount = { $gte: parseFloat(amount) };
+    if (memberName) query.memberName = { $regex: memberName, $options: "i" };
+    if (name) query.name = { $regex: name, $options: "i" };
+    if (mobile) query.mobile = { $regex: mobile, $options: "i" };
 
-    const receipts = await Receipt.find(query)
-      .sort({ receiptNumber: 1 });
+    // Pagination calculation
+    const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    res.status(200).json(receipts);
+    const [receipts, total] = await Promise.all([
+      Receipt.find(query)
+        .sort({ receiptNumber: 1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      Receipt.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      receipts,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / parseInt(limit)),
+    });
   } catch (err) {
     console.error("Error fetching receipts by mandal:", err);
     res.status(500).json({ message: "Server error" });

@@ -118,7 +118,7 @@ const MemberReceipt = ({ url }) => {
             <tr>
               <th scope="col">Receipt No.</th>
               {user?.type !== "member" && <th scope="col">Name</th>}
-              <th scope="col">Amount</th>
+              <th scope="col" className="text-end">Amount</th>
               {user?.type !== "member" && (
                 <>
                   <th scope="col">Mobile No.</th>
@@ -143,7 +143,7 @@ const MemberReceipt = ({ url }) => {
               <tr key={index}>
                 <th>{receipt.receiptNumber}</th>
                 {user?.type !== "member" && <td>{receipt.name}</td>}
-                <th className="text-success">₹ {receipt.amount}</th>
+                <th className="text-success text-end">₹ {receipt.amount}</th>
                 {user?.type !== "member" && (
                   <>
                     <td>{receipt.mobile || "-"}</td>

@@ -224,15 +224,26 @@ export const adminChangePassword = async (req, res) => {
 //member details with total count and pad
 export const getMemberStats = async (req, res) => {
   try {
-    const { year } = req.query;
+    const { year, memberName, mobile } = req.query;
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
+    // Base match
+    const matchConditions = {
+      mandal: req.user.mandal,
+    };
+
+    // Apply filters individually
+    if (memberName && memberName.trim() !== "") {
+      matchConditions.memberName = new RegExp(memberName.trim(), "i");
+    }
+
+    if (mobile && mobile.trim() !== "") {
+      matchConditions.mobile = new RegExp(mobile.trim(), "i");
+    }
 
     const members = await User.aggregate([
       {
-        $match: {
-          mandal: req.user.mandal,
-          type: { $ne: "superadmin" }
-        }
+        $match: matchConditions
       },
       // Lookup pads assigned to member (filter by year)
       {
@@ -284,7 +295,7 @@ export const getMemberStats = async (req, res) => {
           padsAssigned: "$pads.padNumber"
         }
       },
-      // Hide receipts array from final response
+      // Hide receipts & pads array
       {
         $project: {
           receipts: 0,
@@ -299,7 +310,7 @@ export const getMemberStats = async (req, res) => {
   }
 };
 
-//same as above but for logges in user
+//same as above but for logged in user
 export const getMyMemberStats = async (req, res) => {
   try {
     const { year } = req.query;

@@ -109,7 +109,7 @@ const MyReceipts = ({ url }) => {
             <tr>
               <th scope="col">Receipt No.</th>
               <th scope="col">Name</th>
-              <th scope="col">Amount</th>
+              <th scope="col" className="text-end">Amount</th>
               <th scope="col">Mobile No.</th>
               <th scope="col">Address</th>
               <th scope="col">Date & Time</th>
@@ -157,7 +157,7 @@ const MyReceipts = ({ url }) => {
                     receipt.name
                   )}
                 </td>
-                <th className="text-success">
+                <th className="text-success text-end">
                   {editIndex === index ? (
                     <input
                       type="number"

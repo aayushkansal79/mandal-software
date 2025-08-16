@@ -21,19 +21,35 @@ const Members = ({ url }) => {
     password: "",
   });
 
+  const [filters, setFilters] = useState({
+    memberName: "",
+    mobile: "",
+    year: "",
+  });
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await axios.get(`${url}/api/user/members`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const params = new URLSearchParams();
+
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value && value.trim()) {
+            params.append(key, value.trim());
+          }
         });
+        const res = await axios.get(
+          `${url}/api/user/members?${params.toString()}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setMembers(res.data);
       } catch (err) {
         console.error("Error fetching members:", err);
       }
     };
     fetchMembers();
-  }, [url]);
+  }, [url, filters]);
 
   const handleToggleStatus = async (member) => {
     try {
@@ -124,10 +140,10 @@ const Members = ({ url }) => {
           <input
             className="form-control"
             placeholder="Enter Member Name"
-            // value={filters.invoiceNumber}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, invoiceNumber: e.target.value })
-            // }
+            value={filters.memberName}
+            onChange={(e) =>
+              setFilters({ ...filters, memberName: e.target.value })
+            }
           />
         </div>
         <div className="col-md-2 col-6">
@@ -136,11 +152,26 @@ const Members = ({ url }) => {
             className="form-control"
             placeholder="Enter Mobile Number"
             type="number"
-            // value={filters.customerName}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, customerName: e.target.value })
-            // }
+            value={filters.mobile}
+            onChange={(e) => setFilters({ ...filters, mobile: e.target.value })}
           />
+        </div>
+        <div className="col-md-2 col-6">
+          <label className="form-label">Year:</label>
+          <select
+            className="form-select"
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          >
+            {Array.from(
+              { length: new Date().getFullYear() - 2025 + 1 },
+              (_, i) => new Date().getFullYear() - i
+            ).map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader/Loader";
+import Pagination from "../../components/Pagination/Pagination";
 
 const AllReceipts = ({ url }) => {
   const [receipts, setReceipts] = useState([]);
@@ -13,19 +14,50 @@ const AllReceipts = ({ url }) => {
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
+  const [filters, setFilters] = useState({
+    receiptNumber: "",
+    amount: "",
+    memberName: "",
+    name: "",
+    mobile: "",
+    year: "",
+    page: 1,
+    limit: 25,
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
-        const res = await axios.get(`${url}/api/receipt`, {
+        const params = new URLSearchParams();
+
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            params.append(key, String(value).trim());
+          }
+        });
+        const res = await axios.get(`${url}/api/receipt?${params.toString()}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setReceipts(res.data);
+        setReceipts(res.data.receipts);
+        setTotalPages(res.data.pages || 1);
+        setCurrentPage(res.data.page || 1);
       } catch (err) {
         console.error("Error fetching receipts:", err);
       }
     };
     fetchReceipts();
-  }, [url]);
+  }, [url, filters]);
+
+  const handlePageChange = (page) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
+
+  const handleLimitChange = (limit) => {
+    setFilters((prev) => ({ ...prev, limit }));
+  };
 
   const handleSave = async (id) => {
     setLoading(true);
@@ -54,7 +86,7 @@ const AllReceipts = ({ url }) => {
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Failed to update receipt");
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -69,24 +101,30 @@ const AllReceipts = ({ url }) => {
             <label className="form-label">Receipt Number:</label>
             <input
               className="form-control"
-              placeholder="Enter Receipt Number"
+              placeholder="Enter Receipt No."
               type="number"
-              // value={filters.invoiceNumber}
-              // onChange={(e) =>
-              //   setFilters({ ...filters, invoiceNumber: e.target.value })
-              // }
+              value={filters.receiptNumber}
+              onChange={(e) =>
+                setFilters({ ...filters, receiptNumber: e.target.value })
+              }
             />
           </div>
           <div className="col-md-2 col-6">
             <label className="form-label">Amount Category:</label>
-            <select className="form-select">
+            <select
+              className="form-select"
+              value={filters.amount}
+              onChange={(e) =>
+                setFilters({ ...filters, amount: e.target.value })
+              }
+            >
               <option value="">Select Amount</option>
-              <option value="1100">&gt;= ₹ 1100</option>
-              <option value="5100">&gt;= ₹ 5100</option>
-              <option value="11000">&gt;= ₹ 11000</option>
-              <option value="21000">&gt;= ₹ 21000</option>
-              <option value="51000">&gt;= ₹ 51000</option>
-              <option value="100000">&gt;= ₹ 100000</option>
+              <option value="1100">₹ 1100 &gt;=</option>
+              <option value="5100">₹ 5100 &gt;=</option>
+              <option value="11000">₹ 11000 &gt;=</option>
+              <option value="21000">₹ 21000 &gt;=</option>
+              <option value="51000">₹ 51000 &gt;=</option>
+              <option value="100000">₹ 100000 &gt;=</option>
             </select>
           </div>
           <div className="col-md-2 col-6">
@@ -94,10 +132,10 @@ const AllReceipts = ({ url }) => {
             <input
               className="form-control"
               placeholder="Enter Member Name"
-              // value={filters.invoiceNumber}
-              // onChange={(e) =>
-              //   setFilters({ ...filters, invoiceNumber: e.target.value })
-              // }
+              value={filters.memberName}
+              onChange={(e) =>
+                setFilters({ ...filters, memberName: e.target.value })
+              }
             />
           </div>
           <div className="col-md-2 col-6">
@@ -105,11 +143,38 @@ const AllReceipts = ({ url }) => {
             <input
               className="form-control"
               placeholder="Enter Donor Name"
-              // value={filters.customerName}
-              // onChange={(e) =>
-              //   setFilters({ ...filters, customerName: e.target.value })
-              // }
+              value={filters.name}
+              onChange={(e) => setFilters({ ...filters, name: e.target.value })}
             />
+          </div>
+          <div className="col-md-2 col-6">
+            <label className="form-label">Mobile Number:</label>
+            <input
+              type="number"
+              className="form-control"
+              placeholder="Enter Mobile No."
+              value={filters.mobile}
+              onChange={(e) =>
+                setFilters({ ...filters, mobile: e.target.value })
+              }
+            />
+          </div>
+          <div className="col-md-2 col-6">
+            <label className="form-label">Year:</label>
+            <select
+              className="form-select"
+              value={filters.year}
+              onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+            >
+              {Array.from(
+                { length: new Date().getFullYear() - 2025 + 1 },
+                (_, i) => new Date().getFullYear() - i
+              ).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       )}
@@ -121,7 +186,9 @@ const AllReceipts = ({ url }) => {
               <th scope="col">Receipt No.</th>
               <th scope="col">Member Name</th>
               {user?.type !== "member" && <th scope="col">Name</th>}
-              <th scope="col">Amount</th>
+              <th scope="col" className="text-end">
+                Amount
+              </th>
               {user?.type !== "member" && (
                 <>
                   <th scope="col">Mobile No.</th>
@@ -179,7 +246,7 @@ const AllReceipts = ({ url }) => {
                     )}
                   </td>
                 )}
-                <th className="text-success">
+                <th className="text-success text-end">
                   {editIndex === index ? (
                     <input
                       type="number"
@@ -275,6 +342,14 @@ const AllReceipts = ({ url }) => {
         </table>
       </div>
 
+      <Pagination
+        limit={filters.limit}
+        handleLimitChange={handleLimitChange}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+      
       {loading && <Loader />}
     </>
   );
