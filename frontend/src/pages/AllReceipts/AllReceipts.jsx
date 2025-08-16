@@ -21,8 +21,8 @@ const AllReceipts = ({ url }) => {
     name: "",
     mobile: "",
     year: "",
-    page: 1,
-    limit: 25,
+    // page: 1,
+    // limit: 25,
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,9 +41,9 @@ const AllReceipts = ({ url }) => {
         const res = await axios.get(`${url}/api/receipt?${params.toString()}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setReceipts(res.data.receipts);
-        setTotalPages(res.data.pages || 1);
-        setCurrentPage(res.data.page || 1);
+        setReceipts(res.data);
+        // setTotalPages(res.data.pages || 1);
+        // setCurrentPage(res.data.page || 1);
       } catch (err) {
         console.error("Error fetching receipts:", err);
       }
@@ -51,13 +51,13 @@ const AllReceipts = ({ url }) => {
     fetchReceipts();
   }, [url, filters]);
 
-  const handlePageChange = (page) => {
-    setFilters((prev) => ({ ...prev, page }));
-  };
+  // const handlePageChange = (page) => {
+  //   setFilters((prev) => ({ ...prev, page }));
+  // };
 
-  const handleLimitChange = (limit) => {
-    setFilters((prev) => ({ ...prev, limit }));
-  };
+  // const handleLimitChange = (limit) => {
+  //   setFilters((prev) => ({ ...prev, limit }));
+  // };
 
   const handleSave = async (id) => {
     setLoading(true);
@@ -342,13 +342,13 @@ const AllReceipts = ({ url }) => {
         </table>
       </div>
 
-      <Pagination
+      {/* <Pagination
         limit={filters.limit}
         handleLimitChange={handleLimitChange}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-      />
+      /> */}
       
       {loading && <Loader />}
     </>
