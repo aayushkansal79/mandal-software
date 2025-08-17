@@ -2,6 +2,7 @@ import Admin from "../models/Admin.js";
 import Receipt from "../models/Receipt.js";
 import ReceiptBook from "../models/ReceiptBook.js";
 import User from "../models/User.js";
+import ExcelJS from "exceljs";
 
 export const addReceipt = async (req, res) => {
   try {
@@ -348,6 +349,7 @@ export const adminUpdateReceipt = async (req, res) => {
 //   }
 // };
 
+
 export const getReceiptsByMandal = async (req, res) => {
   try {
     const { 
@@ -358,7 +360,8 @@ export const getReceiptsByMandal = async (req, res) => {
       amount, 
       memberName, 
       name, 
-      mobile 
+      mobile,
+      exportExcel
     } = req.query;
 
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
@@ -373,7 +376,86 @@ export const getReceiptsByMandal = async (req, res) => {
     if (name) query.name = { $regex: name, $options: "i" };
     if (mobile) query.mobile = { $regex: mobile, $options: "i" };
 
-    // Pagination calculation
+    // 👉 If Excel download requested
+    if (exportExcel === "true") {
+      const receipts = await Receipt.find(query).sort({ receiptNumber: 1 });
+
+      // Create workbook & worksheet
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Receipts");
+
+      // Add headers
+      worksheet.columns = [
+        { header: "S No.", key: "index", width: 7 },
+        { header: "Receipt No", key: "receiptNumber", width: 10 },
+        { header: "Member Name", key: "memberName", width: 25 },
+        { header: "Name", key: "name", width: 25 },
+        { header: "Amount", key: "amount", width: 10 },
+        { header: "Mobile", key: "mobile", width: 15 },
+        { header: "Address", key: "address", width: 25 },
+        { header: "Date", key: "createdAt", width: 20 }
+      ];
+
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } }; // Bold white text
+        cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "4F81BD" }, // Light blue background
+        };
+        cell.alignment = { vertical: "middle", horizontal: "center" };
+        cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+        };
+      });
+
+      // Add rows
+      receipts.forEach((r, i) => {
+        worksheet.addRow({
+          index: i + 1,
+          receiptNumber: r.receiptNumber,
+          memberName: r.memberName,
+          name: r.name,
+          amount: r.amount,
+          mobile: r.mobile,
+          address: r.address,
+          createdAt: r.createdAt.toLocaleDateString("en-IN")
+        });
+      });
+
+      // 🔹 Center align all columns except Amount
+      worksheet.columns.forEach((col) => {
+        if (col.key !== "amount") {
+          col.alignment = { vertical: "middle", horizontal: "center" };
+        }
+      });
+
+      // 🔹 Format Amount column as currency
+      worksheet.getColumn("amount").numFmt = '₹ #,##,##0';
+      worksheet.getColumn("amount").alignment = { vertical: "middle", horizontal: "right" };
+
+      // 🔹 Adjust header row height
+      worksheet.getRow(1).height = 28;
+
+      // Set response headers for Excel download
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=Receipts_${selectedYear}.xlsx`
+      );
+
+      // Write Excel file to response
+      await workbook.xlsx.write(res);
+      return res.end();
+    }
+
+    // 👉 Otherwise, return paginated JSON
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const [receipts, total] = await Promise.all([
@@ -390,11 +472,61 @@ export const getReceiptsByMandal = async (req, res) => {
       page: parseInt(page),
       pages: Math.ceil(total / parseInt(limit)),
     });
+
   } catch (err) {
     console.error("Error fetching receipts by mandal:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+// export const getReceiptsByMandal = async (req, res) => {
+//   try {
+//     const { 
+//       year, 
+//       page = 1, 
+//       limit = 50, 
+//       receiptNumber, 
+//       amount, 
+//       memberName, 
+//       name, 
+//       mobile 
+//     } = req.query;
+
+//     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
+//     // Base query
+//     const query = { mandal: req.user.mandal };
+
+//     if (selectedYear) query.year = selectedYear;
+//     if (receiptNumber) query.receiptNumber = parseInt(receiptNumber);
+//     if (amount) query.amount = { $gte: parseFloat(amount) };
+//     if (memberName) query.memberName = { $regex: memberName, $options: "i" };
+//     if (name) query.name = { $regex: name, $options: "i" };
+//     if (mobile) query.mobile = { $regex: mobile, $options: "i" };
+
+//     // Pagination calculation
+//     const skip = (parseInt(page) - 1) * parseInt(limit);
+
+//     const [receipts, total] = await Promise.all([
+//       Receipt.find(query)
+//         .sort({ receiptNumber: 1 })
+//         .skip(skip)
+//         .limit(parseInt(limit)),
+//       Receipt.countDocuments(query),
+//     ]);
+
+//     res.status(200).json({
+//       receipts,
+//       total,
+//       page: parseInt(page),
+//       pages: Math.ceil(total / parseInt(limit)),
+//     });
+//   } catch (err) {
+//     console.error("Error fetching receipts by mandal:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
 
 
 

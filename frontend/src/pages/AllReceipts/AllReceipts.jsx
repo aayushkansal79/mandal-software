@@ -13,6 +13,7 @@ const AllReceipts = ({ url }) => {
   const token = localStorage.getItem("token");
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const [filters, setFilters] = useState({
     receiptNumber: "",
@@ -23,6 +24,7 @@ const AllReceipts = ({ url }) => {
     year: "",
     page: 1,
     limit: 50,
+    exportExcel: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,6 +59,41 @@ const AllReceipts = ({ url }) => {
 
   const handleLimitChange = (limit) => {
     setFilters((prev) => ({ ...prev, limit }));
+  };
+
+  const handleDownloadExcel = async () => {
+    setDownloading(true);
+    try {
+      const params = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          params.append(key, String(value).trim());
+        }
+      });
+
+      params.append("exportExcel", "true");
+
+      const res = await axios.get(`${url}/api/receipt?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob", // important for binary data
+      });
+
+      // Create a link to download the file
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `Receipts_${
+        filters.year || new Date().getFullYear()
+      }.xlsx`;
+      link.click();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to download Excel");
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const handleSave = async (id) => {
@@ -159,7 +196,7 @@ const AllReceipts = ({ url }) => {
               }
             />
           </div>
-          <div className="col-md-2 col-6">
+          <div className="col-md-1 col-4">
             <label className="form-label">Year:</label>
             <select
               className="form-select"
@@ -175,6 +212,24 @@ const AllReceipts = ({ url }) => {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="col-md-1 col-2 align-self-end text-center">
+            <button
+              className="btn btn-sm btn-success"
+              onClick={handleDownloadExcel}
+              title="Download Excel"
+              disabled={downloading}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="white"
+              >
+                <path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z" />
+              </svg>
+            </button>
           </div>
         </div>
       )}
@@ -349,7 +404,7 @@ const AllReceipts = ({ url }) => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
-      
+
       {loading && <Loader />}
     </>
   );
