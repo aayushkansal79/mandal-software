@@ -1,4 +1,5 @@
 import Expenditure from "../models/Expenditure.js";
+import ExcelJS from "exceljs";
 
 // ADD multiple expenses
 export const addExpenses = async (req, res) => {
@@ -54,20 +55,78 @@ export const updateExpenditure = async (req, res) => {
 };
 
 // FETCH all expenses for specific mandal & year
+// export const getAllExpenses = async (req, res) => {
+//     try {
+//         const mandalId = req.user.mandal;
+//         const { year } = req.query;
+//         const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
+//         const expenses = await Expenditure.find({
+//             mandal: mandalId,
+//             year: selectedYear
+//         }).sort({ createdAt: 1 });
+
+//         res.status(200).json(expenses);
+//     } catch (error) {
+//         console.error("Error fetching expenses:", error);
+//         res.status(500).json({ message: "Server error" });
+//     }
+// };
+
 export const getAllExpenses = async (req, res) => {
-    try {
-        const mandalId = req.user.mandal;
-        const { year } = req.query;
-        const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+  try {
+    const mandalId = req.user.mandal;
+    const { year, exportExcel } = req.query; // add exportExcel flag
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
-        const expenses = await Expenditure.find({
-            mandal: mandalId,
-            year: selectedYear
-        }).sort({ createdAt: 1 });
+    const expenses = await Expenditure.find({
+      mandal: mandalId,
+      year: selectedYear,
+    }).sort({ createdAt: 1 });
 
-        res.status(200).json(expenses);
-    } catch (error) {
-        console.error("Error fetching expenses:", error);
-        res.status(500).json({ message: "Server error" });
+    // If user requested Excel
+    if (exportExcel === "true") {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Expenses");
+
+      // Define columns
+      worksheet.columns = [
+          { header: "Field", key: "field", width: 30 },
+          { header: "Amount", key: "amount", width: 15 },
+          { header: "Date", key: "date", width: 15 },
+      ];
+
+      // Add rows
+      expenses.forEach((exp) => {
+        worksheet.addRow({
+            field: exp.field || "",
+            amount: exp.amount,
+            date: exp.createdAt.toISOString().split("T")[0], // format YYYY-MM-DD
+        });
+      });
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+
+      // Set response headers for Excel file
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=Expenses_${selectedYear}.xlsx`
+      );
+
+      // Write to response
+      await workbook.xlsx.write(res);
+      return res.end();
     }
+
+    // Default: return JSON
+    res.status(200).json(expenses);
+  } catch (error) {
+    console.error("Error fetching expenses:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
