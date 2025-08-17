@@ -97,11 +97,22 @@ const MyReceipts = ({ url }) => {
           <label className="form-label">Receipt Number:</label>
           <input
             className="form-control"
-            placeholder="Enter Receipt Number"
+            placeholder="Enter Receipt No."
             type="number"
             value={filters.receiptNumber}
             onChange={(e) =>
               setFilters({ ...filters, receiptNumber: e.target.value })
+            }
+          />
+        </div>
+        <div className="col-md-2 col-6">
+          <label className="form-label">Donor Name:</label>
+          <input
+            className="form-control"
+            placeholder="Enter Donor Name"
+            value={filters.name}
+            onChange={(e) =>
+              setFilters({ ...filters, name: e.target.value })
             }
           />
         </div>
@@ -122,21 +133,10 @@ const MyReceipts = ({ url }) => {
           </select>
         </div>
         <div className="col-md-2 col-6">
-          <label className="form-label">Donor Name:</label>
-          <input
-            className="form-control"
-            placeholder="Enter Donor Name"
-            value={filters.name}
-            onChange={(e) =>
-              setFilters({ ...filters, name: e.target.value })
-            }
-          />
-        </div>
-        <div className="col-md-2 col-6">
           <label className="form-label">Mobile Number:</label>
           <input
             className="form-control"
-            placeholder="Enter Mobile Number"
+            placeholder="Enter Mobile No."
             type="number"
             value={filters.mobile}
             onChange={(e) =>

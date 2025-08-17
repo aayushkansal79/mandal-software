@@ -150,7 +150,7 @@ const Members = ({ url }) => {
           <label className="form-label">Mobile Number:</label>
           <input
             className="form-control"
-            placeholder="Enter Mobile Number"
+            placeholder="Enter Mobile No."
             type="number"
             value={filters.mobile}
             onChange={(e) => setFilters({ ...filters, mobile: e.target.value })}

@@ -91,78 +91,80 @@ const MemberReceipt = ({ url }) => {
         </div>
       </div>
 
-      {user !== "member" && (
-        <div className="row g-1 mb-1 px-2 mt-2">
-          <div className="col-md-2 col-6">
-            <label className="form-label">Receipt Number:</label>
-            <input
-              className="form-control"
-              placeholder="Enter Receipt Number"
-              type="number"
-              value={filters.receiptNumber}
-              onChange={(e) =>
-                setFilters({ ...filters, receiptNumber: e.target.value })
-              }
-            />
-          </div>
-          <div className="col-md-2 col-6">
-            <label className="form-label">Amount Category:</label>
-            <select
-              className="form-select"
-              value={filters.amount}
-              onChange={(e) =>
-                setFilters({ ...filters, amount: e.target.value })
-              }
-            >
-              <option value="">Select Amount</option>
-              <option value="1100">₹ 1100 &gt;=</option>
-              <option value="5100">₹ 5100 &gt;=</option>
-              <option value="11000">₹ 11000 &gt;=</option>
-              <option value="21000">₹ 21000 &gt;=</option>
-              <option value="51000">₹ 51000 &gt;=</option>
-              <option value="100000">₹ 100000 &gt;=</option>
-            </select>
-          </div>
-          <div className="col-md-2 col-6">
-            <label className="form-label">Donor Name:</label>
-            <input
-              className="form-control"
-              placeholder="Enter Donor Name"
-              value={filters.name}
-              onChange={(e) => setFilters({ ...filters, name: e.target.value })}
-            />
-          </div>
-          <div className="col-md-2 col-6">
-            <label className="form-label">Mobile Number:</label>
-            <input
-              className="form-control"
-              placeholder="Enter Mobile Number"
-              type="number"
-              value={filters.mobile}
-              onChange={(e) =>
-                setFilters({ ...filters, mobile: e.target.value })
-              }
-            />
-          </div>
-          <div className="col-md-2 col-6">
-            <label className="form-label">Year:</label>
-            <select
-              className="form-select"
-              value={filters.year}
-              onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-            >
-              {Array.from(
-                { length: new Date().getFullYear() - 2025 + 1 },
-                (_, i) => new Date().getFullYear() - i
-              ).map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="row g-1 mb-1 px-2 mt-2">
+        <div className="col-md-2 col-6">
+          <label className="form-label">Receipt Number:</label>
+          <input
+            className="form-control"
+            placeholder="Enter Receipt Number"
+            type="number"
+            value={filters.receiptNumber}
+            onChange={(e) =>
+              setFilters({ ...filters, receiptNumber: e.target.value })
+            }
+          />
         </div>
-      )}
+        <div className="col-md-2 col-6">
+          <label className="form-label">Amount Category:</label>
+          <select
+            className="form-select"
+            value={filters.amount}
+            onChange={(e) => setFilters({ ...filters, amount: e.target.value })}
+          >
+            <option value="">Select Amount</option>
+            <option value="1100">₹ 1100 &gt;=</option>
+            <option value="5100">₹ 5100 &gt;=</option>
+            <option value="11000">₹ 11000 &gt;=</option>
+            <option value="21000">₹ 21000 &gt;=</option>
+            <option value="51000">₹ 51000 &gt;=</option>
+            <option value="100000">₹ 100000 &gt;=</option>
+          </select>
+        </div>
+        {user?.type !== "member" && (
+          <>
+            <div className="col-md-2 col-6">
+              <label className="form-label">Donor Name:</label>
+              <input
+                className="form-control"
+                placeholder="Enter Donor Name"
+                value={filters.name}
+                onChange={(e) =>
+                  setFilters({ ...filters, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="col-md-2 col-6">
+              <label className="form-label">Mobile Number:</label>
+              <input
+                className="form-control"
+                placeholder="Enter Mobile Number"
+                type="number"
+                value={filters.mobile}
+                onChange={(e) =>
+                  setFilters({ ...filters, mobile: e.target.value })
+                }
+              />
+            </div>
+          </>
+        )}
+        <div className="col-md-2 col-6">
+          <label className="form-label">Year:</label>
+          <select
+            className="form-select"
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          >
+            {Array.from(
+              { length: new Date().getFullYear() - 2025 + 1 },
+              (_, i) => new Date().getFullYear() - i
+            ).map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <div className="MemberReceipt rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">

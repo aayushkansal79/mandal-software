@@ -261,6 +261,7 @@ export const getMemberStats = async (req, res) => {
                 }
               }
             },
+            { $sort: { padNumber: 1 } },
             { $project: { padNumber: 1, _id: 0 } }
           ],
           as: "pads"
@@ -342,6 +343,7 @@ export const getMyMemberStats = async (req, res) => {
                 }
               }
             },
+            { $sort: { padNumber: 1 } },
             { $project: { padNumber: 1, _id: 0 } }
           ],
           as: "pads"

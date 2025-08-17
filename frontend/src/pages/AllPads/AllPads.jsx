@@ -44,7 +44,7 @@ const AllPads = ({ url }) => {
           <input
             type="number"
             className="form-control"
-            placeholder="Enter Pad Number"
+            placeholder="Enter Pad No."
             value={filters.padNumber}
             onChange={(e) =>
               setFilters({ ...filters, padNumber: e.target.value })

@@ -203,7 +203,7 @@ const ExpenseManager = ({ url }) => {
         </form>
       )}
 
-      <div className="d-flex align-items-end justify-content-between px-2">
+      <div className="d-flex align-items-end justify-content-between px-2 mt-2">
         <div className="col-md-2 col-6">
           <label className="form-label">Year:</label>
           <select
