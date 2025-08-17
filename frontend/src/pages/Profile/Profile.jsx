@@ -103,6 +103,12 @@ const Profile = ({ url }) => {
       <div className="bread">User Profile</div>
       <div className="profile rounded mt-3">
         <div className="profile-container">
+          
+          <p className="text-center">
+            <b style={{ color: "#6d0616" }}>{user?.mandalName.toUpperCase()}</b>
+            <hr className="m-1"/>
+          </p>
+
           <div className="head d-flex align-items-center justify-content-between">
             <img src={`${url}${user?.profilePic}`} width={80} alt="User Icon" />
             <div className="text-end">
@@ -122,11 +128,6 @@ const Profile = ({ url }) => {
             </div>
           </div>
           <hr />
-
-          <p>
-            <b style={{ color: "#6d0616" }}>{user?.mandalName.toUpperCase()}</b>
-            <hr />
-          </p>
 
           <p>
             Username: <b>{user?.username}</b>

@@ -1,11 +1,12 @@
 import Expenditure from "../models/Expenditure.js";
+import ReceiptBook from "../models/ReceiptBook.js";
 import Receipt from "../models/Receipt.js";
 import User from "../models/User.js";
 
 
 export const getDashboardStats = async (req, res) => {
   try {
-    const { year } = req.query; // ?year=2025
+    const { year } = req.query;
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
     const mandalId = req.user.mandal;
@@ -16,6 +17,8 @@ export const getDashboardStats = async (req, res) => {
     });
 
     const filter = { mandal: mandalId, year: selectedYear };
+
+    const padCount = await ReceiptBook.countDocuments(filter);
 
     const receiptCount = await Receipt.countDocuments(filter);
     const expenseCount = await Expenditure.countDocuments(filter);
@@ -34,6 +37,7 @@ export const getDashboardStats = async (req, res) => {
 
     res.status(200).json({
       memberCount,
+      padCount,
       receiptCount,
       expenseCount,
       totalReceiptAmount,
