@@ -17,4 +17,6 @@ router.get("/members", protect(), getMemberStats);
 router.get("/my-member", protect(), getMyMemberStats);
 router.get("/:id/receipts", protect(), getMemberWithReceipts);
 
+// router.put("/set", setAllRolesToMember);
+
 export default router;

@@ -79,9 +79,26 @@ const Sidebar = ({ sidebarOpen }) => {
           )}
 
           <NavLink
-            to="/member-list"
+            to="/member-profiles"
             className={sidebarOpen ? "side-item" : "side-item side-item-active"}
-            title="Members"
+            title="Member Profiles"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="20px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#000000"
+            >
+              <path d="M640-400q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35ZM400-160v-76q0-21 10-40t28-30q45-27 95.5-40.5T640-360q56 0 106.5 13.5T842-306q18 11 28 30t10 40v76H400Zm86-80h308q-35-20-74-30t-80-10q-41 0-80 10t-74 30Zm154-240q17 0 28.5-11.5T680-520q0-17-11.5-28.5T640-560q-17 0-28.5 11.5T600-520q0 17 11.5 28.5T640-480Zm0-40Zm0 280ZM120-400v-80h320v80H120Zm0-320v-80h480v80H120Zm324 160H120v-80h360q-14 17-22.5 37T444-560Z" />
+            </svg>
+            <p>Member Profiles</p>
+          </NavLink>
+
+          <NavLink
+            to="/member-records"
+            className={sidebarOpen ? "side-item" : "side-item side-item-active"}
+            title="Member Records"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +109,7 @@ const Sidebar = ({ sidebarOpen }) => {
             >
               <path d="M0-240v-63q0-43 44-70t116-27q13 0 25 .5t23 2.5q-14 21-21 44t-7 48v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5q72 0 116 26.5t44 70.5v63H780Zm-455-80h311q-10-20-55.5-35T480-370q-55 0-100.5 15T325-320ZM160-440q-33 0-56.5-23.5T80-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T160-440Zm640 0q-33 0-56.5-23.5T720-520q0-34 23.5-57t56.5-23q34 0 57 23t23 57q0 33-23 56.5T800-440Zm-320-40q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm0-80q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm1 240Zm-1-280Z" />
             </svg>
-            <p>Members</p>
+            <p>Member Records</p>
           </NavLink>
 
           {user?.type === "admin" && (
@@ -149,7 +166,7 @@ const Sidebar = ({ sidebarOpen }) => {
             </svg>
             <p>Add Receipt</p>
           </NavLink>
-          
+
           <NavLink
             to="/receipt-list"
             className={sidebarOpen ? "side-item" : "side-item side-item-active"}

@@ -127,12 +127,12 @@ const Members = ({ url }) => {
   };
 
   const handleMemberClick = (id) => {
-    navigate(`/member-list/${id}/member-receipts`);
+    navigate(`/member-records/${id}/member-receipts`);
   };
 
   return (
     <>
-      <div className="bread">Members</div>
+      <div className="bread">Member Records</div>
 
       <div className="row g-2 mb-4 px-2 mt-2">
         <div className="col-md-2 col-6">

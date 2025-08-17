@@ -9,9 +9,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Register User
 export const registerUser = async (req, res) => {
   try {
-    const { username, password, memberName, mobile, address, mandal, type } = req.body;
+    const { username, password, memberName, mobile, address, mandal, role, type } = req.body;
 
-    if (!username || !password || !memberName || !mobile || !mandal || !type) {
+    if (!username || !password || !memberName || !mobile || !mandal || !role || !type) {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
 
@@ -36,6 +36,7 @@ export const registerUser = async (req, res) => {
       address,
       mandal,
       mandalName: mandalDoc.name,
+      role,
       type,
       profilePic: req.file ? `/uploads/profile_pics/${req.file.filename}` : ""
     });
@@ -48,6 +49,9 @@ export const registerUser = async (req, res) => {
         id: user._id,
         username: user.username,
         memberName: user.memberName,
+        mobile: user.mobile,
+        address: user.address,
+        role: user.role,
         type: user.type,
         mandalName: user.mandalName,
         profilePic: user.profilePic
@@ -89,6 +93,9 @@ export const loginUser = async (req, res) => {
         id: user._id,
         username: user.username,
         memberName: user.memberName,
+        mobile: user.mobile,
+        address: user.address,
+        role: user.role,
         type: user.type,
         mandal: user.mandal,
         mandalName: user.mandalName,
@@ -99,6 +106,23 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// export const setAllRolesToMember = async (req, res) => {
+//   try {
+//     const result = await User.updateMany(
+//       {}, // no filter → all users
+//       { $set: { role: "Member" } }
+//     );
+
+//     res.status(200).json({
+//       message: "All user roles updated to 'Member' successfully",
+//       matched: result.matchedCount,
+//       modified: result.modifiedCount
+//     });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 
 // Toggle user status
 export const toggleUserStatus = async (req, res) => {
@@ -242,9 +266,8 @@ export const getMemberStats = async (req, res) => {
     }
 
     const members = await User.aggregate([
-      {
-        $match: matchConditions
-      },
+      { $match: matchConditions },
+
       // Lookup pads assigned to member (filter by year)
       {
         $lookup: {
@@ -267,6 +290,7 @@ export const getMemberStats = async (req, res) => {
           as: "pads"
         }
       },
+
       // Lookup receipts added by member (filter by year)
       {
         $lookup: {
@@ -288,6 +312,7 @@ export const getMemberStats = async (req, res) => {
           as: "receipts"
         }
       },
+
       // Add receipt count & total amount
       {
         $addFields: {
@@ -296,11 +321,43 @@ export const getMemberStats = async (req, res) => {
           padsAssigned: "$pads.padNumber"
         }
       },
+
+      // Custom sort priority
+      {
+        $addFields: {
+          sortOrder: {
+            $cond: [
+              { $eq: ["$type", "admin"] },
+              0,
+              {
+                $switch: {
+                  branches: [
+                    { case: { $eq: ["$role", "Founder"] }, then: 1 },
+                    { case: { $eq: ["$role", "President"] }, then: 2 },
+                    { case: { $eq: ["$role", "Vice President"] }, then: 3 },
+                    { case: { $eq: ["$role", "Secretary"] }, then: 4 },
+                    { case: { $eq: ["$role", "Treasurer"] }, then: 5 },
+                    { case: { $eq: ["$role", "Vice Treasurer"] }, then: 6 },
+                    { case: { $eq: ["$role", "Trustee"] }, then: 7 },
+                    { case: { $eq: ["$role", "Member"] }, then: 8 }
+                  ],
+                  default: 9
+                }
+              }
+            ]
+          }
+        }
+      },
+
+      // Sort by priority
+      { $sort: { sortOrder: 1, memberName: 1 } },
+
       // Hide receipts & pads array
       {
         $project: {
           receipts: 0,
-          pads: 0
+          pads: 0,
+          sortOrder: 0
         }
       }
     ]);
@@ -310,6 +367,7 @@ export const getMemberStats = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 //same as above but for logged in user
 export const getMyMemberStats = async (req, res) => {

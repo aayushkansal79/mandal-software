@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   // const url = "http://localhost:4000";
   const url = "https://mandal-software.onrender.com";
 
-  useEffect(() => {
+  useEffect(() => { 
     const token = localStorage.getItem("token");
 
     const fetchUser = async () => {

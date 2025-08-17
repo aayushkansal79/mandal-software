@@ -12,6 +12,7 @@ const AddMember = ({ url }) => {
     memberName: "",
     mobile: "",
     address: "",
+    role: "Member",
     type: "member",
   });
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,9 @@ const AddMember = ({ url }) => {
         !formData.password ||
         !formData.memberName ||
         !formData.mobile ||
-        !formData.address
+        !formData.address ||
+        !formData.role ||
+        !formData.type
       ) {
         toast.error("Please fill in all fields");
         setLoading(false);
@@ -64,6 +67,7 @@ const AddMember = ({ url }) => {
       payload.append("memberName", formData.memberName);
       payload.append("mobile", formData.mobile);
       payload.append("address", formData.address);
+      payload.append("role", formData.role);
       payload.append("type", formData.type);
       payload.append("mandal", user?.mandal);
       payload.append("mandalId", user?.mandalId);
@@ -88,6 +92,7 @@ const AddMember = ({ url }) => {
         memberName: "",
         mobile: "",
         address: "",
+        role: "Member",
         type: "member",
       });
       setProfilePic(null);
@@ -175,6 +180,26 @@ const AddMember = ({ url }) => {
         <div className="col-md-4">
           <label className="form-label">Role</label>
           <select
+            name="role"
+            className="form-select"
+            value={formData.role}
+            onChange={handleChange}
+            required
+          >
+            <option value="Member">Member</option>
+            <option value="Trustee">Trustee</option>
+            <option value="Secretary">Secretary</option>
+            <option value="Vice Treasurer">Vice Treasurer</option>
+            <option value="Treasurer">Treasurer</option>
+            <option value="Vice President">Vice President</option>
+            <option value="President">President</option>
+            <option value="Founder">Founder</option>
+          </select>
+        </div>
+
+        <div className="col-md-4">
+          <label className="form-label">Type</label>
+          <select
             name="type"
             className="form-select"
             value={formData.type}
@@ -187,7 +212,7 @@ const AddMember = ({ url }) => {
           </select>
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-4">
           <label className="form-label">Profile Picture</label>
           <input
             type="file"

@@ -9,6 +9,7 @@ import Profile from "./pages/Profile/Profile";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import AddMember from "./pages/AddMember/AddMember";
+import MemberList from "./pages/MemberList/MemberList";
 import Members from "./pages/Members/Members";
 import Footer from "./components/Footer/Footer";
 import MemberReceipt from "./pages/MemberReceipt/MemberReceipt";
@@ -61,8 +62,9 @@ function App() {
             <Route path="/dashboard" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Dashboard url={url} /> </PrivateRoute>} />
             <Route path="/mandal" element={<PrivateRoute roles={["admin"]}> <MandalForm url={url} /> </PrivateRoute>} />
             <Route path="/add-member" element={<PrivateRoute roles={["admin"]}> <AddMember url={url} /> </PrivateRoute>} />
-            <Route path="/member-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Members url={url} /> </PrivateRoute>} />
-            <Route path="/member-list/:id/member-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MemberReceipt url={url} /> </PrivateRoute>} />
+            <Route path="/member-profiles" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MemberList url={url} /> </PrivateRoute>} />
+            <Route path="/member-records" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Members url={url} /> </PrivateRoute>} />
+            <Route path="/member-records/:id/member-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MemberReceipt url={url} /> </PrivateRoute>} />
             <Route path="/assign-pad" element={<PrivateRoute roles={["admin"]}> <AssignPad url={url} /> </PrivateRoute>} />
             <Route path="/all-pads" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllPads url={url} /> </PrivateRoute>} />
             <Route path="/add-receipt" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AddReceipt url={url} /> </PrivateRoute>} />
