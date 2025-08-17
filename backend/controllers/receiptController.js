@@ -1,3 +1,4 @@
+import Admin from "../models/Admin.js";
 import Receipt from "../models/Receipt.js";
 import ReceiptBook from "../models/ReceiptBook.js";
 import User from "../models/User.js";
@@ -9,6 +10,24 @@ export const addReceipt = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    let field = "";
+    if (user.mandal.name === "Shri Shyam Sewa Sangh Sarojini Nagar") {
+      field = "sarojiniReceiptStatus";
+    } else if (user.mandal.name === "Shri Shyam Sewak Yuva Mandal Sangam Vihar") {
+      field = "sangamReceiptStatus";
+    } else {
+      return res.status(400).json({ message: "Invalid mandal name" });
+    }
+  
+    const admin = await Admin.findOne().select(field);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin settings not found" });
+    }
+
+    if (!admin[field]) {
+      return res.status(403).json({ message: "Receipt creation is disabled for your mandal" });
     }
 
     const { receiptNumber, name, amount, mobile, address } = req.body;
@@ -381,16 +400,42 @@ export const getReceiptsByMandal = async (req, res) => {
 
 export const getReceiptsByMember = async (req, res) => {
   try {
-    const { year } = req.query;
+    const { 
+      year, 
+      page = 1, 
+      limit = 50, 
+      receiptNumber, 
+      amount,
+      name, 
+      mobile 
+    } = req.query;
+
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
     const query = { mandal: req.user.mandal, member: req.user.id };
     if (selectedYear) query.year = selectedYear;
+    if (receiptNumber) query.receiptNumber = parseInt(receiptNumber);
+    if (amount) query.amount = { $gte: parseFloat(amount) };
+    if (name) query.name = { $regex: name, $options: "i" };
+    if (mobile) query.mobile = { $regex: mobile, $options: "i" };
 
-    const receipts = await Receipt.find(query)
-      .sort({ receiptNumber: 1 });
+    // Pagination calculation
+    const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    res.status(200).json(receipts);
+    const [receipts, total] = await Promise.all([
+      Receipt.find(query)
+        .sort({ receiptNumber: 1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      Receipt.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      receipts,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / parseInt(limit)),
+    });
   } catch (err) {
     console.error("Error fetching receipts by member:", err);
     res.status(500).json({ message: "Server error" });

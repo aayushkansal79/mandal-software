@@ -96,7 +96,7 @@ const AllReceipts = ({ url }) => {
       <div className="bread">All Receipts</div>
 
       {user !== "member" && (
-        <div className="row g-2 mb-4 px-2 mt-2">
+        <div className="row g-1 mb-1 px-2 mt-1">
           <div className="col-md-2 col-6">
             <label className="form-label">Receipt Number:</label>
             <input

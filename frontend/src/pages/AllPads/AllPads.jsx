@@ -2,25 +2,37 @@ import React, { useEffect, useState } from "react";
 import "./AllPads.css";
 import axios from "axios";
 
-const AllPads = ({url}) => {
+const AllPads = ({ url }) => {
+  const [pads, setPads] = useState([]);
+  const token = localStorage.getItem("token");
 
-    const [pads, setPads] = useState([]);
-    const token = localStorage.getItem("token");
+  const [filters, setFilters] = useState({
+    padNumber: "",
+    memberName: "",
+    year: "",
+  });
 
-    useEffect(() => {
-        const fetchPads = async () => {
-          try {
-            const res = await axios.get(`${url}/api/receiptbook/pads`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            setPads(res.data);
-            console.log("Pads fetched:", res.data);
-          } catch (err) {
-            console.error("Error fetching pads:", err);
+  useEffect(() => {
+    const fetchPads = async () => {
+      try {
+        const params = new URLSearchParams();
+
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            params.append(key, String(value).trim());
           }
-        };
-        fetchPads();
-      }, [url]);
+        });
+        const res = await axios.get(`${url}/api/receiptbook/pads?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPads(res.data);
+        console.log("Pads fetched:", res.data);
+      } catch (err) {
+        console.error("Error fetching pads:", err);
+      }
+    };
+    fetchPads();
+  }, [url, filters]);
 
   return (
     <>
@@ -30,13 +42,13 @@ const AllPads = ({url}) => {
         <div className="col-md-2 col-6">
           <label className="form-label">Pad Number:</label>
           <input
-          type="number"
+            type="number"
             className="form-control"
             placeholder="Enter Pad Number"
-            // value={filters.invoiceNumber}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, invoiceNumber: e.target.value })
-            // }
+            value={filters.padNumber}
+            onChange={(e) =>
+              setFilters({ ...filters, padNumber: e.target.value })
+            }
           />
         </div>
         <div className="col-md-2 col-6">
@@ -44,11 +56,28 @@ const AllPads = ({url}) => {
           <input
             className="form-control"
             placeholder="Enter Member Name"
-            // value={filters.invoiceNumber}
-            // onChange={(e) =>
-            //   setFilters({ ...filters, invoiceNumber: e.target.value })
-            // }
+            value={filters.memberName}
+            onChange={(e) =>
+              setFilters({ ...filters, memberName: e.target.value })
+            }
           />
+        </div>
+        <div className="col-md-2 col-6">
+          <label className="form-label">Year:</label>
+          <select
+            className="form-select"
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          >
+            {Array.from(
+              { length: new Date().getFullYear() - 2025 + 1 },
+              (_, i) => new Date().getFullYear() - i
+            ).map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -62,12 +91,20 @@ const AllPads = ({url}) => {
             </tr>
           </thead>
           <tbody className="table-group-divider">
-            {pads.length === 0 && (<tr><td colSpan="3" className="text-center">No Pads Found</td></tr>)}
+            {pads.length === 0 && (
+              <tr>
+                <td colSpan="3" className="text-center">
+                  No Pads Found
+                </td>
+              </tr>
+            )}
             {pads.map((pad, index) => (
               <tr key={pad._id}>
                 <th>{pad.padNumber}</th>
                 <td>{pad.memberName}</td>
-                <th className="text-success">₹ {pad.totalAmount.toLocaleString("en-IN")}</th>
+                <th className="text-success">
+                  ₹ {pad.totalAmount.toLocaleString("en-IN")}
+                </th>
               </tr>
             ))}
           </tbody>

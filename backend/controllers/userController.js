@@ -411,7 +411,18 @@ export const getAllMembers = async (req, res) => {
 
 export const getMemberWithReceipts = async (req, res) => {
   try {
-    const { id, year } = req.params;
+    const { id } = req.params;
+    const { 
+      year, 
+      page = 1, 
+      limit = 50, 
+      receiptNumber, 
+      amount, 
+      memberName, 
+      name, 
+      mobile 
+    } = req.query;
+
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
     const member = await User.findById(id);
@@ -420,18 +431,36 @@ export const getMemberWithReceipts = async (req, res) => {
       return res.status(404).json({ message: "Member not found" });
     }
 
-    const receipts = await Receipt.find({
-      member: id,
-      year: selectedYear
-    })
-      .sort({ receiptNumber: 1 });
+    const query = { member: id };
+    if (selectedYear) query.year = selectedYear;
 
-    res.json({
+    if (receiptNumber) query.receiptNumber = parseInt(receiptNumber);
+    if (amount) query.amount = { $gte: parseFloat(amount) };
+    if (memberName) query.memberName = { $regex: memberName, $options: "i" };
+    if (name) query.name = { $regex: name, $options: "i" };
+    if (mobile) query.mobile = { $regex: mobile, $options: "i" };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [receipts, total] = await Promise.all([
+      Receipt.find(query)
+        .sort({ receiptNumber: 1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      Receipt.countDocuments(query),
+    ]);
+
+    res.status(200).json({
       member,
-      receipts
+      receipts,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / parseInt(limit)),
     });
 
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Error fetching member with receipts:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
+

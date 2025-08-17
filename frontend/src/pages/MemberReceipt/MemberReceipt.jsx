@@ -3,6 +3,7 @@ import "./MemberReceipt.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import Pagination from "../../components/Pagination/Pagination";
 
 const MemberReceipt = ({ url }) => {
   const navigate = useNavigate();
@@ -11,18 +12,48 @@ const MemberReceipt = ({ url }) => {
   const [memberData, setMemberData] = useState(null);
   const { user } = useContext(AuthContext);
 
+  const [filters, setFilters] = useState({
+    receiptNumber: "",
+    amount: "",
+    name: "",
+    mobile: "",
+    year: "",
+    page: 1,
+    limit: 50,
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        params.append(key, String(value).trim());
+      }
+    });
     axios
-      .get(`${url}/api/user/${id}/receipts`, {
+      .get(`${url}/api/user/${id}/receipts?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
         setMemberData(res.data);
+        setCurrentPage(res.data.page || 1);
+        setTotalPages(res.data.pages || 1);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, [id, url]);
+  }, [id, url, filters]);
+
+  const handlePageChange = (page) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
+
+  const handleLimitChange = (limit) => {
+    setFilters((prev) => ({ ...prev, limit }));
+  };
 
   return (
     <>
@@ -30,7 +61,7 @@ const MemberReceipt = ({ url }) => {
 
       <div className="MemberReceipt rounded d-flex justify-content-between mt-3">
         <div>
-          <button className="op-btn mb-3" onClick={() => navigate(-1)}>
+          <button className="op-btn mb-2" onClick={() => navigate(-1)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="40px"
@@ -45,7 +76,7 @@ const MemberReceipt = ({ url }) => {
             Receipts for{" "}
             <b className="text-primary">{memberData?.member?.memberName}</b>
           </h3>
-          <p>
+          <p className="m-0">
             <b>Mobile :</b> {memberData?.member?.mobile} | <b>Address :</b>{" "}
             {memberData?.member?.address}
           </p>
@@ -61,29 +92,35 @@ const MemberReceipt = ({ url }) => {
       </div>
 
       {user !== "member" && (
-        <div className="row g-2 mb-4 px-2 mt-2">
+        <div className="row g-1 mb-1 px-2 mt-2">
           <div className="col-md-2 col-6">
             <label className="form-label">Receipt Number:</label>
             <input
               className="form-control"
               placeholder="Enter Receipt Number"
               type="number"
-              // value={filters.invoiceNumber}
-              // onChange={(e) =>
-              //   setFilters({ ...filters, invoiceNumber: e.target.value })
-              // }
+              value={filters.receiptNumber}
+              onChange={(e) =>
+                setFilters({ ...filters, receiptNumber: e.target.value })
+              }
             />
           </div>
           <div className="col-md-2 col-6">
             <label className="form-label">Amount Category:</label>
-            <select className="form-select">
+            <select
+              className="form-select"
+              value={filters.amount}
+              onChange={(e) =>
+                setFilters({ ...filters, amount: e.target.value })
+              }
+            >
               <option value="">Select Amount</option>
-              <option value="1100">&gt;= ₹ 1100</option>
-              <option value="5100">&gt;= ₹ 5100</option>
-              <option value="11000">&gt;= ₹ 11000</option>
-              <option value="21000">&gt;= ₹ 21000</option>
-              <option value="51000">&gt;= ₹ 51000</option>
-              <option value="100000">&gt;= ₹ 100000</option>
+              <option value="1100">₹ 1100 &gt;=</option>
+              <option value="5100">₹ 5100 &gt;=</option>
+              <option value="11000">₹ 11000 &gt;=</option>
+              <option value="21000">₹ 21000 &gt;=</option>
+              <option value="51000">₹ 51000 &gt;=</option>
+              <option value="100000">₹ 100000 &gt;=</option>
             </select>
           </div>
           <div className="col-md-2 col-6">
@@ -91,10 +128,8 @@ const MemberReceipt = ({ url }) => {
             <input
               className="form-control"
               placeholder="Enter Donor Name"
-              // value={filters.invoiceNumber}
-              // onChange={(e) =>
-              //   setFilters({ ...filters, invoiceNumber: e.target.value })
-              // }
+              value={filters.name}
+              onChange={(e) => setFilters({ ...filters, name: e.target.value })}
             />
           </div>
           <div className="col-md-2 col-6">
@@ -103,22 +138,41 @@ const MemberReceipt = ({ url }) => {
               className="form-control"
               placeholder="Enter Mobile Number"
               type="number"
-              // value={filters.customerName}
-              // onChange={(e) =>
-              //   setFilters({ ...filters, customerName: e.target.value })
-              // }
+              value={filters.mobile}
+              onChange={(e) =>
+                setFilters({ ...filters, mobile: e.target.value })
+              }
             />
+          </div>
+          <div className="col-md-2 col-6">
+            <label className="form-label">Year:</label>
+            <select
+              className="form-select"
+              value={filters.year}
+              onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+            >
+              {Array.from(
+                { length: new Date().getFullYear() - 2025 + 1 },
+                (_, i) => new Date().getFullYear() - i
+              ).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       )}
-      
+
       <div className="MemberReceipt rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">
           <thead className="table-info">
             <tr>
               <th scope="col">Receipt No.</th>
               {user?.type !== "member" && <th scope="col">Name</th>}
-              <th scope="col" className="text-end">Amount</th>
+              <th scope="col" className="text-end">
+                Amount
+              </th>
               {user?.type !== "member" && (
                 <>
                   <th scope="col">Mobile No.</th>
@@ -148,7 +202,9 @@ const MemberReceipt = ({ url }) => {
                   <>
                     <td>{receipt.mobile || "-"}</td>
                     <td>{receipt.address || "-"}</td>
-                    <td className="small">{new Date(receipt.updatedAt).toLocaleString("en-IN")}</td>
+                    <td className="small">
+                      {new Date(receipt.updatedAt).toLocaleString("en-IN")}
+                    </td>
                   </>
                 )}
               </tr>
@@ -156,6 +212,14 @@ const MemberReceipt = ({ url }) => {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        limit={filters.limit}
+        handleLimitChange={handleLimitChange}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 };

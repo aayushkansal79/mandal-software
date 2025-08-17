@@ -28,7 +28,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, handleLimitC
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1 || totalPages === 0}
-        className="p-0"
+        className="p-1"
       >
         {/* First */}
         <svg
@@ -45,7 +45,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, handleLimitC
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || totalPages === 0}
-        className="p-0"
+        className="p-1"
       >
         {/* Prev */}
         <svg
@@ -72,7 +72,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, handleLimitC
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || totalPages === 0}
-        className="p-0"
+        className="p-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +89,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, handleLimitC
       <button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages || totalPages === 0}
-        className="p-0"
+        className="p-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +105,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, limit, handleLimitC
 
       <select
         className="form-select"
-        style={{ width: "75px" }}
+        style={{ width: "70px" }}
         value={limit}
         onChange={(e) => handleLimitChange(parseInt(e.target.value))}
       >

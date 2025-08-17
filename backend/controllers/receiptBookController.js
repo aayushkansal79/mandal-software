@@ -84,11 +84,16 @@ export const getMembersWithPads = async (req, res) => {
 
 export const getPadsWithTotalAmount = async (req, res) => {
   try {
-    const { year } = req.query;
+    const { year, padNumber, memberName } = req.query;
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
     const mandalId = req.user.mandal;
 
-    const pads = await ReceiptBook.find({ mandal: mandalId, year: selectedYear })
+    const query = { mandal: mandalId, year: selectedYear };
+
+    if (padNumber) query.padNumber = parseInt(padNumber);
+    if (memberName) query.memberName = { $regex: memberName, $options: "i" };
+
+    const pads = await ReceiptBook.find(query)
       .populate("member", "name")
       .sort({ padNumber: 1 });
 
@@ -98,6 +103,7 @@ export const getPadsWithTotalAmount = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // export const getPadsWithTotalAmount = async (req, res) => {
 //   try {

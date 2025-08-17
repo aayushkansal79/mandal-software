@@ -3,6 +3,7 @@ import "./Profile.css";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Loader from "../../components/Loader/Loader";
 
 const Profile = ({ url }) => {
   const { user } = useContext(AuthContext);
@@ -10,6 +11,8 @@ const Profile = ({ url }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
   const token = localStorage.getItem("token");
+  const [receiptStatus, setReceiptStatus] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -31,10 +34,14 @@ const Profile = ({ url }) => {
   }, [url]);
 
   const handleSave = async () => {
+    setLoading(true);
     try {
-
       if (editData.mobile && editData.mobile.length < 10) {
-        return Swal.fire("Error!", "Mobile number must be 10 digits long", "error");
+        return Swal.fire(
+          "Error!",
+          "Mobile number must be 10 digits long",
+          "error"
+        );
       }
 
       const res = await axios.put(`${url}/api/user/update-profile`, editData, {
@@ -50,6 +57,44 @@ const Profile = ({ url }) => {
         err.response?.data?.message || "Failed to update",
         "error"
       );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await axios.get(`${url}/api/admin/receipt-status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setReceiptStatus(res.data.status);
+      } catch (err) {
+        console.error("Error fetching receipt status:", err);
+      }
+    };
+    fetchStatus();
+  }, [url]);
+
+  const handleToggle = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.put(
+        `${url}/api/admin/receipt-status`,
+        { status: !receiptStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReceiptStatus(res.data.status);
+      Swal.fire("Success!", res.data.message, "success");
+    } catch (err) {
+      console.error("Error updating receipt status:", err);
+      Swal.fire(
+        "Error!",
+        err.response?.data?.message || "Failed to update",
+        "error"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,6 +124,11 @@ const Profile = ({ url }) => {
           <hr />
 
           <p>
+            <b style={{ color: "#6d0616" }}>{user?.mandalName.toUpperCase()}</b>
+            <hr />
+          </p>
+
+          <p>
             Username: <b>{user?.username}</b>
             <hr />
           </p>
@@ -100,7 +150,7 @@ const Profile = ({ url }) => {
           </p>
           <hr />
 
-          <p className="d-flex align-items-center gap-1">
+          <p className={isEditing ? "d-flex align-items-center gap-1" : ""}>
             Address:
             {isEditing ? (
               <input
@@ -112,7 +162,7 @@ const Profile = ({ url }) => {
                 }
               />
             ) : (
-              <b>{member?.address}</b>
+              <b> {member?.address}</b>
             )}
           </p>
           <hr />
@@ -148,6 +198,8 @@ const Profile = ({ url }) => {
                   role="switch"
                   title="Change Status"
                   style={{ cursor: "pointer" }}
+                  checked={receiptStatus}
+                  onChange={handleToggle}
                 />
               </div>
               <hr />
@@ -185,6 +237,8 @@ const Profile = ({ url }) => {
           )}
         </div>
       </div>
+
+      {loading && <Loader />}
     </>
   );
 };
