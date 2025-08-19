@@ -3,6 +3,7 @@ import fs from "fs";
 import xlsx from "xlsx";
 import { translate } from '@vitalets/google-translate-api';
 import InvitedMandal from "../models/InvitedMandal.js";
+import ExcelJS from "exceljs";
 
 
 // export const bulkUploadInvitedMandals = async (req, res) => {
@@ -55,8 +56,6 @@ import InvitedMandal from "../models/InvitedMandal.js";
 //   }
 // };
 
-
-
 export const addInvitedMandal = async (req, res) => {
     try {
         const { mandalName, contactPerson, mobile, address } = req.body;
@@ -85,11 +84,172 @@ export const addInvitedMandal = async (req, res) => {
 };
 
 export const getInvitedMandals = async (req, res) => {
-    try {
-        const mandals = await InvitedMandal.find().sort({ createdAt: 1 });
-        res.status(200).json(mandals);
-    } catch (error) {
-        console.error("Error fetching invited mandals:", error);
-        res.status(500).json({ message: "Server error" });
+  try {
+    const { 
+      mandalName, 
+      contactPerson, 
+      address, 
+      mobile, 
+      page = 1, 
+      limit = 50,
+      exportExcel 
+    } = req.query;
+
+    const query = {};
+
+    if (mandalName) query.mandalName = { $regex: mandalName, $options: "i" };
+    if (contactPerson) query.contactPerson = { $regex: contactPerson, $options: "i" };
+    if (address) query.address = { $regex: address, $options: "i" };
+    if (mobile) query.mobile = { $regex: mobile, $options: "i" };
+
+    if (exportExcel === "true") {
+      const mandals = await InvitedMandal.find(query).sort({ createdAt: 1 });
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Invited Mandals");
+
+      // Add headers
+      worksheet.columns = [
+        { header: "S No.", key: "index", width: 7 },
+        { header: "Mandal Name", key: "mandalName", width: 60 },
+        { header: "Contact Person", key: "contactPerson", width: 25 },
+        { header: "Mobile", key: "mobile", width: 15 },
+        { header: "Address", key: "address", width: 100 },
+      ];
+
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } }; 
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "4F81BD" },
+        };
+        cell.alignment = { vertical: "middle", horizontal: "center" };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      mandals.forEach((m, i) => {
+        worksheet.addRow({
+          index: i + 1,
+          mandalName: m.mandalName,
+          contactPerson: m.contactPerson,
+          mobile: m.mobile,
+          address: m.address,
+        });
+      });
+
+      worksheet.columns.forEach((col) => {
+        if (col.key !== "address") {
+          col.alignment = { vertical: "middle", horizontal: "center" };
+        }
+      });
+      worksheet.getColumn("address").alignment = { vertical: "middle", horizontal: "left" };
+
+      worksheet.getRow(1).height = 28;
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=InvitedMandals.xlsx`
+      );
+
+      await workbook.xlsx.write(res);
+      return res.end();
     }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [mandals, total] = await Promise.all([
+      InvitedMandal.find(query)
+        .sort({ createdAt: 1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      InvitedMandal.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      mandals,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / parseInt(limit)),
+    });
+
+  } catch (error) {
+    console.error("Error fetching invited mandals:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
+
+// if (exportExcel === "true") {
+//   const mandals = await InvitedMandal.find(query).sort({ createdAt: 1 });
+
+//   const workbook = new ExcelJS.Workbook();
+//   const worksheet = workbook.addWorksheet("Invited Mandals");
+
+//   // Add title
+//   worksheet.mergeCells("A1:C1");
+//   const titleCell = worksheet.getCell("A1");
+//   titleCell.value = "List of Invited Mandals";
+//   titleCell.font = { name: "Calibri", size: 16, bold: true };
+//   titleCell.alignment = { horizontal: "center", vertical: "middle" };
+//   titleCell.fill = {
+//     type: "pattern",
+//     pattern: "solid",
+//     fgColor: { argb: "D9E1F2" },
+//   };
+//   worksheet.getRow(1).height = 30;
+
+//   // Format variables
+//   const columnsPerRow = 3;
+//   let currentRow = 3;
+//   let currentCol = 1;
+
+//   mandals.forEach((m, i) => {
+//     const content = `${m.mandalName || ""}\n${m.contactPerson || ""}\n${m.address || ""}\n${m.mobile || ""}`;
+
+//     // Merge 4 rows vertically per cell
+//     worksheet.mergeCells(currentRow, currentCol, currentRow + 3, currentCol);
+//     const cell = worksheet.getCell(currentRow, currentCol);
+//     cell.value = content;
+
+//     // Apply formatting
+//     cell.alignment = { wrapText: true, vertical: "middle", horizontal: "left" };
+//     cell.border = {
+//       top: { style: "thin" },
+//       left: { style: "thin" },
+//       bottom: { style: "thin" },
+//       right: { style: "thin" },
+//     };
+//     cell.font = { name: "Calibri", size: 11 };
+
+//     // Set column width
+//     worksheet.getColumn(currentCol).width = 40;
+
+//     // Move to next column, or wrap to next row
+//     currentCol++;
+//     if (currentCol > columnsPerRow) {
+//       currentCol = 1;
+//       currentRow += 5; // 4 rows content + 1 empty row
+//     }
+//   });
+
+//   res.setHeader(
+//     "Content-Type",
+//     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+//   );
+//   res.setHeader(
+//     "Content-Disposition",
+//     `attachment; filename=InvitedMandals.xlsx`
+//   );
+
+//   await workbook.xlsx.write(res);
+//   return res.end();
+// }

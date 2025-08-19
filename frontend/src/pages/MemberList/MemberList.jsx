@@ -59,8 +59,7 @@ const MemberList = ({ url }) => {
           <thead className="table-info">
             <tr>
               <th></th>
-              <th scope="col">Member Name</th>
-              <th scope="col">Role</th>
+              <th scope="col">Member</th>
               <th scope="col">Member Details</th>
               {user.type === "admin" && <th scope="col">Type</th>}
             </tr>
@@ -79,8 +78,7 @@ const MemberList = ({ url }) => {
                     alt=""
                   />
                 </td>
-                <th style={{ color: "#6d0616" }}>{member.memberName}</th>
-                <th className="text-primary">{member.role}</th>
+                <th style={{ color: "#6d0616" }}>{member.memberName} <br /> <span className="text-primary">{member.role}</span></th>
                 <td className="text-start"><b>Mobile:</b> {member.mobile} <br /> <b>Address:</b> {member.address}</td>
                 {user.type === "admin" && (
                   <td style={{ width: "130px" }}>

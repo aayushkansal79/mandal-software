@@ -17,7 +17,7 @@ const AddMember = ({ url }) => {
   });
   const [loading, setLoading] = useState(false);
 
-  const [profilePic, setProfilePic] = useState(null); // NEW state for profile pic
+  const [profilePic, setProfilePic] = useState(null);
 
   const { user } = useContext(AuthContext);
   const token = localStorage.getItem("token");
@@ -27,7 +27,7 @@ const AddMember = ({ url }) => {
   };
 
   const handleFileChange = (e) => {
-    setProfilePic(e.target.files[0]); // Store the selected file
+    setProfilePic(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -60,7 +60,6 @@ const AddMember = ({ url }) => {
         return;
       }
 
-      // Prepare FormData for file upload
       const payload = new FormData();
       payload.append("username", formData.username);
       payload.append("password", formData.password);
@@ -85,7 +84,6 @@ const AddMember = ({ url }) => {
 
       toast.success(res.data.message || "Member created successfully");
 
-      // Reset form
       setFormData({
         username: "",
         password: "",

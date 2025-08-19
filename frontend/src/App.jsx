@@ -21,6 +21,7 @@ import MandalForm from "./pages/Mandal/Mandal";
 import PrivateRoute from "./context/PrivateRoute";
 import MyReceipts from "./pages/MyReceipts/MyReceipts";
 import Expenditure from "./pages/Expenditure/Expenditure";
+import AddMandal from "./pages/AddMandal/AddMandal";
 import InvitedMandals from "./pages/InvitedMandal/InvitedMandal";
 
 function App() {
@@ -72,7 +73,8 @@ function App() {
             <Route path="/receipt-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
             <Route path="/my-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
             <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin"]}> <Expenditure url={url} /> </PrivateRoute>} />
-            <Route path="/invited-mandal" element={<PrivateRoute roles={["admin", "subadmin"]}> <InvitedMandals url={url} /> </PrivateRoute>} />
+            <Route path="/add-mandal" element={<PrivateRoute roles={["admin", "subadmin"]}> <AddMandal url={url} /> </PrivateRoute>} />
+            <Route path="/invited-mandal" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <InvitedMandals url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
         {!hideLayout && (

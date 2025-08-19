@@ -366,7 +366,6 @@ export const getReceiptsByMandal = async (req, res) => {
 
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
-    // Base query
     const query = { mandal: req.user.mandal };
 
     if (selectedYear) query.year = selectedYear;
@@ -376,15 +375,12 @@ export const getReceiptsByMandal = async (req, res) => {
     if (name) query.name = { $regex: name, $options: "i" };
     if (mobile) query.mobile = { $regex: mobile, $options: "i" };
 
-    // 👉 If Excel download requested
     if (exportExcel === "true") {
       const receipts = await Receipt.find(query).sort({ receiptNumber: 1 });
 
-      // Create workbook & worksheet
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Receipts");
 
-      // Add headers
       worksheet.columns = [
         { header: "S No.", key: "index", width: 7 },
         { header: "Receipt No", key: "receiptNumber", width: 10 },
@@ -393,15 +389,14 @@ export const getReceiptsByMandal = async (req, res) => {
         { header: "Amount", key: "amount", width: 10 },
         { header: "Mobile", key: "mobile", width: 15 },
         { header: "Address", key: "address", width: 25 },
-        { header: "Date", key: "createdAt", width: 20 }
       ];
 
       worksheet.getRow(1).eachCell((cell) => {
-        cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } }; // Bold white text
+        cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } };
         cell.fill = {
             type: "pattern",
             pattern: "solid",
-            fgColor: { argb: "4F81BD" }, // Light blue background
+            fgColor: { argb: "4F81BD" },
         };
         cell.alignment = { vertical: "middle", horizontal: "center" };
         cell.border = {
@@ -412,7 +407,6 @@ export const getReceiptsByMandal = async (req, res) => {
         };
       });
 
-      // Add rows
       receipts.forEach((r, i) => {
         worksheet.addRow({
           index: i + 1,
@@ -422,25 +416,20 @@ export const getReceiptsByMandal = async (req, res) => {
           amount: r.amount,
           mobile: r.mobile,
           address: r.address,
-          createdAt: r.createdAt.toLocaleDateString("en-IN")
         });
       });
 
-      // 🔹 Center align all columns except Amount
       worksheet.columns.forEach((col) => {
         if (col.key !== "amount") {
           col.alignment = { vertical: "middle", horizontal: "center" };
         }
       });
 
-      // 🔹 Format Amount column as currency
       worksheet.getColumn("amount").numFmt = '₹ #,##,##0';
       worksheet.getColumn("amount").alignment = { vertical: "middle", horizontal: "right" };
 
-      // 🔹 Adjust header row height
       worksheet.getRow(1).height = 28;
 
-      // Set response headers for Excel download
       res.setHeader(
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -450,12 +439,10 @@ export const getReceiptsByMandal = async (req, res) => {
         `attachment; filename=Receipts_${selectedYear}.xlsx`
       );
 
-      // Write Excel file to response
       await workbook.xlsx.write(res);
       return res.end();
     }
 
-    // 👉 Otherwise, return paginated JSON
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const [receipts, total] = await Promise.all([

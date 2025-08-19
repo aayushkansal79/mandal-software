@@ -47,14 +47,12 @@ const Navbar = ({ toggleSidebar, url }) => {
         <Link to="/dashboard" className="img">
           {user?.mandalName === "Shri Shyam Sewak Yuva Mandal Sangam Vihar" ? (
             <img
-              className="rounded-circle"
               src={assets.sangam_logo}
               height={60}
               alt=""
             />
           ) : (
             <img
-              className="rounded-circle"
               src={assets.sarojini_logo}
               height={60}
               alt=""

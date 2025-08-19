@@ -240,6 +240,7 @@ const ExpenseManager = ({ url }) => {
           </button>
         </div>
       </div>
+      
       {/* Expense Table */}
       <div className="Expenditure rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">
