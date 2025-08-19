@@ -10,6 +10,12 @@ const ExpenseManager = ({ url }) => {
   const [allExpenses, setAllExpenses] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [editData, setEditData] = useState({ field: "", amount: "" });
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentPayment, setCurrentPayment] = useState({
+    payAmount: "",
+    paymentMethod: "",
+  });
+  const [selectedExpenseId, setSelectedExpenseId] = useState(null);
 
   const token = localStorage.getItem("token");
   const { user } = useContext(AuthContext);
@@ -160,6 +166,49 @@ const ExpenseManager = ({ url }) => {
     setEditData({ field: "", amount: "" });
   };
 
+  const openPaymentModal = (expenseId, field) => {
+    setSelectedExpenseId(expenseId);
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentPayment((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddPayment = async () => {
+    if (!currentPayment.payAmount || !currentPayment.paymentMethod) {
+      toast.error("Please provide both amount and payment method.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axios.patch(
+        `${url}/api/expenditure/payment/${selectedExpenseId}`,
+        {
+          payment: {
+            payAmount: currentPayment.payAmount,
+            paymentMethod: currentPayment.paymentMethod,
+          },
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      toast.success("Payment added successfully!");
+      fetchExpenses();
+      setCurrentPayment({ payAmount: "", paymentMethod: "" });
+      setShowPaymentModal(false);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to add payment");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const totalAmount = allExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   return (
@@ -240,7 +289,7 @@ const ExpenseManager = ({ url }) => {
           </button>
         </div>
       </div>
-      
+
       {/* Expense Table */}
       <div className="Expenditure rounded my-3">
         <table className="table align-middle table-striped table-hover my-0">
@@ -248,6 +297,8 @@ const ExpenseManager = ({ url }) => {
             <tr>
               <th>#</th>
               <th>Expense Detail</th>
+              <th className="text-end">Payments Done</th>
+              <th></th>
               <th className="text-end">Amount</th>
               <th>Date & Time</th>
               {user?.type === "admin" && <th>Edit</th>}
@@ -277,6 +328,32 @@ const ExpenseManager = ({ url }) => {
                   ) : (
                     exp.field
                   )}
+                </th>
+                <td className="text-end">
+                  <div>
+                    {exp.payments?.map((payment) => (
+                      <div>
+                        {payment.paymentMethod} - ₹{" "}
+                        {payment.payAmount?.toLocaleString("en-IN")}
+                      </div>
+                    ))}
+                  </div>
+                </td>
+                <th>
+                  <button
+                    className="op-btn"
+                    onClick={() => openPaymentModal(exp._id, exp.field)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="24px"
+                      viewBox="0 -960 960 960"
+                      width="24px"
+                      fill="green"
+                    >
+                      <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                    </svg>
+                  </button>
                 </th>
                 <th className="text-danger text-end">
                   {editIndex === index ? (
@@ -344,6 +421,57 @@ const ExpenseManager = ({ url }) => {
           </tbody>
         </table>
       </div>
+
+      {showPaymentModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h5 style={{ color: "#6d0616" }}>
+              Add Payment for{" "}
+              {allExpenses.find((exp) => exp._id === selectedExpenseId)
+                ?.field || "Expense"}
+            </h5>
+            <div className="row mb-4 text-start">
+              <div className="col-6">
+                <label className="form-label">Amount</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="payAmount"
+                  value={currentPayment.payAmount}
+                  onChange={handlePaymentChange}
+                  placeholder="Enter amount"
+                />
+              </div>
+              <div className="col-6">
+                <label className="form-label">Payment Method</label>
+                <select
+                  className="form-select"
+                  name="paymentMethod"
+                  value={currentPayment.paymentMethod}
+                  onChange={handlePaymentChange}
+                >
+                  <option value="">Select Method</option>
+                  <option value="Cash">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div className="d-flex justify-content-end gap-2">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowPaymentModal(false)}
+              >
+                Cancel
+              </button>
+              <button className="btn btn-success" onClick={handleAddPayment}>
+                Add Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading && <Loader />}
     </>
