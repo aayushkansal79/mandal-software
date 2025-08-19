@@ -4,7 +4,7 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect("superadmin"), createMandal);
-router.get("/", protect("superadmin"), getMandals);
+router.post("/", protect("admin"), createMandal);
+router.get("/", protect("admin"), getMandals);
 
 export default router;

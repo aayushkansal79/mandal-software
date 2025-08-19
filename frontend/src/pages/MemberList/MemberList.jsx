@@ -61,13 +61,14 @@ const MemberList = ({ url }) => {
               <th></th>
               <th scope="col">Member Name</th>
               <th scope="col">Role</th>
-              <th scope="col">Mobile No.</th>
-              <th scope="col">Address</th>
+              <th scope="col">Member Details</th>
               {user.type === "admin" && <th scope="col">Type</th>}
             </tr>
           </thead>
           <tbody className="table-group-divider">
-            {members.map((member, index) => (
+            {members
+            .filter(member => member.memberName !== 'Admin')
+            .map((member, index) => (
               <tr key={index}>
                 <td>
                   <img
@@ -80,10 +81,9 @@ const MemberList = ({ url }) => {
                 </td>
                 <th style={{ color: "#6d0616" }}>{member.memberName}</th>
                 <th className="text-primary">{member.role}</th>
-                <td>{member.mobile}</td>
-                <td>{member.address}</td>
+                <td className="text-start"><b>Mobile:</b> {member.mobile} <br /> <b>Address:</b> {member.address}</td>
                 {user.type === "admin" && (
-                  <td>
+                  <td style={{ width: "130px" }}>
                     {member.type !== "admin" ? (
                       <select className="form-select" value={member.type}>
                         <option value="admin">Admin</option>

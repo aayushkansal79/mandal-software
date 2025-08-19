@@ -187,6 +187,7 @@ const AddMember = ({ url }) => {
             required
           >
             <option value="Member">Member</option>
+            <option value="Office">Office</option>
             <option value="Trustee">Trustee</option>
             <option value="Secretary">Secretary</option>
             <option value="Vice Treasurer">Vice Treasurer</option>

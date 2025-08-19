@@ -21,6 +21,7 @@ import MandalForm from "./pages/Mandal/Mandal";
 import PrivateRoute from "./context/PrivateRoute";
 import MyReceipts from "./pages/MyReceipts/MyReceipts";
 import Expenditure from "./pages/Expenditure/Expenditure";
+import InvitedMandals from "./pages/InvitedMandal/InvitedMandal";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -50,7 +51,7 @@ function App() {
           <Toaster
             toastOptions={{
               className: "bg-dark text-light border shadow-sm rounded",
-              duration: 2000,
+              duration: 3000,
               style: { padding: "10px 15px", fontSize: "1rem" },
             }}
           />
@@ -71,6 +72,7 @@ function App() {
             <Route path="/receipt-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
             <Route path="/my-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
             <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin"]}> <Expenditure url={url} /> </PrivateRoute>} />
+            <Route path="/invited-mandal" element={<PrivateRoute roles={["admin", "subadmin"]}> <InvitedMandals url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
         {!hideLayout && (

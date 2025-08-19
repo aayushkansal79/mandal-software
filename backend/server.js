@@ -9,6 +9,7 @@ import userRoutes from './routes/userRoutes.js';
 import receiptBookRoutes from './routes/receiptBookRoutes.js'
 import receiptRoutes from './routes/receiptRoutes.js';
 import expenditureRoutes from './routes/expenditureRoutes.js';
+import invitedMandalRoutes from './routes/invitedMandalRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
 // app config
@@ -33,6 +34,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/receiptbook", receiptBookRoutes);
 app.use("/api/receipt", receiptRoutes);
 app.use("/api/expenditure", expenditureRoutes);
+app.use("/api/invitedmandal", invitedMandalRoutes);
 app.use("/api/admin", adminRoutes);
 
 // database connection

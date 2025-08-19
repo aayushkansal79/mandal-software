@@ -42,7 +42,7 @@ const Dashboard = ({ url }) => {
         </div>
 
         <div className="dashboard row gy-2 gx-4">
-          <Link to="/member-list" className="col-12 col-sm-6 col-md-3">
+          <Link to="/member-records" className="col-12 col-sm-6 col-md-3">
             <div className="card text-bg-light mb-3">
               <div className="card-header text-dark">Members</div>
               <div className="card-body align-items-center">

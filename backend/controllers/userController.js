@@ -339,9 +339,10 @@ export const getMemberStats = async (req, res) => {
                     { case: { $eq: ["$role", "Treasurer"] }, then: 5 },
                     { case: { $eq: ["$role", "Vice Treasurer"] }, then: 6 },
                     { case: { $eq: ["$role", "Trustee"] }, then: 7 },
-                    { case: { $eq: ["$role", "Member"] }, then: 8 }
+                    { case: { $eq: ["$role", "Member"] }, then: 8 },
+                    { case: { $eq: ["$role", "Office"] }, then: 9 },
                   ],
-                  default: 9
+                  default: 10
                 }
               }
             ]

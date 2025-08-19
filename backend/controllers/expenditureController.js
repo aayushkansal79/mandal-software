@@ -14,15 +14,21 @@ export const addExpenses = async (req, res) => {
         const mandalName = req.user.mandalName;
         const year = new Date().getFullYear();
 
-        const expenseDocs = expenses.map(exp => ({
-            mandal: mandalId,
-            mandalName,
-            field: exp.field,
-            amount: exp.amount,
-            year,
-        }));
+        const savedExpenses = [];
 
-        const savedExpenses = await Expenditure.insertMany(expenseDocs);
+        // Create each expense one by one
+        for (const exp of expenses) {
+            const expenseDoc = new Expenditure({
+                mandal: mandalId,
+                mandalName,
+                field: exp.field,
+                amount: exp.amount,
+                year,
+            });
+
+            const saved = await expenseDoc.save();
+            savedExpenses.push(saved);
+        }
 
         res.status(201).json({
             message: "Expenses added successfully",
@@ -33,6 +39,7 @@ export const addExpenses = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
 
 export const updateExpenditure = async (req, res) => {
   try {
