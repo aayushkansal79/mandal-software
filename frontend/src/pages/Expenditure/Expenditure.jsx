@@ -297,9 +297,9 @@ const ExpenseManager = ({ url }) => {
             <tr>
               <th>#</th>
               <th>Expense Detail</th>
+              <th className="text-end">Amount</th>
               <th className="text-end">Payments Done</th>
               <th></th>
-              <th className="text-end">Amount</th>
               <th>Date & Time</th>
               {user?.type === "admin" && <th>Edit</th>}
             </tr>
@@ -329,6 +329,20 @@ const ExpenseManager = ({ url }) => {
                     exp.field
                   )}
                 </th>
+                <th className="text-danger text-end">
+                  {editIndex === index ? (
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={editData.amount}
+                      onChange={(e) =>
+                        handleEditChange("amount", e.target.value)
+                      }
+                    />
+                  ) : (
+                    `₹ ${exp.amount.toLocaleString("en-IN")}`
+                  )}
+                </th>
                 <td className="text-end">
                   <div>
                     {exp.payments?.map((payment) => (
@@ -354,20 +368,6 @@ const ExpenseManager = ({ url }) => {
                       <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
                     </svg>
                   </button>
-                </th>
-                <th className="text-danger text-end">
-                  {editIndex === index ? (
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={editData.amount}
-                      onChange={(e) =>
-                        handleEditChange("amount", e.target.value)
-                      }
-                    />
-                  ) : (
-                    `₹ ${exp.amount.toLocaleString("en-IN")}`
-                  )}
                 </th>
                 <td className="small">
                   {new Date(exp.updatedAt).toLocaleString("en-IN")}
