@@ -59,8 +59,8 @@ const MemberList = ({ url }) => {
           <thead className="table-info">
             <tr>
               <th></th>
-              <th scope="col">Member</th>
-              <th scope="col">Member Details</th>
+              <th scope="col">Member Name</th>
+              <th scope="col" className="text-start">Member Details</th>
               {user.type === "admin" && <th scope="col">Type</th>}
             </tr>
           </thead>

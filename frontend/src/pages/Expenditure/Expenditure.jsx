@@ -351,6 +351,9 @@ const ExpenseManager = ({ url }) => {
                         {payment.payAmount?.toLocaleString("en-IN")}
                       </div>
                     ))}
+                    {exp.payments?.length === 0 && (
+                      <div className="text-center">--</div>
+                    )}
                   </div>
                 </td>
                 <th>
@@ -415,7 +418,7 @@ const ExpenseManager = ({ url }) => {
               <th className="text-success text-end">
                 ₹ {totalAmount.toLocaleString("en-IN")}
               </th>
-              <th></th>
+              <th colSpan={3}></th>
               {user?.type === "admin" && <th></th>}
             </tr>
           </tbody>

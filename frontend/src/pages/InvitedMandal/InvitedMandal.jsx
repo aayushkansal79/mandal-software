@@ -4,10 +4,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import "./InvitedMandal.css";
 import Pagination from "../../components/Pagination/Pagination";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const InvitedMandals = ({ url }) => {
   const [mandals, setMandals] = useState([]);
   const token = localStorage.getItem("token");
+  const {user} = useContext(AuthContext)
   const [downloading, setDownloading] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -69,10 +72,13 @@ const InvitedMandals = ({ url }) => {
 
       params.append("exportExcel", "true");
 
-      const res = await axios.get(`${url}/api/invitedmandal?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        responseType: "blob", // important for binary data
-      });
+      const res = await axios.get(
+        `${url}/api/invitedmandal?${params.toString()}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob", // important for binary data
+        }
+      );
 
       // Create a link to download the file
       const blob = new Blob([res.data], {
@@ -140,24 +146,26 @@ const InvitedMandals = ({ url }) => {
             onChange={(e) => setFilters({ ...filters, mobile: e.target.value })}
           />
         </div>
-        <div className="col-md-1 col-2 align-self-end text-center">
-          <button
-            className="btn btn-sm btn-success"
-            onClick={handleDownloadExcel}
-            title="Download Excel"
-            disabled={downloading}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="white"
+        {user?.type !== "member" && (
+          <div className="col-md-1 col-2 align-self-end text-center">
+            <button
+              className="btn btn-sm btn-success"
+              onClick={handleDownloadExcel}
+              title="Download Excel"
+              disabled={downloading}
             >
-              <path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z" />
-            </svg>
-          </button>
-        </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="white"
+              >
+                <path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="Mandal rounded my-3">
@@ -187,7 +195,9 @@ const InvitedMandals = ({ url }) => {
                 <td>{mandal.contactPerson}</td>
                 <td>{mandal.mobile || "-"}</td>
                 <td>{mandal.address}</td>
-                <td className="small">{new Date(mandal.createdAt).toLocaleString()}</td>
+                <td className="small">
+                  {new Date(mandal.createdAt).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>

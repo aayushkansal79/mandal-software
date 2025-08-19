@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import "./AddMandal.css";
 
 const AddMandal = ({url}) => {
   const [loading, setLoading] = useState(false);
@@ -93,7 +94,7 @@ const AddMandal = ({url}) => {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">Contact Person Name</label>
+          <label className="form-label">Contact Person Name*</label>
           <input
             type="text"
             name="contactPerson"
@@ -106,7 +107,7 @@ const AddMandal = ({url}) => {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">Mobile Number</label>
+          <label className="form-label">Mobile Number*</label>
           <input
             type="number"
             name="mobile"
@@ -118,6 +119,7 @@ const AddMandal = ({url}) => {
           />
         </div>
 
+        <div className="disc">(*) Required fields</div>
         <div className="col-12">
           <button type="submit" className="btn btn-primary">
             Add Mandal
