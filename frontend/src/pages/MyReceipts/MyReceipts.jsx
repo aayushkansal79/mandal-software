@@ -270,12 +270,14 @@ const MyReceipts = ({ url }) => {
                       <button
                         className="btn btn-success btn-sm small"
                         onClick={() => handleSave(receipt._id)}
+                        title="Save"
                       >
                         Save
                       </button>
                       <button
                         className="btn btn-secondary btn-sm small"
                         onClick={() => setEditIndex(null)}
+                        title="Cancel"
                       >
                         Cancel
                       </button>
@@ -287,6 +289,7 @@ const MyReceipts = ({ url }) => {
                         setEditIndex(index);
                         setEditData(receipt);
                       }}
+                      title="Edit"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
