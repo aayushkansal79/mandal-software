@@ -87,7 +87,7 @@ const AllPads = ({ url }) => {
             <tr>
               <th scope="col">Pad No.</th>
               <th scope="col">Member Name</th>
-              <th scope="col">Amount</th>
+              <th scope="col" className="text-end">Amount</th>
             </tr>
           </thead>
           <tbody className="table-group-divider">
@@ -102,7 +102,7 @@ const AllPads = ({ url }) => {
               <tr key={pad._id}>
                 <th>{pad.padNumber}</th>
                 <td>{pad.memberName}</td>
-                <th className="text-success">
+                <th className="text-success text-end">
                   ₹ {pad.totalAmount.toLocaleString("en-IN")}
                 </th>
               </tr>

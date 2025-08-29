@@ -61,25 +61,6 @@ export const updateExpenditure = async (req, res) => {
   }
 };
 
-// FETCH all expenses for specific mandal & year
-// export const getAllExpenses = async (req, res) => {
-//     try {
-//         const mandalId = req.user.mandal;
-//         const { year } = req.query;
-//         const selectedYear = year ? parseInt(year) : new Date().getFullYear();
-
-//         const expenses = await Expenditure.find({
-//             mandal: mandalId,
-//             year: selectedYear
-//         }).sort({ createdAt: 1 });
-
-//         res.status(200).json(expenses);
-//     } catch (error) {
-//         console.error("Error fetching expenses:", error);
-//         res.status(500).json({ message: "Server error" });
-//     }
-// };
-
 export const getAllExpenses = async (req, res) => {
   try {
     const mandalId = req.user.mandal;
@@ -169,41 +150,6 @@ export const getAllExpenses = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
-// export const addPayment = async (req, res) => {
-//   const { id } = req.params;
-//   const { payAmount, paymentMethod } = req.body;
-
-//   if (!payAmount || !paymentMethod) {
-//     return res.status(400).json({ message: "Payment amount and method are required" });
-//   }
-
-//   try {
-//     const expenditure = await Expenditure.findById(id);
-
-//     if (!expenditure) {
-//       return res.status(404).json({ message: "Expenditure not found" });
-//     }
-
-//     const newPayment = {
-//       payAmount: parseInt(payAmount),
-//       paymentMethod,
-//     };
-
-//     expenditure.payments.push(newPayment);
-
-//     await expenditure.save();
-
-//     res.status(200).json({
-//       message: "Payment added successfully",
-//       updated: expenditure,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Failed to add payment" });
-//   }
-// };
 
 export const addPayment = async (req, res) => {
   const { id } = req.params;

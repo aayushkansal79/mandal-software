@@ -188,68 +188,24 @@ export const getInvitedMandals = async (req, res) => {
   }
 };
 
-// if (exportExcel === "true") {
-//   const mandals = await InvitedMandal.find(query).sort({ createdAt: 1 });
+export const updateInvitedMandal = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { mandalName, contactPerson, mobile, address } = req.body;
 
-//   const workbook = new ExcelJS.Workbook();
-//   const worksheet = workbook.addWorksheet("Invited Mandals");
+    const mandal = await InvitedMandal.findById(id);
+    if (!mandal) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
 
-//   // Add title
-//   worksheet.mergeCells("A1:C1");
-//   const titleCell = worksheet.getCell("A1");
-//   titleCell.value = "List of Invited Mandals";
-//   titleCell.font = { name: "Calibri", size: 16, bold: true };
-//   titleCell.alignment = { horizontal: "center", vertical: "middle" };
-//   titleCell.fill = {
-//     type: "pattern",
-//     pattern: "solid",
-//     fgColor: { argb: "D9E1F2" },
-//   };
-//   worksheet.getRow(1).height = 30;
+    if (mandalName) mandal.mandalName = mandalName;
+    if (contactPerson) mandal.contactPerson = contactPerson;
+    if (mobile) mandal.mobile = mobile;
+    if (address) mandal.address = address;
 
-//   // Format variables
-//   const columnsPerRow = 3;
-//   let currentRow = 3;
-//   let currentCol = 1;
-
-//   mandals.forEach((m, i) => {
-//     const content = `${m.mandalName || ""}\n${m.contactPerson || ""}\n${m.address || ""}\n${m.mobile || ""}`;
-
-//     // Merge 4 rows vertically per cell
-//     worksheet.mergeCells(currentRow, currentCol, currentRow + 3, currentCol);
-//     const cell = worksheet.getCell(currentRow, currentCol);
-//     cell.value = content;
-
-//     // Apply formatting
-//     cell.alignment = { wrapText: true, vertical: "middle", horizontal: "left" };
-//     cell.border = {
-//       top: { style: "thin" },
-//       left: { style: "thin" },
-//       bottom: { style: "thin" },
-//       right: { style: "thin" },
-//     };
-//     cell.font = { name: "Calibri", size: 11 };
-
-//     // Set column width
-//     worksheet.getColumn(currentCol).width = 40;
-
-//     // Move to next column, or wrap to next row
-//     currentCol++;
-//     if (currentCol > columnsPerRow) {
-//       currentCol = 1;
-//       currentRow += 5; // 4 rows content + 1 empty row
-//     }
-//   });
-
-//   res.setHeader(
-//     "Content-Type",
-//     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-//   );
-//   res.setHeader(
-//     "Content-Disposition",
-//     `attachment; filename=InvitedMandals.xlsx`
-//   );
-
-//   await workbook.xlsx.write(res);
-//   return res.end();
-// }
+    const updated = await mandal.save();
+    res.json({ message: "Mandal updated successfully", updated });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update mandal" });
+  }
+};

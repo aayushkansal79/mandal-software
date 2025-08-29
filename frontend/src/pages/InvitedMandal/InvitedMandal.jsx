@@ -6,11 +6,14 @@ import "./InvitedMandal.css";
 import Pagination from "../../components/Pagination/Pagination";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const InvitedMandals = ({ url }) => {
   const [mandals, setMandals] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editData, setEditData] = useState({});
   const token = localStorage.getItem("token");
-  const {user} = useContext(AuthContext)
+  const { user } = useContext(AuthContext);
   const [downloading, setDownloading] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -76,11 +79,10 @@ const InvitedMandals = ({ url }) => {
         `${url}/api/invitedmandal?${params.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob", // important for binary data
+          responseType: "blob",
         }
       );
 
-      // Create a link to download the file
       const blob = new Blob([res.data], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
@@ -88,11 +90,29 @@ const InvitedMandals = ({ url }) => {
       link.href = window.URL.createObjectURL(blob);
       link.download = `InvitedMandals.xlsx`;
       link.click();
+      toast.success("Mandal List exported successfully!")
     } catch (err) {
       console.error(err);
-      toast.error("Failed to download Excel");
+      toast.error(err?.response?.data?.message || "Failed to download Excel");
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleSave = async (id) => {
+    try {
+      await axios.patch(`${url}/api/invitedmandal/${id}`, editData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setMandals((prev) =>
+        prev.map((m) => (m._id === id ? { ...m, ...editData } : m))
+      );
+      toast.success("Mandal updated successfully!")
+      setEditIndex(null);
+    } catch (err) {
+      console.error("Error updating mandal:", err);
+      toast.error(err?.response?.data?.message || "Failed to update mandal");
     }
   };
 
@@ -177,7 +197,8 @@ const InvitedMandals = ({ url }) => {
               <th>Contact Person</th>
               <th>Mobile Number</th>
               <th>Address</th>
-              <th>Date & Time</th>
+              {/* <th>Date & Time</th> */}
+              <th>Edit</th>
             </tr>
           </thead>
           <tbody className="table-group-divider">
@@ -191,13 +212,118 @@ const InvitedMandals = ({ url }) => {
             {mandals.map((mandal, index) => (
               <tr key={mandal._id}>
                 <th>{(filters.page - 1) * filters.limit + index + 1}</th>
-                <th>{mandal.mandalName}</th>
-                <td>{mandal.contactPerson}</td>
-                <td>{mandal.mobile || "-"}</td>
-                <td>{mandal.address}</td>
-                <td className="small">
-                  {new Date(mandal.createdAt).toLocaleString()}
+                <th>
+                  {editIndex === index ? (
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      value={editData.mandalName}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          mandalName: e.target.value,
+                        })
+                      }
+                    />
+                  ) : (
+                    mandal.mandalName
+                  )}
+                </th>
+                <td>
+                  {editIndex === index ? (
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      value={editData.contactPerson}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          contactPerson: e.target.value,
+                        })
+                      }
+                    />
+                  ) : (
+                    mandal.contactPerson
+                  )}
                 </td>
+                <td>
+                  {editIndex === index ? (
+                    <input
+                      type="number"
+                      className="form-control form-control-sm"
+                      value={editData.mobile}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          mobile: e.target.value,
+                        })
+                      }
+                    />
+                  ) : (
+                    mandal.mobile || "-"
+                  )}
+                </td>
+                <td>
+                  {editIndex === index ? (
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      value={editData.address}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          address: e.target.value,
+                        })
+                      }
+                    />
+                  ) : (
+                    mandal.address
+                  )}
+                </td>
+                {/* <td className="small">
+                  {new Date(mandal.createdAt).toLocaleString()}
+                </td> */}
+                {user?.type !== "member" && (
+                  <td>
+                    {editIndex === index ? (
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn btn-success btn-sm small"
+                          onClick={() => handleSave(mandal._id)}
+                          title="Save"
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm small"
+                          onClick={() => setEditIndex(null)}
+                          title="Cancel"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="op-btn"
+                        onClick={() => {
+                          setEditIndex(index);
+                          setEditData(mandal);
+                        }}
+                        title="Edit"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="red"
+                        >
+                          <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+                        </svg>
+                      </button>
+                    )}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

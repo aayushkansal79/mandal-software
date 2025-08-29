@@ -14,6 +14,7 @@ const AllReceipts = ({ url }) => {
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const [filters, setFilters] = useState({
     receiptNumber: "",
@@ -63,6 +64,7 @@ const AllReceipts = ({ url }) => {
 
   const handleDownloadExcel = async () => {
     setDownloading(true);
+    setLoading(true);
     try {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -87,16 +89,19 @@ const AllReceipts = ({ url }) => {
         filters.year || new Date().getFullYear()
       }.xlsx`;
       link.click();
+      toast.success("Receipts exported successfully!");
     } catch (err) {
       console.error(err);
       toast.error("Failed to download Excel");
     } finally {
       setDownloading(false);
+      setLoading(false);
     }
   };
 
   const exportReceipts = async () => {
     setDownloading(true);
+    setLoading(true);
     try {
       const res = await axios.get(
         `${url}/api/receipt/export-groups?year=${
@@ -118,7 +123,7 @@ const AllReceipts = ({ url }) => {
       }_Groups.xlsx`;
       downloadLink.click();
 
-      toast.success("Receipts (Grouped) exported successfully!");
+      toast.success("Receipts (Pad-wise) exported successfully!");
     } catch (error) {
       console.error("Error exporting receipts:", error);
       toast.error(
@@ -126,6 +131,7 @@ const AllReceipts = ({ url }) => {
       );
     } finally {
       setDownloading(false);
+      setLoading(false);
     }
   };
 
@@ -250,12 +256,10 @@ const AllReceipts = ({ url }) => {
           </select>
         </div>
         {user?.type !== "member" && (
-          <div className="col-md-1 col-2 align-self-end d-flex justify-content-around">
+          <div className="col-md-1 col-2 align-self-end text-center">
             <button
-              className="btn btn-sm btn-success"
-              onClick={handleDownloadExcel}
-              title="Download All Receipts Excel"
-              disabled={downloading}
+              className="btn btn-success"
+              onClick={() => setShowDownloadModal(true)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -265,22 +269,6 @@ const AllReceipts = ({ url }) => {
                 fill="white"
               >
                 <path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z" />
-              </svg>
-            </button>
-            <button
-              className="btn btn-sm btn-warning"
-              onClick={exportReceipts}
-              title="Download Pad wise Excel"
-              disabled={downloading}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="black"
-              >
-                <path d="M300-80q-58 0-99-41t-41-99v-520q0-58 41-99t99-41h500v600q-25 0-42.5 17.5T740-220q0 25 17.5 42.5T800-160v80H300Zm-60-267q14-7 29-10t31-3h20v-440h-20q-25 0-42.5 17.5T240-740v393Zm160-13h320v-440H400v440Zm-160 13v-453 453Zm60 187h373q-6-14-9.5-28.5T660-220q0-16 3-31t10-29H300q-26 0-43 17.5T240-220q0 26 17 43t43 17Z" />
               </svg>
             </button>
           </div>
@@ -452,6 +440,58 @@ const AllReceipts = ({ url }) => {
           </tbody>
         </table>
       </div>
+
+      {showDownloadModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h5 style={{ color: "#6d0616" }}>Download Excel</h5>
+            <div className="d-flex justify-content-around mb-3">
+              <button
+                className="btn btn-success"
+                onClick={handleDownloadExcel}
+                title="Download All Receipts Excel"
+                disabled={downloading}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="30px"
+                  fill="white"
+                >
+                  <path d="M320-480v-80h320v80H320Zm0-160v-80h320v80H320Zm-80 240h300q29 0 54 12.5t42 35.5l84 110v-558H240v400Zm0 240h442L573-303q-6-8-14.5-12.5T540-320H240v160Zm480 80H240q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h480q33 0 56.5 23.5T800-800v640q0 33-23.5 56.5T720-80Zm-480-80v-640 640Zm0-160v-80 80Z" />
+                </svg>
+                All Receipts
+              </button>
+              <button
+                className="btn btn-warning"
+                onClick={exportReceipts}
+                title="Download Pad wise Excel"
+                disabled={downloading}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="30px"
+                  fill="black"
+                >
+                  <path d="M300-80q-58 0-99-41t-41-99v-520q0-58 41-99t99-41h500v600q-25 0-42.5 17.5T740-220q0 25 17.5 42.5T800-160v80H300Zm-60-267q14-7 29-10t31-3h20v-440h-20q-25 0-42.5 17.5T240-740v393Zm160-13h320v-440H400v440Zm-160 13v-453 453Zm60 187h373q-6-14-9.5-28.5T660-220q0-16 3-31t10-29H300q-26 0-43 17.5T240-220q0 26 17 43t43 17Z" />
+                </svg>
+                Pad-wise Receipts
+              </button>
+            </div>
+            <div className="d-flex justify-content-end gap-2">
+              <button
+                className="btn btn-sm btn-secondary"
+                onClick={() => setShowDownloadModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Pagination
         limit={filters.limit}

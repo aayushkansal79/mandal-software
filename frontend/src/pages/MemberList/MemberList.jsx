@@ -66,7 +66,7 @@ const MemberList = ({ url }) => {
           </thead>
           <tbody className="table-group-divider">
             {members
-            .filter(member => member.memberName !== 'Admin')
+            .filter(member => member.memberName !== 'Aayush Kansal')
             .map((member, index) => (
               <tr key={index}>
                 <td>
