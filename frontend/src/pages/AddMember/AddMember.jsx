@@ -12,7 +12,7 @@ const AddMember = ({ url }) => {
     memberName: "",
     mobile: "",
     address: "",
-    role: "Member",
+    role: "",
     type: "member",
   });
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,6 @@ const AddMember = ({ url }) => {
         !formData.memberName ||
         !formData.mobile ||
         !formData.address ||
-        !formData.role ||
         !formData.type
       ) {
         toast.error("Please fill in all fields");
@@ -90,7 +89,7 @@ const AddMember = ({ url }) => {
         memberName: "",
         mobile: "",
         address: "",
-        role: "Member",
+        role: "",
         type: "member",
       });
       setProfilePic(null);
@@ -182,8 +181,8 @@ const AddMember = ({ url }) => {
             className="form-select"
             value={formData.role}
             onChange={handleChange}
-            required
           >
+            <option value="">Select</option>
             <option value="Member">Member</option>
             <option value="Office">Office</option>
             <option value="Trustee">Trustee</option>

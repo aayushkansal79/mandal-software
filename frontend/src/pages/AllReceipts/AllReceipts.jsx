@@ -75,10 +75,9 @@ const AllReceipts = ({ url }) => {
 
       const res = await axios.get(`${url}/api/receipt?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
-        responseType: "blob", // important for binary data
+        responseType: "blob",
       });
 
-      // Create a link to download the file
       const blob = new Blob([res.data], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
@@ -91,6 +90,40 @@ const AllReceipts = ({ url }) => {
     } catch (err) {
       console.error(err);
       toast.error("Failed to download Excel");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const exportReceipts = async () => {
+    setDownloading(true);
+    try {
+      const res = await axios.get(
+        `${url}/api/receipt/export-groups?year=${
+          filters.year || new Date().getFullYear()
+        }`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob",
+        }
+      );
+
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const downloadLink = document.createElement("a");
+      downloadLink.href = window.URL.createObjectURL(blob);
+      downloadLink.download = `Receipts_${
+        filters.year || new Date().getFullYear()
+      }_Groups.xlsx`;
+      downloadLink.click();
+
+      toast.success("Receipts (Grouped) exported successfully!");
+    } catch (error) {
+      console.error("Error exporting receipts:", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to export grouped receipts"
+      );
     } finally {
       setDownloading(false);
     }
@@ -119,7 +152,7 @@ const AllReceipts = ({ url }) => {
 
       toast.success(`Receipt updated successfully`);
       setEditIndex(null);
-      setEditData({}); // reset after save
+      setEditData({});
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Failed to update receipt");
@@ -217,11 +250,11 @@ const AllReceipts = ({ url }) => {
           </select>
         </div>
         {user?.type !== "member" && (
-          <div className="col-md-1 col-2 align-self-end text-center">
+          <div className="col-md-1 col-2 align-self-end d-flex justify-content-around">
             <button
               className="btn btn-sm btn-success"
               onClick={handleDownloadExcel}
-              title="Download Excel"
+              title="Download All Receipts Excel"
               disabled={downloading}
             >
               <svg
@@ -232,6 +265,22 @@ const AllReceipts = ({ url }) => {
                 fill="white"
               >
                 <path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z" />
+              </svg>
+            </button>
+            <button
+              className="btn btn-sm btn-warning"
+              onClick={exportReceipts}
+              title="Download Pad wise Excel"
+              disabled={downloading}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="black"
+              >
+                <path d="M300-80q-58 0-99-41t-41-99v-520q0-58 41-99t99-41h500v600q-25 0-42.5 17.5T740-220q0 25 17.5 42.5T800-160v80H300Zm-60-267q14-7 29-10t31-3h20v-440h-20q-25 0-42.5 17.5T240-740v393Zm160-13h320v-440H400v440Zm-160 13v-453 453Zm60 187h373q-6-14-9.5-28.5T660-220q0-16 3-31t10-29H300q-26 0-43 17.5T240-220q0 26 17 43t43 17Z" />
               </svg>
             </button>
           </div>

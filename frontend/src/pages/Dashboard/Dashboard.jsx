@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Dashboard.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const Dashboard = ({ url }) => {
   const [stats, setStats] = useState({});
   const [year, setYear] = useState(new Date().getFullYear());
   const token = localStorage.getItem("token");
+  const {user} = useContext(AuthContext);
+
+  useEffect(() => {
+    document.title = user?.mandalName;
+  }, []);
 
   useEffect(() => {
     axios

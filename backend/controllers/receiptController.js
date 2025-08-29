@@ -561,6 +561,163 @@ export const getReceiptsByMember = async (req, res) => {
   }
 };
 
+export const exportReceiptsInGroups = async (req, res) => {
+  try {
+    const { year } = req.query;
+    const selectedYear = year ? parseInt(year) : new Date().getFullYear();
+
+    const receipts = await Receipt.find({
+      year: selectedYear,
+      mandal: req.user.mandal,
+    }).sort({ receiptNumber: 1 });
+
+    if (!receipts.length) {
+      return res.status(404).json({ message: "No receipts found" });
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const maxReceiptNo = receipts[receipts.length - 1].receiptNumber;
+    const totalPages = Math.ceil(maxReceiptNo / 25);
+
+    for (let page = 1; page <= totalPages; page++) {
+      const start = (page - 1) * 25 + 1;
+      const end = page * 25;
+      const group = receipts.filter(
+        (r) => r.receiptNumber >= start && r.receiptNumber <= end
+      );
+
+      if (group.length === 0) continue;
+
+      const worksheet = workbook.addWorksheet(
+        `${page}_${group[0].memberName || "Group"}`
+      );
+
+      // === Header Row with Member Name ===
+      worksheet.mergeCells("A1:F1");
+      const titleCell = worksheet.getCell("A1");
+      titleCell.value = `Member Name: ${group[0].memberName}`;
+      titleCell.font = { bold: true, size: 16, color: { argb: "FFFFFFFF" } };
+      titleCell.alignment = { vertical: "middle", horizontal: "center" };
+      titleCell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF8C00" }, // Dark Orange
+      };
+      worksheet.getRow(1).height = 30;
+
+      // === Column Headers ===
+      worksheet.columns = [
+        { key: "index", width: 7 },
+        { key: "receiptNumber", width: 10 },
+        { key: "name", width: 25 },
+        { key: "amount", width: 15 },
+        { key: "mobile", width: 15 },
+        { key: "address", width: 30 },
+      ];
+
+      worksheet.addRow([
+        "S No.",
+        "Receipt No",
+        "Name",
+        "Amount",
+        "Mobile",
+        "Address",
+      ]);
+
+      worksheet.getRow(2).eachCell((cell) => {
+        cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "4F81BD" },
+        };
+        cell.alignment = { vertical: "middle", horizontal: "center" };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      group.forEach((r, i) => {
+        worksheet.addRow({
+          index: i + 1,
+          receiptNumber: r.receiptNumber,
+          name: r.name,
+          amount: r.amount,
+          mobile: r.mobile,
+          address: r.address,
+        });
+      });
+
+      worksheet.columns.forEach((col) => {
+        if (col.key !== "amount") {
+          col.alignment = { vertical: "middle", horizontal: "center" };
+        }
+      });
+
+      worksheet.getColumn("amount").numFmt = '"₹"#,##0.00';
+      worksheet.getColumn("amount").alignment = {
+        vertical: "middle",
+        horizontal: "right",
+      };
+
+      const totalRowIndex = worksheet.lastRow.number + 1;
+      const totalAmount = group.reduce((sum, r) => sum + (r.amount || 0), 0);
+
+      const totalRow = worksheet.addRow({
+        index: '',
+        receiptNumber: '',
+        name: '',
+        amount: totalAmount,
+        mobile: '',
+        address: ''
+      });
+
+      totalRow.getCell('D').numFmt = '"₹",##,##,##0.00';
+      totalRow.getCell('D').font = { bold: true, size: 11 };
+      totalRow.getCell('D').alignment = { horizontal: "right", vertical: "middle" };
+
+      totalRow.getCell('C').value = "Total";
+      totalRow.getCell('C').font = { bold: true, size: 11 };
+      totalRow.getCell('C').alignment = { horizontal: "right", vertical: "middle" };
+
+      ['C', 'D'].forEach((col) => {
+        const cell = worksheet.getCell(`${col}${totalRowIndex}`);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFE599" },
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    }
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=Receipts_${selectedYear}_Members.xlsx`
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error("Error exporting grouped receipts:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
 export const backfillReceiptBookTotals = async (req, res) => {
   try {
     const receiptBooks = await ReceiptBook.find();

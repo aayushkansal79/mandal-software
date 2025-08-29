@@ -24,6 +24,7 @@ const Navbar = ({ toggleSidebar, url }) => {
       if (result.isConfirmed) {
         logout();
         toast.success("Logged Out Successfully");
+        document.title = "Shyam Deewane";
         navigate("/login");
       }
     });
@@ -46,17 +47,9 @@ const Navbar = ({ toggleSidebar, url }) => {
         <div className="name">{user?.mandalName.toUpperCase()}</div>
         <Link to="/dashboard" className="img">
           {user?.mandalName === "Shri Shyam Sewak Yuva Mandal Sangam Vihar" ? (
-            <img
-              src={assets.sangam_logo}
-              height={60}
-              alt=""
-            />
+            <img src={assets.sangam_logo} height={60} alt="" />
           ) : (
-            <img
-              src={assets.sarojini_logo}
-              height={60}
-              alt=""
-            />
+            <img src={assets.sarojini_logo} height={60} alt="" />
           )}
         </Link>
         <div className="nav-item dropdown">

@@ -11,7 +11,7 @@ export const registerUser = async (req, res) => {
   try {
     const { username, password, memberName, mobile, address, mandal, role, type } = req.body;
 
-    if (!username || !password || !memberName || !mobile || !mandal || !role || !type) {
+    if (!username || !password || !memberName || !mobile || !mandal || !type) {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
 
