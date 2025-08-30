@@ -23,6 +23,7 @@ import MyReceipts from "./pages/MyReceipts/MyReceipts";
 import Expenditure from "./pages/Expenditure/Expenditure";
 import AddMandal from "./pages/AddMandal/AddMandal";
 import InvitedMandals from "./pages/InvitedMandal/InvitedMandal";
+import DocumentManager from "./pages/Documents/Documents";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -75,6 +76,7 @@ function App() {
             <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin"]}> <Expenditure url={url} /> </PrivateRoute>} />
             <Route path="/add-mandal" element={<PrivateRoute roles={["admin", "subadmin"]}> <AddMandal url={url} /> </PrivateRoute>} />
             <Route path="/invited-mandal" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <InvitedMandals url={url} /> </PrivateRoute>} />
+            <Route path="/documents" element={<PrivateRoute roles={["admin", "subadmin"]}> <DocumentManager url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
         {!hideLayout && (
