@@ -361,11 +361,11 @@ export const getReceiptsByMandal = async (req, res) => {
       memberName, 
       name, 
       mobile,
-      exportExcel
+      exportExcel,
+      extra
     } = req.query;
 
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
-
     const query = { mandal: req.user.mandal };
 
     if (selectedYear) query.year = selectedYear;
@@ -381,55 +381,78 @@ export const getReceiptsByMandal = async (req, res) => {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Receipts");
 
-      worksheet.columns = [
+      // === Columns Setup ===
+      const columns = [
         { header: "S No.", key: "index", width: 7 },
         { header: "Receipt No", key: "receiptNumber", width: 12 },
         { header: "Member Name", key: "memberName", width: 25 },
         { header: "Name", key: "name", width: 25 },
-        { header: "Amount", key: "amount", width: 10 },
-        { header: "Mobile", key: "mobile", width: 15 },
-        { header: "Address", key: "address", width: 25 },
       ];
+      
+      if (extra === "true") {
+        columns.push(
+          { header: "Amount", key: "amount", width: 10 },
+          { header: "Mobile", key: "mobile", width: 15 },
+          { header: "Address", key: "address", width: 25 }
+        );
+      }
 
+      worksheet.columns = columns;
+
+      // === Header Row Styling ===
       worksheet.getRow(1).eachCell((cell) => {
         cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } };
         cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "4F81BD" },
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "4F81BD" },
         };
         cell.alignment = { vertical: "middle", horizontal: "center" };
         cell.border = {
-            top: { style: "thin" },
-            left: { style: "thin" },
-            bottom: { style: "thin" },
-            right: { style: "thin" },
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
         };
       });
 
+      // === Data Rows ===
       receipts.forEach((r, i) => {
-        worksheet.addRow({
+        const rowData = {
           index: i + 1,
           receiptNumber: r.receiptNumber,
           memberName: r.memberName,
           name: r.name,
-          amount: r.amount,
-          mobile: r.mobile,
-          address: r.address,
-        });
+        };
+        
+        if (extra === "true") {
+          rowData.amount = r.amount,
+          rowData.mobile = r.mobile;
+          rowData.address = r.address;
+        }
+
+        worksheet.addRow(rowData);
       });
 
+      // === Column Alignment ===
       worksheet.columns.forEach((col) => {
         if (col.key !== "amount") {
           col.alignment = { vertical: "middle", horizontal: "center" };
         }
       });
 
-      worksheet.getColumn("amount").numFmt = '₹ #,##,##0';
-      worksheet.getColumn("amount").alignment = { vertical: "middle", horizontal: "right" };
-
+      // === Amount Column Formatting ===
+      if(extra === "true"){
+        worksheet.getColumn("amount").numFmt = '₹ #,##,##0';
+        worksheet.getColumn("amount").alignment = {
+          vertical: "middle",
+          horizontal: "right",
+        };
+      }
+        
       worksheet.getRow(1).height = 28;
 
+      // === Response Headers ===
       res.setHeader(
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -443,6 +466,7 @@ export const getReceiptsByMandal = async (req, res) => {
       return res.end();
     }
 
+    // === Pagination Logic ===
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const [receipts, total] = await Promise.all([
@@ -465,6 +489,7 @@ export const getReceiptsByMandal = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 // export const getReceiptsByMandal = async (req, res) => {
@@ -563,7 +588,7 @@ export const getReceiptsByMember = async (req, res) => {
 
 export const exportReceiptsInGroups = async (req, res) => {
   try {
-    const { year } = req.query;
+    const { year, extra } = req.query;
     const selectedYear = year ? parseInt(year) : new Date().getFullYear();
 
     const receipts = await Receipt.find({
@@ -592,8 +617,8 @@ export const exportReceiptsInGroups = async (req, res) => {
         `${page}_${group[0].memberName || "Group"}`
       );
 
-      // === Header Row with Pad No. and Member Name ===
-      worksheet.mergeCells("A1:C1");
+      const mergeEndCol = extra === "true" ? "E" : "C";
+      worksheet.mergeCells(`A1:${mergeEndCol}1`);
       const titleCell1 = worksheet.getCell("A1");
       titleCell1.value = `Pad No.: ${page} (${group[0].memberName})`;
       titleCell1.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
@@ -601,41 +626,30 @@ export const exportReceiptsInGroups = async (req, res) => {
       titleCell1.fill = {
         type: "pattern",
         pattern: "solid",
-        fgColor: { argb: "FF8C00" }, // Dark Orange
+        fgColor: { argb: "FF8C00" },
       };
-
-      // worksheet.mergeCells("C1:D1");
-      // const titleCell2 = worksheet.getCell("C1"); // 🔄 Correct cell reference
-      // titleCell2.value = `Member Name: ${group[0].memberName}`;
-      // titleCell2.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
-      // titleCell2.alignment = { vertical: "middle", horizontal: "center" };
-      // titleCell2.fill = {
-      //   type: "pattern",
-      //   pattern: "solid",
-      //   fgColor: { argb: "FF8C00" }, // Dark Orange
-      // };
-
       worksheet.getRow(1).height = 30;
 
-
       // === Column Headers ===
-      worksheet.columns = [
-        // { key: "index", width: 7 },
+      const columns = [
         { key: "receiptNumber", width: 12 },
         { key: "name", width: 25 },
         { key: "amount", width: 15 },
-        // { key: "mobile", width: 15 },
-        // { key: "address", width: 30 },
       ];
 
-      worksheet.addRow([
-        // "S No.",
-        "Receipt No",
-        "Name",
-        "Amount",
-        // "Mobile",
-        // "Address",
-      ]);
+      if (extra === "true") {
+        columns.push(
+          { key: "mobile", width: 15 },
+          { key: "address", width: 30 }
+        );
+      }
+
+      worksheet.columns = columns;
+
+      const headerRowValues = ["Receipt No", "Name", "Amount"];
+      if (extra === "true") headerRowValues.push("Mobile", "Address");
+
+      worksheet.addRow(headerRowValues);
 
       worksheet.getRow(2).eachCell((cell) => {
         cell.font = { bold: true, size: 12, color: { argb: "FFFFFFFF" } };
@@ -653,15 +667,20 @@ export const exportReceiptsInGroups = async (req, res) => {
         };
       });
 
-      group.forEach((r, i) => {
-        worksheet.addRow({
-          // index: i + 1,
+      // === Data Rows ===
+      group.forEach((r) => {
+        const rowData = {
           receiptNumber: r.receiptNumber,
           name: r.name,
           amount: r.amount,
-          // mobile: r.mobile,
-          // address: r.address,
-        });
+        };
+
+        if (extra === "true") {
+          rowData.mobile = r.mobile;
+          rowData.address = r.address;
+        }
+
+        worksheet.addRow(rowData);
       });
 
       worksheet.columns.forEach((col) => {
@@ -676,27 +695,41 @@ export const exportReceiptsInGroups = async (req, res) => {
         horizontal: "right",
       };
 
+      // === Grand Total Row ===
       const totalRowIndex = worksheet.lastRow.number + 1;
       const totalAmount = group.reduce((sum, r) => sum + (r.amount || 0), 0);
 
-      const totalRow = worksheet.addRow({
-        // index: '',
+      const totalRowData = {
         receiptNumber: '',
-        name: '',
+        name: 'Grand Total',
         amount: totalAmount,
-        // mobile: '',
-        // address: ''
-      });
+      };
 
-      totalRow.getCell('C').numFmt = '"₹"##,##,##0.00';
-      totalRow.getCell('C').font = { bold: true, size: 11 };
-      totalRow.getCell('C').alignment = { horizontal: "right", vertical: "middle" };
+      if (extra === "true") {
+        totalRowData.mobile = '';
+        totalRowData.address = '';
+      }
 
-      totalRow.getCell('B').value = "Grand Total";
-      totalRow.getCell('B').font = { bold: true, size: 11 };
-      totalRow.getCell('B').alignment = { horizontal: "right", vertical: "middle" };
+      const totalRow = worksheet.addRow(totalRowData);
 
-      ['B', 'C'].forEach((col) => {
+      totalRow.getCell("amount").numFmt = '"₹"##,##,##0.00';
+      totalRow.getCell("amount").font = { bold: true };
+      totalRow.getCell("amount").alignment = {
+        horizontal: "right",
+        vertical: "middle",
+      };
+
+      totalRow.getCell("name").font = { bold: true };
+      totalRow.getCell("name").alignment = {
+        horizontal: "right",
+        vertical: "middle",
+      };
+
+      // Highlight Total Row
+      const highlightCols = ["A", "B", "C"];
+      if (extra === "true") highlightCols.push("D", "E");
+
+      highlightCols.forEach((col) => {
         const cell = worksheet.getCell(`${col}${totalRowIndex}`);
         cell.fill = {
           type: "pattern",
@@ -704,10 +737,10 @@ export const exportReceiptsInGroups = async (req, res) => {
           fgColor: { argb: "FFE599" },
         };
         cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' }, 
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
         };
       });
     }
@@ -728,7 +761,6 @@ export const exportReceiptsInGroups = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 
 export const backfillReceiptBookTotals = async (req, res) => {

@@ -26,6 +26,7 @@ const AllReceipts = ({ url }) => {
     page: 1,
     limit: 50,
     exportExcel: "",
+    extra: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,10 +104,10 @@ const AllReceipts = ({ url }) => {
     setDownloading(true);
     setLoading(true);
     try {
+      const year = filters.year || new Date().getFullYear();
+      const extra = filters.extra === "true" ? "&extra=true" : "";
       const res = await axios.get(
-        `${url}/api/receipt/export-groups?year=${
-          filters.year || new Date().getFullYear()
-        }`,
+        `${url}/api/receipt/export-groups?year=${year}${extra}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
@@ -481,7 +482,24 @@ const AllReceipts = ({ url }) => {
                 Pad-wise Receipts
               </button>
             </div>
-            <div className="d-flex justify-content-end gap-2">
+            <div className="d-flex justify-content-between gap-2">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  checked={filters.extra === "true"}
+                  onChange={(e) =>
+                    setFilters({
+                      ...filters,
+                      extra: e.target.checked ? "true" : "",
+                    })
+                  }
+                  id="checkDefault"
+                />
+                <label class="form-check-label" for="checkDefault">
+                  Add All Details
+                </label>
+              </div>
               <button
                 className="btn btn-sm btn-secondary"
                 onClick={() => setShowDownloadModal(false)}
