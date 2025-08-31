@@ -592,18 +592,31 @@ export const exportReceiptsInGroups = async (req, res) => {
         `${page}_${group[0].memberName || "Group"}`
       );
 
-      // === Header Row with Member Name ===
-      worksheet.mergeCells("A1:F1");
-      const titleCell = worksheet.getCell("A1");
-      titleCell.value = `Member Name: ${group[0].memberName}`;
-      titleCell.font = { bold: true, size: 16, color: { argb: "FFFFFFFF" } };
-      titleCell.alignment = { vertical: "middle", horizontal: "center" };
-      titleCell.fill = {
+      // === Header Row with Pad No. and Member Name ===
+      worksheet.mergeCells("A1:B1");
+      const titleCell1 = worksheet.getCell("A1");
+      titleCell1.value = `Pad No.: ${page}`;
+      titleCell1.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+      titleCell1.alignment = { vertical: "middle", horizontal: "center" };
+      titleCell1.fill = {
         type: "pattern",
         pattern: "solid",
         fgColor: { argb: "FF8C00" }, // Dark Orange
       };
+
+      worksheet.mergeCells("C1:D1");
+      const titleCell2 = worksheet.getCell("C1"); // 🔄 Correct cell reference
+      titleCell2.value = `Member Name: ${group[0].memberName}`;
+      titleCell2.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+      titleCell2.alignment = { vertical: "middle", horizontal: "center" };
+      titleCell2.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF8C00" }, // Dark Orange
+      };
+
       worksheet.getRow(1).height = 30;
+
 
       // === Column Headers ===
       worksheet.columns = [
