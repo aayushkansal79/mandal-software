@@ -707,7 +707,7 @@ export const exportReceiptsInGroups = async (req, res) => {
           top: { style: 'thin' },
           left: { style: 'thin' },
           bottom: { style: 'thin' },
-          right: { style: 'thin' },
+          right: { style: 'thin' }, 
         };
       });
     }
