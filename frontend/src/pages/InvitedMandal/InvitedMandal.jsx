@@ -90,7 +90,7 @@ const InvitedMandals = ({ url }) => {
       link.href = window.URL.createObjectURL(blob);
       link.download = `InvitedMandals.xlsx`;
       link.click();
-      toast.success("Mandal List exported successfully!")
+      toast.success("Mandal List exported successfully!");
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || "Failed to download Excel");
@@ -108,7 +108,7 @@ const InvitedMandals = ({ url }) => {
       setMandals((prev) =>
         prev.map((m) => (m._id === id ? { ...m, ...editData } : m))
       );
-      toast.success("Mandal updated successfully!")
+      toast.success("Mandal updated successfully!");
       setEditIndex(null);
     } catch (err) {
       console.error("Error updating mandal:", err);
@@ -198,7 +198,7 @@ const InvitedMandals = ({ url }) => {
               <th>Mobile Number</th>
               <th>Address</th>
               {/* <th>Date & Time</th> */}
-              <th>Edit</th>
+              {user?.type !== "member" && <th>Edit</th>}
             </tr>
           </thead>
           <tbody className="table-group-divider">
