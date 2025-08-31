@@ -383,7 +383,7 @@ export const getReceiptsByMandal = async (req, res) => {
 
       worksheet.columns = [
         { header: "S No.", key: "index", width: 7 },
-        { header: "Receipt No", key: "receiptNumber", width: 10 },
+        { header: "Receipt No", key: "receiptNumber", width: 12 },
         { header: "Member Name", key: "memberName", width: 25 },
         { header: "Name", key: "name", width: 25 },
         { header: "Amount", key: "amount", width: 10 },
@@ -593,9 +593,9 @@ export const exportReceiptsInGroups = async (req, res) => {
       );
 
       // === Header Row with Pad No. and Member Name ===
-      worksheet.mergeCells("A1:B1");
+      worksheet.mergeCells("A1:C1");
       const titleCell1 = worksheet.getCell("A1");
-      titleCell1.value = `Pad No.: ${page}`;
+      titleCell1.value = `Pad No.: ${page} (${group[0].memberName})`;
       titleCell1.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
       titleCell1.alignment = { vertical: "middle", horizontal: "center" };
       titleCell1.fill = {
@@ -604,37 +604,37 @@ export const exportReceiptsInGroups = async (req, res) => {
         fgColor: { argb: "FF8C00" }, // Dark Orange
       };
 
-      worksheet.mergeCells("C1:D1");
-      const titleCell2 = worksheet.getCell("C1"); // 🔄 Correct cell reference
-      titleCell2.value = `Member Name: ${group[0].memberName}`;
-      titleCell2.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
-      titleCell2.alignment = { vertical: "middle", horizontal: "center" };
-      titleCell2.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FF8C00" }, // Dark Orange
-      };
+      // worksheet.mergeCells("C1:D1");
+      // const titleCell2 = worksheet.getCell("C1"); // 🔄 Correct cell reference
+      // titleCell2.value = `Member Name: ${group[0].memberName}`;
+      // titleCell2.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+      // titleCell2.alignment = { vertical: "middle", horizontal: "center" };
+      // titleCell2.fill = {
+      //   type: "pattern",
+      //   pattern: "solid",
+      //   fgColor: { argb: "FF8C00" }, // Dark Orange
+      // };
 
       worksheet.getRow(1).height = 30;
 
 
       // === Column Headers ===
       worksheet.columns = [
-        { key: "index", width: 7 },
-        { key: "receiptNumber", width: 10 },
+        // { key: "index", width: 7 },
+        { key: "receiptNumber", width: 12 },
         { key: "name", width: 25 },
         { key: "amount", width: 15 },
-        { key: "mobile", width: 15 },
-        { key: "address", width: 30 },
+        // { key: "mobile", width: 15 },
+        // { key: "address", width: 30 },
       ];
 
       worksheet.addRow([
-        "S No.",
+        // "S No.",
         "Receipt No",
         "Name",
         "Amount",
-        "Mobile",
-        "Address",
+        // "Mobile",
+        // "Address",
       ]);
 
       worksheet.getRow(2).eachCell((cell) => {
@@ -655,12 +655,12 @@ export const exportReceiptsInGroups = async (req, res) => {
 
       group.forEach((r, i) => {
         worksheet.addRow({
-          index: i + 1,
+          // index: i + 1,
           receiptNumber: r.receiptNumber,
           name: r.name,
           amount: r.amount,
-          mobile: r.mobile,
-          address: r.address,
+          // mobile: r.mobile,
+          // address: r.address,
         });
       });
 
@@ -680,23 +680,23 @@ export const exportReceiptsInGroups = async (req, res) => {
       const totalAmount = group.reduce((sum, r) => sum + (r.amount || 0), 0);
 
       const totalRow = worksheet.addRow({
-        index: '',
+        // index: '',
         receiptNumber: '',
         name: '',
         amount: totalAmount,
-        mobile: '',
-        address: ''
+        // mobile: '',
+        // address: ''
       });
 
-      totalRow.getCell('D').numFmt = '"₹",##,##,##0.00';
-      totalRow.getCell('D').font = { bold: true, size: 11 };
-      totalRow.getCell('D').alignment = { horizontal: "right", vertical: "middle" };
-
-      totalRow.getCell('C').value = "Total";
+      totalRow.getCell('C').numFmt = '"₹"##,##,##0.00';
       totalRow.getCell('C').font = { bold: true, size: 11 };
       totalRow.getCell('C').alignment = { horizontal: "right", vertical: "middle" };
 
-      ['C', 'D'].forEach((col) => {
+      totalRow.getCell('B').value = "Grand Total";
+      totalRow.getCell('B').font = { bold: true, size: 11 };
+      totalRow.getCell('B').alignment = { horizontal: "right", vertical: "middle" };
+
+      ['B', 'C'].forEach((col) => {
         const cell = worksheet.getCell(`${col}${totalRowIndex}`);
         cell.fill = {
           type: "pattern",
