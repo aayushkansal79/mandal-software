@@ -189,7 +189,7 @@ export const getInvitedMandals = async (req, res) => {
 };
 
 export const updateInvitedMandal = async (req, res) => {
-  try {
+  try { 
     const { id } = req.params;
     const { mandalName, contactPerson, mobile, address } = req.body;
 
