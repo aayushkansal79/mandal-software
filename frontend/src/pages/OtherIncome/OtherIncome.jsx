@@ -257,24 +257,26 @@ const OtherIncome = ({ url }) => {
                 </svg>
               </button>
             </div>
-            <div className="mt-3 text-end">
-              <button
-                className="btn btn-primary"
-                onClick={() => setOpenIncomeModel(true)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="white"
-                >
-                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-                </svg>
-                <span>Add Other Income</span>
-              </button>
-            </div>
           </>
+        )}
+        {user?.type === "admin" && (
+          <div className="mt-3 text-end">
+            <button
+              className="btn btn-primary"
+              onClick={() => setOpenIncomeModel(true)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="white"
+              >
+                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+              </svg>
+              <span>Add Other Income</span>
+            </button>
+          </div>
         )}
       </div>
 
