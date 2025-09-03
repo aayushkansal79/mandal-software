@@ -8,7 +8,7 @@ const Dashboard = ({ url }) => {
   const [stats, setStats] = useState({});
   const [year, setYear] = useState(new Date().getFullYear());
   const token = localStorage.getItem("token");
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     document.title = user?.mandalName;
@@ -139,7 +139,9 @@ const Dashboard = ({ url }) => {
                     <p className="card-text green amt">
                       + ₹
                       {(
-                        stats.totalReceiptAmount - stats.totalExpenseAmount
+                        stats.totalReceiptAmount +
+                        stats.totalOtherIncome -
+                        stats.totalExpenseAmount
                       )?.toLocaleString("en-IN")}
                     </p>
                   )}
@@ -155,6 +157,19 @@ const Dashboard = ({ url }) => {
                 <div className="card-body align-items-center">
                   <p className="card-text amt">
                     ₹ {stats.totalReceiptAmount?.toLocaleString("en-IN") || "0"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-12 col-sm-6 col-md-3">
+              <div className="amt-card card text-bg-light mb-3">
+                <div className="card-header bg-secondary text-light">
+                  Total Extra Amount
+                </div>
+                <div className="card-body align-items-center">
+                  <p className="card-text amt">
+                    ₹ {stats.totalOtherIncome?.toLocaleString("en-IN") || "0"}
                   </p>
                 </div>
               </div>

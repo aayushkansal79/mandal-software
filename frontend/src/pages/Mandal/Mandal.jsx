@@ -8,10 +8,13 @@ const MandalForm = ({ url }) => {
     name: "",
     code: "",
   });
+  const token = localStorage.getItem("token");
 
   const fetchMandals = async () => {
     try {
-      const { data } = await axios.get(`${url}/api/mandal`);
+      const { data } = await axios.get(`${url}/api/mandal`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setMandals(data);
     } catch (err) {
       toast.error("Failed to fetch mandals");
@@ -32,7 +35,9 @@ const MandalForm = ({ url }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${url}/api/mandal`, formData);
+      await axios.post(`${url}/api/mandal`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       toast.success("Mandal added successfully");
       setFormData({ name: "", code: "" });
       fetchMandals();

@@ -14,6 +14,7 @@ import Members from "./pages/Members/Members";
 import Footer from "./components/Footer/Footer";
 import MemberReceipt from "./pages/MemberReceipt/MemberReceipt";
 import AddReceipt from "./pages/AddReceipt/AddReceipt";
+import OtherIncome from "./pages/OtherIncome/OtherIncome";
 import AllReceipts from "./pages/AllReceipts/AllReceipts";
 import AssignPad from "./pages/AssignPad/AssignPad";
 import AllPads from "./pages/AllPads/AllPads";
@@ -71,6 +72,7 @@ function App() {
             <Route path="/assign-pad" element={<PrivateRoute roles={["admin"]}> <AssignPad url={url} /> </PrivateRoute>} />
             <Route path="/all-pads" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllPads url={url} /> </PrivateRoute>} />
             <Route path="/add-receipt" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AddReceipt url={url} /> </PrivateRoute>} />
+            <Route path="/other-income" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <OtherIncome url={url} /> </PrivateRoute>} />
             <Route path="/receipt-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
             <Route path="/my-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
             <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin"]}> <Expenditure url={url} /> </PrivateRoute>} />

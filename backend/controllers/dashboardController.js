@@ -2,6 +2,7 @@ import Expenditure from "../models/Expenditure.js";
 import ReceiptBook from "../models/ReceiptBook.js";
 import Receipt from "../models/Receipt.js";
 import User from "../models/User.js";
+import OtherIncome from "../models/OtherIncome.js";
 
 
 export const getDashboardStats = async (req, res) => {
@@ -28,6 +29,12 @@ export const getDashboardStats = async (req, res) => {
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
     const totalReceiptAmount = receiptTotal.length > 0 ? receiptTotal[0].total : 0;
+    
+    const otherIcomeTotal = await OtherIncome.aggregate([
+      { $match: filter },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    const totalOtherIncome = otherIcomeTotal.length > 0 ? otherIcomeTotal[0].total : 0;
 
     const expenseTotal = await Expenditure.aggregate([
       { $match: filter },
@@ -41,6 +48,7 @@ export const getDashboardStats = async (req, res) => {
       receiptCount,
       expenseCount,
       totalReceiptAmount,
+      totalOtherIncome,
       totalExpenseAmount,
       year: selectedYear
     });

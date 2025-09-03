@@ -139,6 +139,12 @@ const AllReceipts = ({ url }) => {
   const handleSave = async (id) => {
     setLoading(true);
     try {
+      if (editData.mobile && editData.mobile.length !== 10) {
+        toast.error("Mobile number must be 10 digits");
+        setLoading(false);
+        return;
+      }
+
       const res = await axios.patch(
         `${url}/api/receipt/admin/${id}`,
         editData,
