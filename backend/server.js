@@ -13,6 +13,7 @@ import expenditureRoutes from './routes/expenditureRoutes.js';
 import invitedMandalRoutes from './routes/invitedMandalRoutes.js';
 import documentRoutes from './routes/documentRoutes.js'
 import adminRoutes from './routes/adminRoutes.js';
+import whatsappRoutes from "./routes/whatsappRoutes.js";
 
 // app config
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api/expenditure", expenditureRoutes);
 app.use("/api/invitedmandal", invitedMandalRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
 
 // database connection
 mongoose.connect(process.env.MONGO_URI)
