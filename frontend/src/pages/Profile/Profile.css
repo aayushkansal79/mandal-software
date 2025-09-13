@@ -34,3 +34,11 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+.btn-outline-primary:hover .share-icon {
+  fill: white;
+}
+
+.share-icon {
+  transition: fill 0.2s ease;
+}

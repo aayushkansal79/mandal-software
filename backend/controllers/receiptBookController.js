@@ -21,13 +21,13 @@ export const assignPads = async (req, res) => {
       return res.status(404).json({ message: "Member not found" });
     }
 
-    const existingPads = await ReceiptBook.find({ padNumber: { $in: padNumbers } });
+    const year = new Date().getFullYear();
+
+    const existingPads = await ReceiptBook.find({ padNumber: { $in: padNumbers }, mandal: loggedInUser.mandal, year });
     if (existingPads.length > 0) {
       const takenPads = existingPads.map(p => p.padNumber);
       return res.status(400).json({ message: `Pad numbers already assigned: ${takenPads.join(", ")}` });
     }
-
-    const year = new Date().getFullYear();
 
     const padDocs = padNumbers.map(num => ({
       mandal: loggedInUser.mandal,

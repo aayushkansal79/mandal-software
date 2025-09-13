@@ -48,30 +48,30 @@ const MandalForm = ({ url }) => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-3">Add Mandal</h2>
+      <h2 className="bread">Add Mandal</h2>
       <form
         onSubmit={handleSubmit}
         className="bg-gray-100 p-4 rounded shadow max-w-md"
       >
         <div className="mb-3">
-          <label className="block mb-1">Mandal Name</label>
+          <label className="form-label">Mandal Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="border px-2 py-1 w-full rounded"
+            className="form-control"
             required
           />
         </div>
         <div className="mb-3">
-          <label className="block mb-1">Mandal Code</label>
+          <label className="form-label">Mandal Code</label>
           <input
             type="text"
             name="code"
             value={formData.code}
             onChange={handleChange}
-            className="border px-2 py-1 w-full rounded"
+            className="form-control"
             required
           />
         </div>
@@ -83,9 +83,9 @@ const MandalForm = ({ url }) => {
         </button>
       </form>
 
-      <h3 className="text-lg font-semibold mt-6">Existing Mandals</h3>
-      <table className="w-full border mt-2">
-        <thead>
+      <h3 className="mt-4 bread">Existing Mandals</h3>
+      <table className="table align-middle table-striped table-hover">
+        <thead className="table-info">
           <tr className="bg-gray-200">
             <th className="border px-2 py-1">Name</th>
             <th className="border px-2 py-1">Code</th>
