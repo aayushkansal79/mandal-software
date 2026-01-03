@@ -1,6 +1,22 @@
 import Expenditure from "../models/Expenditure.js";
 import ExcelJS from "exceljs";
 
+// let field = "";
+//         if (mandalName === "Shri Shyam Sewa Sangh Sarojini Nagar") {
+//           field = "sarojiniYear";
+//         } else if (mandalName === "Shri Shyam Sewak Yuva Mandal Sangam Vihar") {
+//           field = "sangamYear";
+//         } else {
+//           return res.status(400).json({ message: "Invalid mandal name" });
+//         }
+      
+//         const admin = await Admin.findOne().select(field);
+//         if (!admin) {
+//           return res.status(404).json({ message: "Admin settings not found" });
+//         }
+
+//         const year = admin[field] || new Date().getFullYear();
+
 // ADD multiple expenses
 export const addExpenses = async (req, res) => {
     try {
