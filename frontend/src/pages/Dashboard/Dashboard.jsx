@@ -23,6 +23,11 @@ const Dashboard = ({ url }) => {
       .catch((err) => console.error(err));
   }, [year]);
 
+  const balance =
+    stats.totalReceiptAmount +
+      stats.totalOtherIncome -
+      stats.totalExpenseAmount || 0;
+
   return (
     <>
       <div className="bread">Dashboard</div>
@@ -128,7 +133,7 @@ const Dashboard = ({ url }) => {
                   Account
                 </div>
                 <div className="card-body align-items-center">
-                  {stats.totalReceiptAmount - stats.totalExpenseAmount < 0 ? (
+                  {/* {stats.totalReceiptAmount - stats.totalExpenseAmount < 0 ? (
                     <p className="card-text red amt">
                       - ₹{" "}
                       {(-(
@@ -144,7 +149,13 @@ const Dashboard = ({ url }) => {
                         stats.totalExpenseAmount
                       )?.toLocaleString("en-IN")}
                     </p>
-                  )}
+                  )} */}
+                  <p
+                    className={`card-text amt ${balance < 0 ? "red" : "green"}`}
+                  >
+                    {balance < 0 ? "- ₹ " : "+ ₹ "}
+                    {Math.abs(balance).toLocaleString("en-IN")}
+                  </p>
                 </div>
               </div>
             </div>
