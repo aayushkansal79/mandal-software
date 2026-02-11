@@ -325,6 +325,52 @@ export const adminUpdateReceipt = async (req, res) => {
   }
 };
 
+export const adminDeleteReceipt = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const receipt = await Receipt.findById(id);
+    if (!receipt) {
+      return res.status(404).json({ message: "Receipt not found" });
+    }
+
+    const { receiptNumber, mandal, year, member, amount } = receipt;
+
+    // Calculate pad number
+    const padNumber = Math.ceil(receiptNumber / 25);
+
+    // Find corresponding ReceiptBook
+    const padDoc = await ReceiptBook.findOne({
+      padNumber,
+      mandal,
+      member,
+      year,
+    });
+
+    if (padDoc) {
+      padDoc.totalAmount -= amount;
+
+      // Prevent negative totals
+      if (padDoc.totalAmount < 0) {
+        padDoc.totalAmount = 0;
+      }
+
+      await padDoc.save();
+    }
+
+    // Delete receipt
+    await Receipt.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Receipt deleted successfully (Admin)",
+    });
+  } catch (err) {
+    console.error("Error deleting receipt (Admin):", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 // export const getReceiptsByMandal = async (req, res) => {
 //   try {
 //     const { year, receiptNumber, amount, memberName, name, mobile } = req.query;

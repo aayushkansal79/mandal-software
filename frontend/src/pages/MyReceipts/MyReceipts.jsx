@@ -181,7 +181,7 @@ const MyReceipts = ({ url }) => {
               <th scope="col">Mobile No.</th>
               <th scope="col">Address</th>
               <th scope="col">Date & Time</th>
-              <th>Edit</th>
+              {/* <th>Edit</th> */}
             </tr>
           </thead>
           <tbody className="table-group-divider">
@@ -270,7 +270,7 @@ const MyReceipts = ({ url }) => {
                 <td className="small">
                   {new Date(receipt.updatedAt).toLocaleString("en-IN")}
                 </td>
-                <td>
+                {/* <td>
                   {editIndex === index ? (
                     <div className="d-flex gap-2">
                       <button
@@ -308,7 +308,7 @@ const MyReceipts = ({ url }) => {
                       </svg>
                     </button>
                   )}
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>

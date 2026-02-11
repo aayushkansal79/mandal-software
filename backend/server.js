@@ -12,6 +12,7 @@ import otherIncomeRoutes from './routes/otherIncomeRoutes.js'
 import expenditureRoutes from './routes/expenditureRoutes.js';
 import invitedMandalRoutes from './routes/invitedMandalRoutes.js';
 import documentRoutes from './routes/documentRoutes.js'
+import pujaListRoutes from './routes/pujaListRoutes.js'
 import adminRoutes from './routes/adminRoutes.js';
 import whatsappRoutes from "./routes/whatsappRoutes.js";
 
@@ -40,6 +41,7 @@ app.use("/api/other-income", otherIncomeRoutes);
 app.use("/api/expenditure", expenditureRoutes);
 app.use("/api/invitedmandal", invitedMandalRoutes);
 app.use("/api/documents", documentRoutes);
+app.use("/api/puja-list", pujaListRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
 

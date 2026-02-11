@@ -123,7 +123,7 @@ const AddReceipt = ({ url }) => {
         </div>
         <div className="disc">(*) Required fields</div>
         <div className="col-12">
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             Add Receipt
           </button>
         </div>

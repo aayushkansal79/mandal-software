@@ -26,6 +26,7 @@ import Expenditure from "./pages/Expenditure/Expenditure";
 import AddMandal from "./pages/AddMandal/AddMandal";
 import InvitedMandals from "./pages/InvitedMandal/InvitedMandal";
 import DocumentManager from "./pages/Documents/Documents";
+import PujaList from "./pages/PujaList/PujaList";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -81,6 +82,7 @@ function App() {
             <Route path="/add-mandal" element={<PrivateRoute roles={["admin", "subadmin"]}> <AddMandal url={url} /> </PrivateRoute>} />
             <Route path="/invited-mandal" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <InvitedMandals url={url} /> </PrivateRoute>} />
             <Route path="/documents" element={<PrivateRoute roles={["admin", "subadmin"]}> <DocumentManager url={url} /> </PrivateRoute>} />
+            <Route path="/puja-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <PujaList url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
         {!hideLayout && (
