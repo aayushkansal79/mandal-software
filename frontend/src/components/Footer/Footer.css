@@ -7,49 +7,117 @@
   display: none;
 }
 
+/* CONTAINER */
 .footer .container-fluid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-}
+  grid-template-columns: repeat(5, 1fr);
 
-.footer .icons {
+  align-items: center;
   justify-items: center;
-  > .icon {
-    width: 50px;
-    padding: 3px;
-  }
-  > svg {
-    fill: black;
-  }
-  > p b {
-    color: black;
-    font-size: 11px !important;
-  }
+
+  width: 100%;
+
+  padding: 4px 0;
 }
 
-.footer a.active {
-  > .icon {
-    background-color: #6d0616;
-    border-radius: 50px;
-  }
-  > .icon svg {
-    fill: white !important;
-  }
-  > p b {
-    color: #6d0616;
-    /* font-size: 12px !important; */
-  }
+/* EACH ITEM */
+.footer .icons {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+
+  width: 100%;
+
+  transition: all 0.2s ease;
 }
 
+/* ICON */
+.footer .icons .icon {
+  width: 50px;
+  padding: 3px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50px;
+
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* SVG */
+.footer .icons .icon svg {
+  fill: black;
+
+  transition:
+    fill 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* TEXT */
+.footer .icons p {
+  margin: 0;
+  text-align: center;
+  line-height: 1.1;
+}
+
+/* LABEL */
+.footer .icons p b {
+  color: black;
+  font-size: 11px !important;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  transition: color 0.25s ease;
+}
+
+/* HOVER EFFECT */
+.footer .icons:hover .icon {
+  transform: translateY(-2px);
+}
+
+/* ACTIVE */
+.footer a.active .icon {
+  background-color: #6d0616;
+
+  box-shadow: 0 4px 12px rgba(109, 6, 22, 0.25);
+}
+
+.footer a.active .icon svg {
+  fill: white !important;
+}
+
+.footer a.active p b {
+  color: #6d0616;
+}
+
+/* MOBILE */
 @media (max-width: 1000px) {
   .footer {
     display: block;
+
     position: fixed;
+
     z-index: 1001;
+
     bottom: 0;
     left: 0;
     right: 0;
+
+    background-color: #faf7f3;
+
     border-top: 1px solid rgba(0, 0, 0, 0.236);
+
     border-bottom: none;
+
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
