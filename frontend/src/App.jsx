@@ -37,20 +37,28 @@ function App() {
   const hideLayout = location.pathname === "/login";
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div style={{
+        display: "flex",
+        minHeight: "100vh",
+        overflow: "hidden",
+      }}>
       <AuthProvider>
       {!hideLayout && <Sidebar sidebarOpen={sidebarOpen} />}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+        }}>
         {!hideLayout && (
           <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} url={url} />
         )}
-        <main
+        <main className="spiritual-pattern"
           style={{
-            padding: hideLayout ? "0" : "1rem",
             flex: 1,
             overflowY: "auto",
-            scrollbarWidth: "none",
-            paddingBottom: "90px"
+            padding: hideLayout ? "0" : "1rem",
+            paddingBottom: "120px",
           }}
         >
           <Toaster
