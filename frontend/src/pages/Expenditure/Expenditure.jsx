@@ -46,7 +46,7 @@ const ExpenseManager = ({ url }) => {
         `${url}/api/expenditure?${params.toString()}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       setAllExpenses(res.data);
     } catch (err) {
@@ -71,7 +71,7 @@ const ExpenseManager = ({ url }) => {
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob", // important for binary data
-        }
+        },
       );
 
       // Create a link to download the file
@@ -111,13 +111,13 @@ const ExpenseManager = ({ url }) => {
     setLoading(true);
     try {
       const filteredExpenses = expenses.filter(
-        (exp) => exp.field && exp.amount
+        (exp) => exp.field && exp.amount,
       );
 
       await axios.post(
         `${url}/api/expenditure`,
         { expenses: filteredExpenses },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       toast.success("Expenses added successfully");
       fetchExpenses();
@@ -145,11 +145,11 @@ const ExpenseManager = ({ url }) => {
       const res = await axios.patch(
         `${url}/api/expenditure/${id}`,
         { field: editData.field, amount: editData.amount },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       setAllExpenses((prev) =>
-        prev.map((exp) => (exp._id === id ? res.data.updated : exp))
+        prev.map((exp) => (exp._id === id ? res.data.updated : exp)),
       );
 
       toast.success("Expense updated successfully");
@@ -195,7 +195,7 @@ const ExpenseManager = ({ url }) => {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       toast.success("Payment added successfully!");
@@ -291,7 +291,7 @@ const ExpenseManager = ({ url }) => {
           >
             {Array.from(
               { length: new Date().getFullYear() - 2025 + 1 },
-              (_, i) => new Date().getFullYear() - i
+              (_, i) => new Date().getFullYear() - i,
             ).map((year) => (
               <option key={year} value={year}>
                 {year}
@@ -299,24 +299,26 @@ const ExpenseManager = ({ url }) => {
             ))}
           </select>
         </div>
-        <div>
-          <button
-            className="btn btn-sm btn-success px-3"
-            onClick={handleDownloadExcel}
-            title="Download Excel"
-            disabled={downloading}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="white"
+        {user?.type === "admin" && (
+          <div>
+            <button
+              className="btn btn-sm btn-success px-3"
+              onClick={handleDownloadExcel}
+              title="Download Excel"
+              disabled={downloading}
             >
-              <path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z" />
-            </svg>
-          </button>
-        </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="white"
+              >
+                <path d="m720-120 160-160-56-56-64 64v-167h-80v167l-64-64-56 56 160 160ZM560 0v-80h320V0H560ZM240-160q-33 0-56.5-23.5T160-240v-560q0-33 23.5-56.5T240-880h280l240 240v121h-80v-81H480v-200H240v560h240v80H240Zm0-80v-560 560Z" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Expense Table */}
@@ -327,8 +329,12 @@ const ExpenseManager = ({ url }) => {
               <th>#</th>
               <th>Expense Detail</th>
               <th className="text-end">Amount</th>
-              <th className="text-end">Payments Done</th>
-              <th></th>
+              {user?.type === "admin" && (
+                <>
+                  <th className="text-end">Payments Done</th>
+                  <th></th>
+                </>
+              )}
               <th>Date & Time</th>
               {user?.type === "admin" && <th>Actions</th>}
             </tr>
@@ -372,35 +378,39 @@ const ExpenseManager = ({ url }) => {
                     `₹ ${exp.amount.toLocaleString("en-IN")}`
                   )}
                 </th>
-                <td className="text-end">
-                  <div>
-                    {exp.payments?.map((payment) => (
+                {user?.type === "admin" && (
+                  <>
+                    <td className="text-end">
                       <div>
-                        {payment.paymentMethod} - ₹{" "}
-                        {payment.payAmount?.toLocaleString("en-IN")}
+                        {exp.payments?.map((payment) => (
+                          <div>
+                            {payment.paymentMethod} - ₹{" "}
+                            {payment.payAmount?.toLocaleString("en-IN")}
+                          </div>
+                        ))}
+                        {exp.payments?.length === 0 && (
+                          <div className="text-center">--</div>
+                        )}
                       </div>
-                    ))}
-                    {exp.payments?.length === 0 && (
-                      <div className="text-center">--</div>
-                    )}
-                  </div>
-                </td>
-                <th>
-                  <button
-                    className="op-btn"
-                    onClick={() => openPaymentModal(exp._id, exp.field)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="24px"
-                      viewBox="0 -960 960 960"
-                      width="24px"
-                      fill="green"
-                    >
-                      <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-                    </svg>
-                  </button>
-                </th>
+                    </td>
+                    <th>
+                      <button
+                        className="op-btn"
+                        onClick={() => openPaymentModal(exp._id, exp.field)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          height="24px"
+                          viewBox="0 -960 960 960"
+                          width="24px"
+                          fill="green"
+                        >
+                          <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                        </svg>
+                      </button>
+                    </th>
+                  </>
+                )}
                 <td className="small">
                   {new Date(exp.updatedAt).toLocaleString("en-IN")}
                 </td>

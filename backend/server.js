@@ -14,6 +14,9 @@ import invitedMandalRoutes from './routes/invitedMandalRoutes.js';
 import documentRoutes from './routes/documentRoutes.js'
 import pujaListRoutes from './routes/pujaListRoutes.js'
 import adminRoutes from './routes/adminRoutes.js';
+import dutyMemberRoutes from './routes/dutyMemberRoutes.js';
+import dutySessionRoutes from './routes/dutySessionRoutes.js';
+import dutyAttendanceRoutes from './routes/dutyAttendanceRoutes.js';
 import whatsappRoutes from "./routes/whatsappRoutes.js";
 
 // app config
@@ -43,6 +46,9 @@ app.use("/api/invitedmandal", invitedMandalRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/puja-list", pujaListRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/dutymember", dutyMemberRoutes);
+app.use("/api/dutysession", dutySessionRoutes);
+app.use("/api/dutyattendance", dutyAttendanceRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
 
 // database connection

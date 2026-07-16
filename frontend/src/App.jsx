@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./pages/Login/Login";
 import Sidebar from "./components/Sidebar/Sidebar";
+import DutySidebar from "./components/DutySidebar/DutySidebar";
 import Navbar from "./components/Navbar/Navbar";
 import Profile from "./pages/Profile/Profile";
 import BankAccount from "./pages/Profile/Bank_Account";
@@ -27,23 +28,32 @@ import AddMandal from "./pages/AddMandal/AddMandal";
 import InvitedMandals from "./pages/InvitedMandal/InvitedMandal";
 import DocumentManager from "./pages/Documents/Documents";
 import PujaList from "./pages/PujaList/PujaList";
+import DutyRoutes from "./context/DutyRoutes";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   // const url = "http://localhost:4000";
+  // const url = "https://shyamdeewane.in";
   const url = "https://mandal-software.onrender.com";
 
   const location = useLocation();
+  const isDutyRoute = location.pathname.startsWith("/duty");
   const hideLayout = location.pathname === "/login";
 
   return (
     <div style={{
         display: "flex",
-        minHeight: "100vh",
+        height: "100vh",
         overflow: "hidden",
       }}>
       <AuthProvider>
-      {!hideLayout && <Sidebar sidebarOpen={sidebarOpen} />}
+      {/* {!hideLayout && <Sidebar sidebarOpen={sidebarOpen} />} */}
+      {!hideLayout &&
+        (isDutyRoute ? (
+          <DutySidebar sidebarOpen={sidebarOpen} />
+        ) : (
+          <Sidebar sidebarOpen={sidebarOpen} />
+      ))}
       <div style={{
           flex: 1,
           display: "flex",
@@ -86,14 +96,15 @@ function App() {
             <Route path="/other-income" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <OtherIncome url={url} /> </PrivateRoute>} />
             <Route path="/receipt-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <AllReceipts url={url} /> </PrivateRoute>} />
             <Route path="/my-receipts" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <MyReceipts url={url} /> </PrivateRoute>} />
-            <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin"]}> <Expenditure url={url} /> </PrivateRoute>} />
+            <Route path="/expenditure" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <Expenditure url={url} /> </PrivateRoute>} />
             <Route path="/add-mandal" element={<PrivateRoute roles={["admin", "subadmin"]}> <AddMandal url={url} /> </PrivateRoute>} />
             <Route path="/invited-mandal" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <InvitedMandals url={url} /> </PrivateRoute>} />
             <Route path="/documents" element={<PrivateRoute roles={["admin", "subadmin"]}> <DocumentManager url={url} /> </PrivateRoute>} />
             <Route path="/puja-list" element={<PrivateRoute roles={["admin", "subadmin", "member"]}> <PujaList url={url} /> </PrivateRoute>} />
+            <Route path="/duty/*" element={<PrivateRoute roles={["admin", "duty"]}> <DutyRoutes url={url} /> </PrivateRoute>} />
           </Routes>
         </main>
-        {!hideLayout && (
+        {!hideLayout && !isDutyRoute && (
           <Footer />
         )}
       </div>
