@@ -128,7 +128,7 @@ const Sessions = ({ url }) => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <div className="bread">Attendance Sessions</div>
+        <div className="bread">Sessions</div>
 
         {activeSession ? (
           <button className="btn btn-danger" onClick={handleEndSession}>

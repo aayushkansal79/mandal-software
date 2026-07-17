@@ -47,7 +47,7 @@ const Navbar = ({ toggleSidebar, url }) => {
           </svg>
         </div>
         <div className="name">{user?.mandalName.toUpperCase()}</div>
-        <Link to="/dashboard" className="img">
+        <Link to={isDutyRoute ? "/duty" : "/dashboard"} className="img">
           {user?.mandalName === "Shri Shyam Sewak Yuva Mandal Sangam Vihar" ? (
             <img src={assets.sangam_logo} height={60} alt="" />
           ) : (

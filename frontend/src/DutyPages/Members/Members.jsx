@@ -93,92 +93,215 @@ const Members = ({ url }) => {
 
   // Print QR
   const handlePrintQR = () => {
-    const printContents = componentRef.current.innerHTML;
 
-    const printWindow = window.open("", "_blank", "width=1000,height=800");
+  const printContents = componentRef.current.innerHTML;
 
-    printWindow.document.write(`
-        <html>
+  const printWindow = window.open(
+    "",
+    "_blank",
+    "width=1200,height=900"
+  );
 
-        <head>
+  printWindow.document.write(`
+  <html>
 
-            <title>Duty QR</title>
+    <head>
 
-            <style>
+      <title>Duty QR</title>
 
-                body{
+      <style>
 
-                    margin:10px;
-                    font-family:Arial;
+        *{
+          box-sizing:border-box;
+        }
 
-                }
+        body{
 
-                .qr-print-area{
+          margin:0;
+          padding:0;
 
-                    display:grid;
+          font-family:Arial, Helvetica, sans-serif;
 
-                    grid-template-columns:repeat(5,1fr);
+          background:white;
 
-                    gap:12px;
+        }
 
-                }
+        .qr-print-area{
 
-                .qr-card{
+          display:grid;
 
-                    border:1px solid black;
+          grid-template-columns:repeat(3,2.3in);
 
-                    border-radius:8px;
+          gap:0.15in;
 
-                    padding:10px;
+          justify-content:center;
 
-                    text-align:center;
+          padding:0.15in;
 
-                    page-break-inside:avoid;
+        }
 
-                    break-inside:avoid;
+        .qr-card{
 
-                }
+          width:2.3in;
 
-                .qr-card div{
+          height:3.3in;
 
-                    margin-top:5px;
+          border:2px solid #6d0616;
 
-                    font-weight:bold;
-                }
+          border-radius:12px;
 
-                @page{
+          overflow:hidden;
 
-                    margin:10mm;
+          display:flex;
 
-                }
+          flex-direction:column;
 
-            </style>
+          background:white;
 
-        </head>
+          page-break-inside:avoid;
 
-        <body>
+          break-inside:avoid;
 
-            <div class="qr-print-area">
+        }
 
-                ${printContents}
+        .qr-header{
 
-            </div>
+          background:#6d0616;
 
-        </body>
+          color:white;
 
-        </html>
-    `);
+          text-align:center;
 
-    printWindow.document.close();
+          padding:8px 5px;
 
-    printWindow.focus();
+        }
 
-    setTimeout(() => {
-      printWindow.print();
+        .mandal-name{
 
-      printWindow.close();
-    }, 500);
-  };
+          font-size:17px;
+
+          font-weight:bold;
+
+          letter-spacing:1px;
+
+        }
+
+        .mandal-subtitle{
+
+          font-size:10px;
+
+          margin-top:2px;
+
+        }
+
+        .qr-body{
+
+          flex:1;
+
+          display:flex;
+
+          justify-content:center;
+
+          align-items:center;
+
+          padding-top:8px;
+
+        }
+
+        .qr-body svg{
+
+          width:1.45in !important;
+
+          height:1.45in !important;
+
+        }
+
+        .member-code{
+
+          text-align:center;
+
+          font-size:18px;
+
+          font-weight:bold;
+
+          color:#6d0616;
+
+          margin-top:2px;
+
+        }
+
+        .member-name{
+
+          text-align:center;
+
+          font-size:20px;
+
+          font-weight:600;
+
+          padding:4px 10px;
+
+          min-height:36px;
+
+          display:flex;
+
+          align-items:center;
+
+          justify-content:center;
+
+        }
+
+        .qr-footer{
+
+          background:#f4f4f4;
+
+          text-align:center;
+
+          font-size:10px;
+
+          padding:6px;
+
+          border-top:1px solid #ddd;
+
+        }
+
+        @page{
+
+          size:A4 portrait;
+
+          margin:0.25in;
+
+        }
+
+      </style>
+
+    </head>
+
+    <body>
+
+      <div class="qr-print-area">
+
+        ${printContents}
+
+      </div>
+
+    </body>
+
+  </html>
+  `);
+
+  printWindow.document.close();
+
+  printWindow.focus();
+
+  setTimeout(() => {
+
+    printWindow.print();
+
+    printWindow.close();
+
+  },500);
+
+};
 
   const handleUpload = async () => {
     if (!file) {
@@ -359,11 +482,27 @@ const Members = ({ url }) => {
       >
         {members.map((member) => (
           <div className="qr-card" key={member._id}>
-            <QRCode value={member.memberCode} size={120} />
+            <div className="qr-header">
+              <div className="mandal-name">SHYAM DEEWANE</div>
 
-            <div>{member.memberCode}</div>
+              {/* <div className="mandal-subtitle"> JAI SHREE SHYAM</div> */}
+            </div>
 
-            <small>{member.name}</small>
+            <div className="qr-body">
+              <QRCode
+                value={member.memberCode}
+                style={{
+                  width: "1.45in",
+                  height: "1.45in",
+                }}
+              />
+            </div>
+
+            <div className="member-code">{member.memberCode}</div>
+
+            <div className="member-name">{member.name}</div>
+
+            <div className="qr-header">SEWADAAR</div>
           </div>
         ))}
       </div>
