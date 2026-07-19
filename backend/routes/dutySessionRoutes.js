@@ -4,9 +4,9 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect("admin"), createSession);
-router.get("/live", protect("admin"), getLiveSession);
-router.get("/", protect("admin"), getSessions);
-router.put("/end", protect("admin"), endSession);
+router.post("/", protect(["admin", "duty"]), createSession);
+router.get("/live", protect(["admin", "duty"]), getLiveSession);
+router.get("/", protect(["admin", "duty"]), getSessions);
+router.put("/end", protect(["admin", "duty"]), endSession);
 
 export default router;

@@ -64,7 +64,7 @@ const ReportDash = ({url}) => {
 
   return (
     <>
-      <div className="bread">Duty Reports</div>
+      <div className="bread">Attendance Reports</div>
 
       {/* <div className="card shadow-sm my-4">
         <div className="card-body">

@@ -4,7 +4,7 @@ import { getAllReports, getDayReport } from "../controllers/dutyReportController
 
 const router = express.Router();
 
-router.get("/", protect("admin"), getAllReports);
-router.get("/day", protect("admin"), getDayReport);
+router.get("/", protect(["admin", "duty"]), getAllReports);
+router.get("/day", protect(["admin", "duty"]), getDayReport);
 
 export default router;

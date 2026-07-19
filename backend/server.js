@@ -18,6 +18,7 @@ import dutyMemberRoutes from './routes/dutyMemberRoutes.js';
 import dutySessionRoutes from './routes/dutySessionRoutes.js';
 import dutyAttendanceRoutes from './routes/dutyAttendanceRoutes.js';
 import dutyReportRoutes from './routes/dutyReportRoutes.js';
+import dutyBreakRoutes from './routes/dutyBreakRoutes.js';
 import whatsappRoutes from "./routes/whatsappRoutes.js";
 
 // app config
@@ -51,6 +52,7 @@ app.use("/api/dutymember", dutyMemberRoutes);
 app.use("/api/dutysession", dutySessionRoutes);
 app.use("/api/dutyattendance", dutyAttendanceRoutes);
 app.use("/api/dutyreport", dutyReportRoutes);
+app.use("/api/dutybreak", dutyBreakRoutes);
 app.use("/api/whatsapp", whatsappRoutes);
 
 // database connection

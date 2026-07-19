@@ -6,21 +6,32 @@ const PrivateRoute = ({ children, roles = [] }) => {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) {
-    return <div className="d-flex justify-content-center align-items-center vh-100">
-      <div className="spinner-border" role="status" />
-    </div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border" role="status" />
+      </div>
+    );
   }
 
+  // Not logged in
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // Check permission
   if (roles.length > 0 && !roles.includes(user.type)) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <h4>🚫 Access Denied: You do not have permission to view this page.</h4>
-      </div>
-    );
+    // Duty user trying to access Mandal pages
+    if (user.type === "duty") {
+      return <Navigate to="/duty" replace />;
+    }
+
+    // Mandal users trying to access Duty pages
+    if (["admin", "subadmin", "member"].includes(user.type)) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    // Unknown user
+    return <Navigate to="/login" replace />;
   }
 
   return children;

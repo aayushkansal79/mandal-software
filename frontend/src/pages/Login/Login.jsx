@@ -17,10 +17,14 @@ const Login = ({ url }) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (user?.type) {
-      navigate("/dashboard");
+    if (!user) return;
+
+    if (user.type === "duty") {
+      navigate("/duty", { replace: true });
+    } else {
+      navigate("/dashboard", { replace: true });
     }
-  }, [user, location, navigate]);
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +40,13 @@ const Login = ({ url }) => {
       toast.success("Logged in successfully!");
 
       const decodedUser = JSON.parse(atob(res.data.token.split(".")[1]));
-      navigate("/dashboard");
+
+      if (decodedUser.type === "duty") {
+        navigate("/duty");
+      } else {
+        navigate("/dashboard");
+      }
+      // navigate("/dashboard");
 
       // if (decodedUser.type === "admin") {
       //   navigate("/dashboard");
@@ -48,7 +58,7 @@ const Login = ({ url }) => {
     } catch (err) {
       console.error(err);
       toast.error(
-        err.response?.data?.message || "Login failed. Please try again."
+        err.response?.data?.message || "Login failed. Please try again.",
       );
     } finally {
       setLoading(false);

@@ -1,0 +1,23 @@
+.report-card {
+  transition: 0.25s;
+
+  border: none;
+
+  border-left: 6px solid #6d0616;
+}
+
+.report-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.report-card p {
+  margin-bottom: 0.45rem;
+}
+
+.report-card h4 {
+  color: #6d0616;
+
+  font-weight: 700;
+}

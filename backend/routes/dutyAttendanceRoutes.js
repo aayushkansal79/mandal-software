@@ -4,7 +4,7 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect("admin"), markAttendance);
-router.get("/:sessionId", protect("admin"), getAttendanceBySession);
+router.post("/", protect(["admin", "duty"]), markAttendance);
+router.get("/:sessionId", protect(["admin", "duty"]), getAttendanceBySession);
 
 export default router;
