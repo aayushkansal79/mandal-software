@@ -50,9 +50,9 @@ function App() {
       {/* {!hideLayout && <Sidebar sidebarOpen={sidebarOpen} />} */}
       {!hideLayout &&
         (isDutyRoute ? (
-          <DutySidebar sidebarOpen={sidebarOpen} />
+          <DutySidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         ) : (
-          <Sidebar sidebarOpen={sidebarOpen} />
+          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       ))}
       <div style={{
           flex: 1,

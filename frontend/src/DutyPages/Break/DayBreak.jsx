@@ -11,6 +11,7 @@ const DayBreak = ({ url }) => {
   const [search, setSearch] = useState("");
   const [members, setMembers] = useState([]);
   const [filteredMembers, setFilteredMembers] = useState([]);
+  const [longBreakMembers, setLongBreakMembers] = useState([]);
   const [displayDate, setDisplayDate] = useState("");
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalBreaks, setTotalBreaks] = useState(0);
@@ -82,10 +83,19 @@ const DayBreak = ({ url }) => {
   }, [search, members]);
 
   useEffect(() => {
+
+    const longBreak = members.filter(
+      (member) =>
+        member.totalDuration >= 40,
+    );
+
+    setLongBreakMembers(longBreak);
+  }, [members]);
+
+  useEffect(() => {
     fetchReport();
   }, []);
 
-  
   return (
     <>
       <div className="bread">
@@ -135,6 +145,45 @@ const DayBreak = ({ url }) => {
           </div>
         </div>
 
+        <div className="card shadow-sm mt-2 mb-4">
+          <div className="card-body">
+            <h5 className="fw-bold mb-3">On Break more than 40 minutes</h5>
+
+            {longBreakMembers.length === 0 ? (
+              <div className="text-center text-muted py-3">
+                No one is on break for too long.
+              </div>
+            ) : (
+              <div
+                style={{
+                  maxHeight: "320px",
+                  overflowY: "auto",
+                }}
+              >
+                {longBreakMembers.map((member) => (
+                  <div key={member._id} className="border rounded p-2 mb-2">
+                    <div className="w-100 d-flex justify-content-between">
+                    <div>
+                      <strong>{member.name}</strong>
+
+                      <br />
+
+                      <small>{member.memberCode}</small>
+                    </div>
+
+                    <div className="text-end">
+                      <div>{member.breakCount} Break(s)</div>
+
+                      <strong>{member.totalBreakText}</strong>
+                    </div>
+                  </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="row mb-4">
           <div className="col-md-6">
             <input
@@ -144,8 +193,6 @@ const DayBreak = ({ url }) => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-
-          
         </div>
 
         <div className="accordion">
@@ -192,17 +239,23 @@ const DayBreak = ({ url }) => {
                       {member.breaks.map((item, index) => (
                         <tr key={index}>
                           <td>
-                            {new Date(item.breakOut).toLocaleTimeString("en-IN", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {new Date(item.breakOut).toLocaleTimeString(
+                              "en-IN",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </td>
 
                           <td>
-                            {new Date(item.breakIn).toLocaleTimeString("en-IN", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {new Date(item.breakIn).toLocaleTimeString(
+                              "en-IN",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </td>
 
                           <td>{item.duration} min</td>

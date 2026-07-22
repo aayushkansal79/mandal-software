@@ -1,10 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./DutySidebar.css";
 import { assets } from "../../assets/assets";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
-const DutySidebar = ({ sidebarOpen }) => {
+const DutySidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
 
   const [openMenu, setOpenMenu] = useState(null);
@@ -13,6 +13,12 @@ const DutySidebar = ({ sidebarOpen }) => {
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
+
+  useEffect(() => {
+    if (window.innerWidth <= 768) {
+      setSidebarOpen(true);
+    }
+  }, [location.pathname]);
 
   if (!user) {
     return;

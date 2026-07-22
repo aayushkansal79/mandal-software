@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import Loader from "../../components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const ReportDash = ({ url }) => {
   const token = localStorage.getItem("token");
@@ -86,30 +87,38 @@ const ReportDash = ({ url }) => {
   }, [search, reports]);
 
   const closeAllBreaks = async () => {
-    const confirm = window.confirm("Close all active breaks?");
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to end all breaks?",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, close all!",
+    });
 
-    if (!confirm) return;
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.put(
+          `${url}/api/dutybreak/closeall`,
 
-    try {
-      const response = await axios.put(
-        `${url}/api/dutybreak/closeall`,
+          {},
 
-        {},
-
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      if (response.data.success) {
-        toast.success(response.data.message);
+        if (response.data.success) {
+          toast.success(response.data.message);
 
-        fetchReports();
+          fetchReports();
+          fetchLiveBreaks();
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Unable to close breaks.");
       }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Unable to close breaks.");
     }
   };
 
